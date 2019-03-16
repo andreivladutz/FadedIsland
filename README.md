@@ -1,8 +1,7 @@
 # Faded Island Game
-<br/>
 ## Project Structure
 
-- index.html
+- **index.html**
 - **Tiled**<br/>
   *(the folder for Tiled maps, defined tileset workfiles and tileset images* <br/>
   *all the workfiles should be exported as .json files)*
