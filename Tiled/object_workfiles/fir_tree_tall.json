@@ -1,0 +1,20 @@
+{ "object":
+    {
+     "gid":1,
+     "height":224,
+     "id":218,
+     "name":"TallFirTree",
+     "rotation":0,
+     "type":"static",
+     "visible":true,
+     "width":96,
+     "x":-48,
+     "y":112
+    },
+ "tileset":
+    {
+     "firstgid":1,
+     "source":"..\/tileset_workfiles\/TallFirTree.json"
+    },
+ "type":"template"
+}

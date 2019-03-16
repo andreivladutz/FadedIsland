@@ -1,0 +1,15 @@
+{ "columns":1,
+ "image":"..\/tileset_images\/CherryTree2.png",
+ "imageheight":256,
+ "imagewidth":96,
+ "margin":0,
+ "name":"NarrowCherryTree",
+ "spacing":0,
+ "tilecount":2,
+ "tiledversion":"1.2.3",
+ "tileheight":128,
+ "tilewidth":96,
+ "transparentcolor":"#8f8f8f",
+ "type":"tileset",
+ "version":1.2
+}

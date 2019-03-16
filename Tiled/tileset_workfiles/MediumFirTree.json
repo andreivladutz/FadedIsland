@@ -1,0 +1,15 @@
+{ "columns":1,
+ "image":"..\/tileset_images\/MediumFirTree.png",
+ "imageheight":192,
+ "imagewidth":96,
+ "margin":0,
+ "name":"MediumFirTree",
+ "spacing":0,
+ "tilecount":1,
+ "tiledversion":"1.2.3",
+ "tileheight":192,
+ "tilewidth":96,
+ "transparentcolor":"#8f8f8f",
+ "type":"tileset",
+ "version":1.2
+}

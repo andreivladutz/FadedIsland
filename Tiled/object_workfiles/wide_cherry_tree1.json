@@ -1,0 +1,20 @@
+{ "object":
+    {
+     "gid":1,
+     "height":128,
+     "id":7,
+     "name":"CherryTree3",
+     "rotation":0,
+     "type":"static",
+     "visible":true,
+     "width":128,
+     "x":-64,
+     "y":64
+    },
+ "tileset":
+    {
+     "firstgid":1,
+     "source":"..\/tileset_workfiles\/WideCherryTree.json"
+    },
+ "type":"template"
+}

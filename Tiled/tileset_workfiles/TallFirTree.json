@@ -1,0 +1,15 @@
+{ "columns":1,
+ "image":"..\/tileset_images\/TallFirTree.png",
+ "imageheight":224,
+ "imagewidth":96,
+ "margin":0,
+ "name":"TallFirTree",
+ "spacing":0,
+ "tilecount":1,
+ "tiledversion":"1.2.3",
+ "tileheight":224,
+ "tilewidth":96,
+ "transparentcolor":"#8f8f8f",
+ "type":"tileset",
+ "version":1.2
+}

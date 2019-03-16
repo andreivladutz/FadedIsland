@@ -1,0 +1,15 @@
+{ "columns":32,
+ "image":"..\/tileset_images\/base_out_atlas.png",
+ "imageheight":1024,
+ "imagewidth":1024,
+ "margin":0,
+ "name":"castle_houses_objects_atlas",
+ "spacing":0,
+ "tilecount":1024,
+ "tiledversion":"1.2.3",
+ "tileheight":32,
+ "tilewidth":32,
+ "transparentcolor":"#8f8f8f",
+ "type":"tileset",
+ "version":1.2
+}

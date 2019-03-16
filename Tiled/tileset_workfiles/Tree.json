@@ -1,0 +1,15 @@
+{ "columns":1,
+ "image":"..\/tileset_images\/Tree.png",
+ "imageheight":117,
+ "imagewidth":95,
+ "margin":0,
+ "name":"Tree",
+ "spacing":0,
+ "tilecount":1,
+ "tiledversion":"1.2.3",
+ "tileheight":117,
+ "tilewidth":95,
+ "transparentcolor":"#8f8f8f",
+ "type":"tileset",
+ "version":1.2
+}

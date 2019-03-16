@@ -1,0 +1,20 @@
+{ "object":
+    {
+     "gid":1,
+     "height":128,
+     "id":9,
+     "name":"CherryTree2",
+     "rotation":0,
+     "type":"static",
+     "visible":true,
+     "width":96,
+     "x":-48,
+     "y":55
+    },
+ "tileset":
+    {
+     "firstgid":1,
+     "source":"..\/tileset_workfiles\/NarrowCherryTree.json"
+    },
+ "type":"template"
+}
