@@ -31,10 +31,11 @@
   *the handler with event parameter 'e' will access the sent object in the e.detail property*<br/>
 - **ResourceLoader**<br/>
  *A loader for the game resources. It loads images, .xml and .json files*<br/>
-  *API:*<br/>
-  *to start loading resources the `add` function should be called with an array of resource objects like the following:*<br/>
-  <br/>
-  ```
+ </br>
+ *API:*<br/>
+ *to start loading resources the `add` function should be called with an array of resource objects like the following:*<br/>
+ <br/>
+ ```
  var RESOURCES = [
 	{
 		name : "resource1Name",
@@ -52,7 +53,7 @@
 		url : "filepath/file3.xml"
 	}
  ];
-  ```
+ ```
 ## Game Classes
 
 ## Tiled
