@@ -34,6 +34,7 @@
  </br>
  *API:*<br/>
  *to start loading resources the `add` function should be called with an array of resource objects like the following:*<br/>
+ 
  ```
  var RESOURCES = [
 	{
