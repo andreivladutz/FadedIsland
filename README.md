@@ -33,7 +33,7 @@
  *A loader for the game resources. It loads images, .xml and .json files*<br/>
   *API:*<br/>
   *to start loading resources the `add` function should be called with an array of resource objects like the following:*<br/>
-  
+  <br/>
   ```
  var RESOURCES = [
 	{
