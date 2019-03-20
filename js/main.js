@@ -12,13 +12,20 @@ const RESOURCES = [
 	},
 ];
 
-var resourceLoader = new ResourceLoader();
+var resourceLoader, canvasManager, mapRenderer;
+
+//array of promises to be fullfilled on the loading 
+var loadedResourcesPromises = [];
 
 function init() {
 	if (DEBUGGING) {
 		var stats = new xStats();
 		document.body.appendChild(stats.element);
 	}
+	
+	
+	resourceLoader = new ResourceLoader();
+	canvasManager = CanvasManagerFactory(document.getElementById("gameCanvas"));
 	
 	/*
 		listener for the handling of each loaded resource
@@ -29,19 +36,30 @@ function init() {
 			
 			function(e){
 				MapRenderer.MAP_INSTANCES[resource["name"]] = 
-					parseMap(e);
+					parseMap(e, resource["name"]);
 			}
 		);
 	}
 		
 	resourceLoader.add(RESOURCES);
-	resourceLoader.load();
+	resourceLoader.load("Maps");
+	
+	loadedResourcesPromises.push(
+		promisify(function(resolve, reject) {
+			resourceLoader.addEventListener("finishedLoadingMaps", resolve);
+		})
+	);
+	
+	waitOnAllPromises(loadedResourcesPromises).then(function() {
+		mapRenderer = new MapRenderer("Map2");
+		mapRenderer.draw();
+	});
 }
 
-function parseMap(e) {
+function parseMap(e, mapName) {
 	var xhttpObj = e.detail;
 	
-	var mapParser = new MapParser(resourceLoader, xhttpObj.response);
+	var mapParser = new MapParser(resourceLoader, xhttpObj.response, loadedResourcesPromises);
 	
-	return mapParser.getMapInstance();
+	return mapParser.getMapInstance(mapName);
 }

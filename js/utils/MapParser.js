@@ -4,9 +4,12 @@ const LAYER_ARR = "layers", OBJECT_ARR = "objects", TILE_ARR = "data",
 	  TILESET_IMAGE = "image", TILED_PATH = "Tiled";
 
 class MapParser {
-	constructor(resLoader, jsonText) {
+	constructor(resLoader, jsonText, loadedResourcesPromisesArr) {
 		this.globalResLoader = resLoader;
 		this.resourceLoader = new ResourceLoader();
+		
+		//a reference to the global array of promises
+		this.loadedResourcesPromises = loadedResourcesPromisesArr;
 		
 		//the map .json object
 		var jObj = this.jsonMapObject = JSON.parse(jsonText);
@@ -16,11 +19,11 @@ class MapParser {
 		this.mapWidth = jObj[MAP_WIDTH];
 		this.mapHeight = jObj[MAP_HEIGHT];
 		
-		//building a matrix with mapHeight rows
-		this.tilesMatrix = [];
-		for (let i = 0; i < this.mapHeight; i++) {
-			this.tilesMatrix.push([]);
-		}
+		/*
+			building an array of matrices with mapHeight rows
+			each layer of tiles is transformed in a matrix of tiles
+		*/
+		this.tilesMatrices = [];
 		
 		this.objectsArr = [];
 		
@@ -98,22 +101,42 @@ _p.loadTilesetsWorkfiles = function() {
 	
 	this.resourceLoader.add(tilesetsJsonRes);
 	
-	const WORKFILES_NAME = "TilesetWorkfiles", IMAGES_NAME = "TilesetsImages";
+	const WORKFILES_NAME = "TilesetWorkfiles";
 	
-	//once we finished loading all tileset .json files we start loading tileset images 
-	this.resourceLoader.on("finishedLoading" + WORKFILES_NAME, function startLoadingImages() {
-		self.resourceLoader.add(imageResources);
-		self.resourceLoader.load(IMAGES_NAME);
-		
-		self.resourceLoader.on("finishedLoading" + IMAGES_NAME, function() {
-			console.log(self.tilesetsWorkfiles);
-			self.resourceLoader.moveResourcesTo(self.globalResLoader);
-		});
-	});
+	//once we finished loading all tileset .json files we start loading tileset images
+	this.loadedResourcesPromises.push(
+		promisify(function(resolve, reject) {
+			self.resourceLoader.on("finishedLoading" + WORKFILES_NAME, function startLoadingImages() {
+				self.startLoadingTilsetImages(imageResources);
+				resolve();
+			});
+		})
+	);
 	
 	this.resourceLoader.load(WORKFILES_NAME);
 }
 
+_p.startLoadingTilsetImages = function(imageResources) {
+	const IMAGES_NAME = "TilesetsImages";
+	
+	this.resourceLoader.add(imageResources);
+	
+	var self = this;
+	
+	this.loadedResourcesPromises.push(
+		promisify(function(resolve, reject) {
+			self.resourceLoader.on("finishedLoading" + IMAGES_NAME, function() {
+				console.log(self.tilesetsWorkfiles);
+				
+				self.resourceLoader.moveResourcesTo(self.globalResLoader);
+				resolve();
+			});
+		})
+	);
+	
+	this.resourceLoader.load(IMAGES_NAME);
+}						
+						
 _p.loadTilesetImage = function(imgSrc, tileset, imageResources) {
 	let existingResource = this.globalResLoader.get(imgSrc);
 
@@ -145,7 +168,7 @@ _p.parseLayers = function(obj) {
 	}
 	
 	else if (TILE_ARR in obj) {
-		this.applyTiles(obj[TILE_ARR]);
+		this.applyLayer(obj[TILE_ARR]);
 	}
 	
 	else if (OBJECT_ARR in obj) {
@@ -153,29 +176,34 @@ _p.parseLayers = function(obj) {
 	}
 }
 
-//If there's no tile we leave the position as it is
-//If there's a tile we overwrite the old one
-_p.applyTiles = function(tileArray) {
-	var arrInd = 0;
+
+_p.applyLayer = function(tileArray) {
+	var arrInd = 0, layerMatrix = [];
+	
+	//creating a matrix with mapHeight rows
+	//to represent this layer of tiles
+	for (let i = 0; i < this.mapHeight; i++) {
+		layerMatrix.push([]);
+	}
 	
 	for (let i = 0; i < this.mapHeight; i++) {
 		for (let j = 0; j < this.mapWidth; j++) {
-			this.tilesMatrix[i][j] = 
-				(tileArray[arrInd] === NO_TILE)? this.tilesMatrix[i][j] : tileArray[arrInd];
-			
-			arrInd++;
+			layerMatrix[i][j] = tileArray[arrInd++];
 		}
 	}
+	
+	this.tilesMatrices.push(layerMatrix);
 }
 
-_p.getMapInstance = function() {
+_p.getMapInstance = function(mapName) {
 	return new MapInstance(
+		mapName,
 		this.jsonMapObject,
 		this.tilesetsWorkfiles,
 		this.tileSize,
 		this.mapWidth,
 		this.mapHeight,
-		this.tilesMatrix,
+		this.tilesMatrices,
 		this.objectsArr
 	);
 }

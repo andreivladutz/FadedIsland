@@ -202,21 +202,6 @@ _p._addDOMListeners = function() {
 	this._element.addEventListener("mousedown", this._handleDown.bind(this));
 	this._element.addEventListener("mousemove", this._handleMove.bind(this));
 	
-	/*
-		daca ies din element ori :
-		- nu mai vreau sa "arunc" event-uri de movement
-		- vreau sa continui movement-ul tinand cont de evenimentele aruncate pe body
-	*/
-	this._element.addEventListener("mouseleave", this._handleMouseLeave.bind(this));
-	this._element.addEventListener("mouseenter", this._handleMouseEnter.bind(this));
-	
-	//body trebuie sa captureze mouseup pentru a fi siguri ca evenimentul ajunge la el
-	document.body.addEventListener("mouseup", this._handleMouseUpOnBody.bind(this), true);
-	
-	/*
-		avem optiunea de a continua movement-ul pe body
-	*/
-	document.body.addEventListener("mousemove", this._handleMouseMoveOnBody.bind(this), true);
 }
 
 class TouchHandler extends InputHandlerBase {
