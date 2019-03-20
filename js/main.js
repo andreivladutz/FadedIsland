@@ -52,8 +52,14 @@ function init() {
 	
 	waitOnAllPromises(loadedResourcesPromises).then(function() {
 		mapRenderer = new MapRenderer("Map2");
-		mapRenderer.draw();
+		requestAnimationFrame(draw);
 	});
+}
+
+function draw() {
+	mapRenderer.draw();
+	
+	requestAnimationFrame(draw);
 }
 
 function parseMap(e, mapName) {

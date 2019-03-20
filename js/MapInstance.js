@@ -1,5 +1,6 @@
 const OBJECT_X = "x", OBJECT_Y = "y", IMAGE_OF_TILESET = "image", 
 	  FIRST_TILE_NUMBER = "firstgid", TILES_PER_ROW = "columns"; 
+
 class MapInstance extends InputHandler {
 	constructor(
 		mapName,
@@ -46,38 +47,55 @@ class MapInstance extends InputHandler {
 			this.mapX = 0;
 			this.mapY = 0;
 			
-			this.offDirty = true;
+			CanvasManagerFactory().addEventListener(
+				CANVAS_RESIZE_EVENT, 
+				this.updateViewportSize.bind(this)
+			);
 			
-			//the size of the viewport in pixels
-			this.viewportWidth = CanvasManagerFactory().canvas.width;
-			this.viewportHeight = CanvasManagerFactory().canvas.height;
-			
+			this.updateViewportSize();
 	}
 }
 
 _p = MapInstance.prototype;
 
+_p.updateViewportSize = function() {
+	//the size of the viewport in pixels
+	this.viewportWidth = CanvasManagerFactory().canvas.width;
+	this.viewportHeight = CanvasManagerFactory().canvas.height;
+}
+
 _p.moveMap = function(e) {
-	var movement = e.detail;;
+	var movement = e.detail,
+		pixelsMapWidth = this.mapWidth * this.tileSize,
+		pixelsMapHeight = this.mapHeight * this.tileSize;
 	
-	this.mapX = Math.min(
-		this.mapX + movement.deltaX, 0
-	);
+	if (this.viewportWidth >= pixelsMapWidth) {
+		this.mapX = (this.viewportWidth - pixelsMapWidth) / 2;
+	}
 	
-	this.mapY = Math.min(
-		this.mapY + movement.deltaY, 0
-	);
+	else {
+		this.mapX = Math.min(
+			this.mapX + movement.deltaX, 0
+		);
+		
+		this.mapX = Math.max(
+			- pixelsMapWidth + this.viewportWidth, this.mapX
+		);
+	}
 	
-	this.mapX = Math.max(
-		- (this.mapWidth * this.tileSize) + this.viewportWidth, this.mapX
-	);
+	if (this.viewportHeight >= pixelsMapHeight) {
+		this.mapY = (this.viewportHeight - pixelsMapHeight) / 2;
+	}
 	
-	this.mapY = Math.max(
-		- (this.mapHeight * this.tileSize) + this.viewportHeight, this.mapY
-	);
-	//this.mapX = Math.min(
-	//	this.mapX, 
-	//)
+	else {
+		this.mapY = Math.min(
+			this.mapY + movement.deltaY, 0
+		);
+
+		this.mapY = Math.max(
+			- pixelsMapHeight + this.viewportHeight, this.mapY
+		);
+	}
 
 	this.emit("movedMap", null);
 }
