@@ -2,8 +2,24 @@
 <html lang="en">
 	<head>
 		<title>Faded Island Game</title>
+		
+		<link href="css/general.css" rel="stylesheet" type="text/css">
+		
+		<script src = "js/utils/xstats.js"></script>
+		<script src = "js/utils/promisesUtilities.js"></script>
+		<script src = "js/utils/MapParser.js"></script>
+		<script src = "js/utils/EventEmiter.js"></script>
+		
+		<script src = "js/utils/isTouchDevice.js"></script>
+		<script src = "js/utils/InputHandler.js"></script>
+		
+		<script src = "js/utils/ResourceLoader.js"></script>
+		<script src = "js/CanvasManager.js"></script>
+		<script src = "js/MapInstance.js"></script>
+		<script src = "js/MapRenderer.js"></script>
+		<script src = "js/main.js"></script>
 	</head>
-	<body>
-	
+	<body onload = "init()">
+		<canvas id = "gameCanvas" width="500" height="500"></canvas>
 	</body>
 </html>
