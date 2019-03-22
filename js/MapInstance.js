@@ -1,5 +1,6 @@
 const OBJECT_X = "x", OBJECT_Y = "y", IMAGE_OF_TILESET = "image", 
-	  FIRST_TILE_NUMBER = "firstgid", TILES_PER_ROW = "columns"; 
+	  FIRST_TILE_NUMBER = "firstgid", TILES_PER_ROW = "columns",
+	  DEFAULT_TILE = "defaultTile", JSON_TILESET_WORKFILE = "tilesetWorkfile"; 
 
 class MapInstance extends InputHandler {
 	constructor(
@@ -10,7 +11,9 @@ class MapInstance extends InputHandler {
 		mapWidth,
 		mapHeight,
 		tilesMatrices,
-		objectsArr) {
+		objectsArr,
+		collisionMatrix,
+		animationsArr) {
 			super(document.getElementById("gameCanvas"));
 			
 			this.on("move", this.moveMap.bind(this));
@@ -27,8 +30,6 @@ class MapInstance extends InputHandler {
 			*/
 			this.tilesetsWorkfiles = tilesetsWorkfiles;
 			
-			this.mapImage = this.tilesetsWorkfiles[IMAGE_OF_TILESET];
-			
 			//the size of a single square tile
 			this.tileSize = tileSize;
 			
@@ -42,6 +43,22 @@ class MapInstance extends InputHandler {
 			
 			//the array of objects from the map.json file
 			this.objectsArr = objectsArr;
+			
+			//true => we cannot walk on the tile 
+			//false => no collision with the tile
+			this.collisionMatrix = collisionMatrix;
+			
+			/*
+				an array of animation arrays as it is defined in the tileset json
+				workfile, with extra properties :
+				
+				matrixPosition - an object {i, j} with the position in the world
+				currentId - the id of the current tile drawn
+				currentFrame - the array index of the current frame drawn
+			*/
+			
+			this.animationsArr = animationsArr;
+			this.processAnimations();
 			
 			//the map coordinates
 			this.mapX = 0;
@@ -57,6 +74,69 @@ class MapInstance extends InputHandler {
 }
 
 _p = MapInstance.prototype;
+
+//returns true if the coords and tileId match an animated tile 
+_p.isAnimated = function(i, j, tileId) {
+	for (let animationArr of this.animationsArr) {
+		
+		for (let animationObj of animationArr) {
+			if (animationObj.tileid == tileId ) {
+				if (animationArr[POSITION_IN_MATRIX].i == i 
+					&& animationArr[POSITION_IN_MATRIX].j == j) {
+						return true;
+				}
+			}
+		}
+		
+	}
+	
+	return false;
+}
+
+_p.processAnimations = function() {
+	let tilesets = this.tilesetsWorkfiles;
+	
+	for (let animationArr of this.animationsArr) {
+		let i = animationArr[POSITION_IN_MATRIX].i,
+			j = animationArr[POSITION_IN_MATRIX].j;
+		
+		for (let layerMatrix of this.tilesMatrices) {
+			let tileId = layerMatrix[i][j],
+				usedTileset;
+				
+			if (tileId == NO_TILE) {
+				continue;
+			}
+
+			for (let tilesetInd = 0; tilesetInd < tilesets.length - 1; tilesetInd++) {
+				let currTileset = tilesets[tilesetInd],
+					nextTileset = tilesets[tilesetInd + 1];
+
+				//the tile to be drawn belongs to the currentTileset
+				if (tileId >= currTileset[FIRST_TILE_NUMBER] && tileId < nextTileset[FIRST_TILE_NUMBER]) {
+					usedTileset = currTileset;
+					break;
+				}
+			}
+
+			//the current tile is from the last tileset in the tilesets array
+			if (!usedTileset) {
+				usedTileset = tilesets[tilesets.length - 1];	
+			}
+
+			tileId -= usedTileset[FIRST_TILE_NUMBER];
+			
+			for (let animationObj of animationArr) {
+				if (animationObj.tileid == tileId ) {
+					animationArr[DEFAULT_TILE] = tileId;
+					animationArr[JSON_TILESET_WORKFILE] = usedTileset.JSONobject;
+					animationArr[TILESET_IMAGE] = usedTileset["image"];
+				}
+			}
+		}
+		
+	}
+}
 
 _p.updateViewportSize = function() {
 	//the size of the viewport in pixels

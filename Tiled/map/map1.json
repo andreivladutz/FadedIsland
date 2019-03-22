@@ -2409,10 +2409,6 @@
         }, 
         {
          "firstgid":1026,
-         "source":"..\/tileset_workfiles\/WaterFountain.json"
-        }, 
-        {
-         "firstgid":1026,
          "source":"..\/tileset_workfiles\/base_terrain_atlas.json"
         }, 
         {

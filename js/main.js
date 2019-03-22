@@ -35,8 +35,7 @@ function init() {
 			"loaded" + resource["name"],
 			
 			function(e){
-				MapRenderer.MAP_INSTANCES[resource["name"]] = 
-					parseMap(e, resource["name"]);
+				parseMap(e, resource["name"]);
 			}
 		);
 	}
@@ -52,6 +51,7 @@ function init() {
 	
 	waitOnAllPromises(loadedResourcesPromises).then(function() {
 		mapRenderer = new MapRenderer("Map2");
+		//mapRenderer.showCollisions();
 		requestAnimationFrame(draw);
 	});
 }
@@ -67,5 +67,7 @@ function parseMap(e, mapName) {
 	
 	var mapParser = new MapParser(resourceLoader, xhttpObj.response, loadedResourcesPromises);
 	
-	return mapParser.getMapInstance(mapName);
+	mapParser.on(LOADED_TILESETS_EVENT, function() {	
+		MapRenderer.MAP_INSTANCES[mapName] = mapParser.getMapInstance(mapName);
+	});
 }

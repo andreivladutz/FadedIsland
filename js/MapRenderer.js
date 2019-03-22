@@ -1,3 +1,5 @@
+const LAST_ANIMATION_TIME = "lastAnimationTime", FRAME_DURATION = "duration";
+
 class MapRenderer {
 	//the constructor receives the name of the current rendered map
 	constructor(currentMapName) {
@@ -7,7 +9,7 @@ class MapRenderer {
 		
 		//the offscreen buffer has extra 10 tiles in every direction
 		//so it is bigger than the visible canvas
-		this.extraBufferTiles = 30;
+		this.extraBufferTiles = 10;
 		
 		var tileSize = this.currentMapInstance.tileSize;
 		
@@ -15,6 +17,9 @@ class MapRenderer {
 			(this.extraBufferTiles * 2) * tileSize,
 			(this.extraBufferTiles * 2) * tileSize
 		);
+		
+		//flag only for debugging
+		this._showCollisions_ = false;
 		
 		var self = this;
 		this.canvasManager.addEventListener(
@@ -30,6 +35,10 @@ class MapRenderer {
 MapRenderer.MAP_INSTANCES = {};
 
 _p = MapRenderer.prototype;
+
+_p.showCollisions = function() {
+	this._showCollisions_ = true;
+}
 
 _p.changeMap = function(mapName) {
 	this.currentMapName = mapName;
@@ -102,6 +111,120 @@ _p.computeVisibleTileArea = function() {
 	}
 }
 
+_p.drawOffScreenAnimatedTiles = function() {
+	var mapInst = this.currentMapInstance,
+		stX = this.offScreenVisibleTileArea.startX,
+		stY = this.offScreenVisibleTileArea.startY,
+		eX = this.offScreenVisibleTileArea.endX,
+		eY = this.offScreenVisibleTileArea.endY;
+	
+	if (!this.startOfAnimation) {
+		this.startOfAnimation = new Date().getTime();
+	}
+	
+	for (let animationArr of mapInst.animationsArr) {
+		let i = animationArr[POSITION_IN_MATRIX].i,
+			j = animationArr[POSITION_IN_MATRIX].j;
+		
+		if (i < stY || i > eY || j < stX || j > eX) {
+			continue;
+		}
+		
+		let currFrame = animationArr[CURRENT_FRAME],
+			frameDuration = animationArr[currFrame][FRAME_DURATION],
+			timeNow = new Date().getTime();
+		
+		var newFrame = 
+			Math.floor(
+				(timeNow - this.startOfAnimation) / frameDuration
+			) % animationArr.length;
+		
+		if (newFrame != currFrame) {
+			currFrame = newFrame;
+			animationArr[CURRENT_FRAME] = currFrame;
+			animationArr[CURRENT_ID] = animationArr[currFrame].tileid;
+			
+			this.drawOffScreenTile(i, j, animationArr[DEFAULT_TILE]);
+			
+			let tileNo = animationArr[CURRENT_ID],
+				tileSize = mapInst.tileSize,
+				tilesPerRow = animationArr[JSON_TILESET_WORKFILE][TILES_PER_ROW],
+				srcX = (tileNo % tilesPerRow) * tileSize,
+				srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
+				destX = (j - stX) * tileSize,
+				destY = (i - stY) * tileSize,
+				offCtx = CanvasManagerFactory().offScreenCtx;
+
+			offCtx.drawImage(
+				animationArr[TILESET_IMAGE], 
+				srcX, srcY, tileSize, tileSize,
+				destX, destY, tileSize, tileSize
+			);
+			
+		}
+	}
+}
+
+//draws all of the layers of a tile without animated ones
+_p.drawOffScreenTile = function(i, j, animatedId) {
+	var offCtx = this.canvasManager.offScreenCtx,
+		canvas = this.canvasManager.offScreenBuffer,
+		mapInstance = this.currentMapInstance,
+		tilesMatrices = mapInstance.tilesMatrices,
+		mapX = mapInstance.mapX,
+		mapY = mapInstance.mapY,
+		tilesets = mapInstance.tilesetsWorkfiles,
+		tileSize = mapInstance.tileSize;
+	
+	var stX = this.offScreenVisibleTileArea.startX,
+		stY = this.offScreenVisibleTileArea.startY,
+		eX = this.offScreenVisibleTileArea.endX,
+		eY = this.offScreenVisibleTileArea.endY;
+	
+	for (let tilesMatrix of tilesMatrices) {
+		let tileNo = tilesMatrix[i][j],
+			usedTileset;
+
+		if (tileNo == NO_TILE) {
+			continue;
+		}
+
+		for (let tilesetInd = 0; tilesetInd < tilesets.length - 1; tilesetInd++) {
+			let currTileset = tilesets[tilesetInd],
+				nextTileset = tilesets[tilesetInd + 1];
+
+			//the tile to be drawn belongs to the currentTileset
+			if (tileNo >= currTileset[FIRST_TILE_NUMBER] && tileNo < nextTileset[FIRST_TILE_NUMBER]) {
+				usedTileset = currTileset;
+				break;
+			}
+		}
+
+		//the current tile is from the last tileset in the tilesets array
+		if (!usedTileset) {
+			usedTileset = tilesets[tilesets.length - 1];	
+		}
+
+		tileNo -= usedTileset[FIRST_TILE_NUMBER];
+		
+		if (tileNo == animatedId) {
+			continue;
+		}
+
+		let tilesPerRow = usedTileset.JSONobject[TILES_PER_ROW],
+			srcX = (tileNo % tilesPerRow) * tileSize,
+			srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
+			destX = (j - stX) * tileSize,
+			destY = (i - stY) * tileSize;
+		
+		offCtx.drawImage(
+			usedTileset["image"], 
+			srcX, srcY, tileSize, tileSize,
+			destX, destY, tileSize, tileSize
+		);
+	}
+}
+
 _p.redrawOffscreenBuffer = function() {
 	var offCtx = this.canvasManager.offScreenCtx,
 		canvas = this.canvasManager.offScreenBuffer,
@@ -126,7 +249,7 @@ _p.redrawOffscreenBuffer = function() {
 				let tileNo = tilesMatrix[i][j],
 					usedTileset;
 				
-				if (tileNo === NO_TILE) {
+				if (tileNo == NO_TILE) {
 					continue;
 				}
 
@@ -159,6 +282,13 @@ _p.redrawOffscreenBuffer = function() {
 					srcX, srcY, tileSize, tileSize,
 					destX, destY, tileSize, tileSize
 				);
+				
+				if (this._showCollisions_ && mapInstance.collisionMatrix[i][j]) {
+					let color = "rgba(255, 0, 0, 0.2)";
+					
+					offCtx.fillStyle = color;
+					offCtx.fillRect(destX, destY, tileSize, tileSize);
+				}
 			}
 		}
 	}
@@ -177,6 +307,8 @@ _p.draw = function() {
 		this.computeOffScreenBufferVisibleArea();
 		this.redrawOffscreenBuffer();
 	}
+	
+	this.drawOffScreenAnimatedTiles();
 	
 	var offStX = this.offScreenVisibleTileArea.startX,
 		offStY = this.offScreenVisibleTileArea.startY,
