@@ -55,6 +55,22 @@
 	}
  ];
  ```
+ *for each resource, a load listener can be added:*<br/>
+ 
+ ```
+ resourceLoader.addEventListener("loaded" + resName, handlerFunction);
+ ```
+ 
+ *were resName is the name of the resource from the RESOURCES array.*<br/>
+ <br/>
+ *to begin loading the resources the `load(resourcesName)` should be called. Also a listener for the whole data can be subscribed:*<br/>
+ 
+ ```
+ resourceLoader.load(resourcesName);
+ resourceLoader.addEventListener("finishedLoading" + resourcesName, handler);
+ ```
+ 
+ *where resourcesName is a name you chose to describe the whole array of resources(that has been passed to the `load` function)*<br/>
 ## Game Classes
 
 ## Tiled
