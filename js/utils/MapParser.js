@@ -1,10 +1,17 @@
 const LAYER_ARR = "layers", OBJECT_ARR = "objects", TILE_ARR = "data",
 	  TILE_SIZE = "tilewidth", MAP_HEIGHT = "height", MAP_WIDTH = "width",
 	  TILESETS_ARR = "tilesets", NO_TILE = 0, WORKFILE_SOURCE = "source",
-	  TILESET_IMAGE = "image", TILED_PATH = "Tiled";
+	  TILESET_IMAGE = "image", TILED_PATH = "Tiled", 
+	  TILE_ARR_IN_TILESETWORKFILE = "tiles", WALKABLE = "walkable",
+	  ANIMATION = "animation", PROPERTIES = "properties",
+	  PROPERTY_NAME = "name", PROPERTY_VALUE = "value",
+	  POSITION_IN_MATRIX = "matrixPosition", CURRENT_ID = "currentId",
+	  CURRENT_FRAME = "currentFrame", LOADED_TILESETS_EVENT = "tilesetLoadFinished";
 
-class MapParser {
+class MapParser extends EventEmiter {
 	constructor(resLoader, jsonText, loadedResourcesPromisesArr) {
+		super();
+		
 		this.globalResLoader = resLoader;
 		this.resourceLoader = new ResourceLoader();
 		
@@ -18,7 +25,6 @@ class MapParser {
 		this.tileSize = jObj[TILE_SIZE];
 		this.mapWidth = jObj[MAP_WIDTH];
 		this.mapHeight = jObj[MAP_HEIGHT];
-		
 		/*
 			building an array of matrices with mapHeight rows
 			each layer of tiles is transformed in a matrix of tiles
@@ -26,8 +32,19 @@ class MapParser {
 		this.tilesMatrices = [];
 		
 		this.objectsArr = [];
+		this.animationsArr = [];
 		
 		this.parseLayers(jObj);
+		
+		//false means "no collision" while true means "collision a.k.a. non-walkable"
+		this.collisionMatrix = [];
+		for (var i = 0; i < this.mapHeight; i++) {
+			this.collisionMatrix.push([]);
+			
+			for (var j = 0; j < this.mapWidth; j++) {
+				this.collisionMatrix[i][j] = false;
+			}
+		}
 		
 		this.loadTilesetsWorkfiles();
 	}
@@ -106,14 +123,101 @@ _p.loadTilesetsWorkfiles = function() {
 	//once we finished loading all tileset .json files we start loading tileset images
 	this.loadedResourcesPromises.push(
 		promisify(function(resolve, reject) {
-			self.resourceLoader.on("finishedLoading" + WORKFILES_NAME, function startLoadingImages() {
+			self.resourceLoader.on("finishedLoading" + WORKFILES_NAME, function startLoadingImages() {				
 				self.startLoadingTilsetImages(imageResources);
+				self.processCollisionMatrixAnimations();
+				
 				resolve();
 			});
 		})
 	);
 	
 	this.resourceLoader.load(WORKFILES_NAME);
+}
+
+_p.processCollisionMatrixAnimations = function() {
+	for (let tileMatrix of this.tilesMatrices) {
+		for (let i = 0; i < tileMatrix.length; i++) {
+			for (let j = 0; j < tileMatrix[i].length; j++) {
+				let tileNo = tileMatrix[i][j],
+					tilesets = this.tilesetsWorkfiles,
+					usedTileset;
+				
+				if (tileNo == NO_TILE) {
+					continue;
+				}
+
+				for (let tilesetInd = 0; tilesetInd < tilesets.length - 1; tilesetInd++) {
+					let currTileset = tilesets[tilesetInd],
+						nextTileset = tilesets[tilesetInd + 1];
+
+					//the tile to be drawn belongs to the currentTileset
+					if (tileNo >= currTileset[FIRST_TILE_NUMBER] && tileNo < nextTileset[FIRST_TILE_NUMBER]) {
+						usedTileset = currTileset;
+						break;
+					}
+				}
+
+				//the current tile is from the last tileset in the tilesets array
+				if (!usedTileset) {
+					usedTileset = tilesets[tilesets.length - 1];	
+				}
+				
+				//if the resource isn't found locally than it is stored in the global resLoader
+				let tilesetWorkfile = usedTileset.JSONobject;
+				
+				let tilesObjectArr = tilesetWorkfile[TILE_ARR_IN_TILESETWORKFILE],
+					realTileNo = tileNo - usedTileset[FIRST_TILE_NUMBER],
+					currTileObj = tilesObjectArr[realTileNo];
+				
+				if (PROPERTIES in currTileObj) {
+					let propertiesArr = currTileObj[PROPERTIES];
+					
+					for (let property of propertiesArr) {
+						if (property[PROPERTY_NAME] === WALKABLE) {
+							let value = property[PROPERTY_VALUE];
+							
+							//the tile is non-walkable so collision is true
+							if (value === false) {
+								this.collisionMatrix[i][j] = true;
+							}
+						}
+					}
+				}
+				
+				if (ANIMATION in currTileObj) {
+					//making a copy of the animation array
+					let currAnimationArr = 
+						JSON.parse(JSON.stringify(currTileObj[ANIMATION]));
+					
+					this.animationsArr.push(
+						currAnimationArr
+					);
+					
+					Object.defineProperties(currAnimationArr, {
+						"matrixPosition" : {
+							value : {i, j},
+							enumerable : false,
+							writable : false,
+							configurable : false
+						},
+						"currentId" : {
+							value : currAnimationArr[0].tileid,
+							enumerable : false,
+							writable : true,
+							configurable : false
+						},
+						"currentFrame" : {
+							value : 0,
+							enumerable : false,
+							writable : true,
+							configurable : false
+						}
+					});
+				}
+			}
+		}
+	}
 }
 
 _p.startLoadingTilsetImages = function(imageResources) {
@@ -129,6 +233,10 @@ _p.startLoadingTilsetImages = function(imageResources) {
 				console.log(self.tilesetsWorkfiles);
 				
 				self.resourceLoader.moveResourcesTo(self.globalResLoader);
+				
+				//we finished loading everything so we can make a mapInstance
+				self.emit(LOADED_TILESETS_EVENT, null);
+				
 				resolve();
 			});
 		})
@@ -204,6 +312,8 @@ _p.getMapInstance = function(mapName) {
 		this.mapWidth,
 		this.mapHeight,
 		this.tilesMatrices,
-		this.objectsArr
+		this.objectsArr,
+		this.collisionMatrix,
+		this.animationsArr
 	);
 }

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="41">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="45">
  <tileset firstgid="1" source="../tileset_workfiles/TERRAIN_TILESET.json"/>
  <tileset firstgid="1025" source="../tileset_workfiles/base_terrain_atlas.json"/>
  <tileset firstgid="2049" source="../tileset_workfiles/interior_tileset.json"/>
- <tileset firstgid="3073" source="../tileset_workfiles/WaterFountain.json"/>
- <tileset firstgid="3075" source="../tileset_workfiles/Tree.json"/>
- <tileset firstgid="3076" source="../tileset_workfiles/WideCherryTree.json"/>
- <tileset firstgid="3078" source="../tileset_workfiles/NarrowCherryTree.json"/>
+ <tileset firstgid="3073" source="../tileset_workfiles/Tree.json"/>
+ <tileset firstgid="3074" source="../tileset_workfiles/WideCherryTree.json"/>
+ <tileset firstgid="3076" source="../tileset_workfiles/NarrowCherryTree.json"/>
  <layer id="1" name="Tile Layer 1" width="10" height="10">
   <data encoding="csv">
 0,65,66,66,35,626,627,627,628,161,

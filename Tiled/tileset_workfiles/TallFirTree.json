@@ -8,6 +8,16 @@
  "tilecount":1,
  "tiledversion":"1.2.3",
  "tileheight":224,
+ "tiles":[
+        {
+         "id":0,
+         "properties":[
+                {
+                 "name":"walkable",
+                 "type":"bool",
+                 "value":false
+                }]
+        }],
  "tilewidth":96,
  "transparentcolor":"#8f8f8f",
  "type":"tileset",

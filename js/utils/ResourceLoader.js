@@ -108,16 +108,13 @@ _p.moveResourcesTo = function(resLoader) {
 		let resource = this._resourceObjects[resName];
 		
 		if (!resource._availableResource) {
-			console.error("You're trying to move a resource \
-				that hasn't been loaded yet!");
+			console.error("You're trying to move a resource that hasn't been loaded yet!");
 			
 			return;
 		}
 		
 		if (resLoader._resourceObjects[resName]) {
-			console.error("You're trying to move a resource \
-				to a resourceLoader that has a name collision with your \
-				resource");
+			console.error("You're trying to move a resource to a resourceLoader that has a name collision with your resource");
 			
 			return;
 		}
