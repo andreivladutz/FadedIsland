@@ -329,3 +329,69 @@ _p.draw = function() {
 				  0, 0, canvas.width, canvas.height
 				 );
 }
+
+
+/*
+    all the functions that translate coords receive
+    a coords object of the form {x : (x coordinate), y : (y coordinate)}
+    and return an object of the same form
+*/
+_p.screenCoordsToMapCoords = function(coords) {
+    var mapInstance = this.currentMapInstance,
+        mapX = mapInstance.mapX,
+        mapY = mapInstance.mapY,
+        
+        new_coords = {
+            x : coords.x + Math.abs(mapX),
+            y : coords.y + Math.abs(mapY)
+        }
+    
+    return new_coords;
+}
+
+_p.mapCoordsToScreenCoords = function(coords) {
+    var mapInstance = this.currentMapInstance,
+        mapX = mapInstance.mapX,
+        mapY = mapInstance.mapY,
+        
+        new_coords = {
+            x : coords.x - Math.abs(mapX),
+            y : coords.y - Math.abs(mapY)
+        }
+    
+    return new_coords;
+}
+
+_p.mapCoordsToTileCoords = function(coords) {
+    var mapInstance = this.currentMapInstance;
+    
+    var tile_coords = {
+        x : Math.floor(coords.x / mapInstance.tileSize),
+        y : Math.floor(coords.y / mapInstance.tileSize)
+    }
+    
+    return tile_coords;
+}
+
+_p.tileCoordsToMapCoords = function(coords) {
+    var mapInstance = this.currentMapInstance,
+        new_coords = {
+            x : coords.x * mapInstance.tileSize,
+            y : coords.y * mapInstance.tileSize
+        }
+    
+    return new_coords;
+}
+
+_p.screenCoordsToTileCoords = function(coords) {
+    return this.mapCoordsToTileCoords(this.screenCoordsToMapCoords(coords));
+}
+
+_p.tileCoordsToScreenCoords = function(coords) {
+    var new_coords = this.mapCoordsToScreenCoords(this.tileCoordsToMapCoords(coords));
+    
+    new_coords.x = Math.max(new_coords.x, 0);
+    new_coords.y = Math.max(new_coords.y, 0);
+    
+    return new_coords;
+}
