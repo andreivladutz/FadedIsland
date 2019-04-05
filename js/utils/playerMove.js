@@ -15,7 +15,7 @@ class Player extends EventEmiter {
         super();
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.speed = 10;
+        this.speed = 16;
         
         // loading player sprite
         this.resLoader = new ResourceLoader();
@@ -25,6 +25,7 @@ class Player extends EventEmiter {
         this.lastDirection = "down";
         
         // column, row for specific frame in sprite
+        // expected order for frames top-down: up/0, left/1, down/2, right/3
         // default for down movement frame
         this.row = FRAME_ROW + 2;
         this.column = 0;
@@ -58,7 +59,7 @@ class Player extends EventEmiter {
         this.keyEvents.addEventListener("down", this.keyDown.bind(this));
         this.keyEvents.addEventListener("left", this.keyLeft.bind(this));
         this.keyEvents.addEventListener("right", this.keyRight.bind(this));
-        
+        this.keyEvents.addEventListener("keyunpressed", this.keyUnpressed.bind(this));
                
     }
 }
@@ -75,21 +76,29 @@ _p.setMapRenderer = function(mapRenderer) {
     this.mapRenderer = mapRenderer;
 }
 
+// function to check if future tile to be walking on is obstacle or not
+_p.checkCollision = function(x, y) { // x,y distance to be added
+    var tileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + x, y: this.coordY + y});
+    // return value from collisionMatrix in MapInstance
+    return this.mapRenderer.currentMapInstance.collisionMatrix[tileCoords.y][tileCoords.x];
+}
+
 _p.keyUp = function() {
-    this.lastDirection = "up";
     
-    // player movement
-    if(this.mapRenderer.currentMapInstance.mapY == 0) { // canvas is at the top of the whole map
-        if(this.coordY - this.speed - FRAME_HEIGHT <= 0) // move only the player until it hits upper bound
-            this.coordY = 0 + FRAME_HEIGHT;
-        else
-            this.coordY -= this.speed;
-    }
-    else {
-        if(this.coordY - this.speed >= this.canvas.height / 2) // player not centered on y-axis
-            this.coordY -= this.speed;
-        else
-            this.mapRenderer.moveMap(0, this.speed);
+    if(!this.checkCollision(0, -this.speed)) { // if no collision
+        // player movement
+        if(this.mapRenderer.currentMapInstance.mapY == 0) { // canvas is at the top of the whole map
+            if(this.coordY - this.speed - FRAME_HEIGHT <= 0) // move only the player until it hits upper bound
+                this.coordY = 0 + FRAME_HEIGHT;
+            else
+                this.coordY -= this.speed;
+        }
+        else {
+            if(this.coordY - this.speed >= this.canvas.height / 2) // player not centered on y-axis
+                this.coordY -= this.speed;
+            else
+                this.mapRenderer.moveMap(0, this.speed);
+        }
     }
     
     // sprite animation
@@ -98,22 +107,23 @@ _p.keyUp = function() {
 }
 
 _p.keyDown = function() {
-    this.lastDirection = "down";
     
-    // player movement
-    var mapInstance = this.mapRenderer.currentMapInstance;
-    var lowerBound = this.canvas.height - mapInstance.mapHeight * mapInstance.tileSize; // pseudo bound
-    if(mapInstance.mapY == lowerBound) { // if canvas at pseudo lower bound aka bottom of canvas is at bottom of whole map
-        if(this.coordY + this.speed >= this.canvas.height) // move player until it hits lower bound
-            this.coordY = this.canvas.height;
-        else
-            this.coordY += this.speed;
-    }
-    else {
-        if(this.coordY + this.speed <= this.canvas.height / 2) // player not centered on y-axis
-            this.coordY += this.speed;
-        else
-            this.mapRenderer.moveMap(0, -this.speed); 
+    if(!this.checkCollision(0, this.speed)) { // if no collision
+        // player movement
+        var mapInstance = this.mapRenderer.currentMapInstance;
+        var lowerBound = this.canvas.height - mapInstance.mapHeight * mapInstance.tileSize; // pseudo bound
+        if(mapInstance.mapY == lowerBound) { // if canvas at pseudo lower bound aka bottom of canvas is at bottom of whole map
+            if(this.coordY + this.speed >= this.canvas.height) // move player until it hits lower bound
+                this.coordY = this.canvas.height;
+            else
+                this.coordY += this.speed;
+        }
+        else {
+            if(this.coordY + this.speed <= this.canvas.height / 2) // player not centered on y-axis
+                this.coordY += this.speed;
+            else
+                this.mapRenderer.moveMap(0, -this.speed); 
+        }
     }
     
     // sprite animation
@@ -122,20 +132,21 @@ _p.keyDown = function() {
 }
 
 _p.keyLeft = function() {
-    this.lastDirection = "left";
     
-    // player movement
-    if(this.mapRenderer.currentMapInstance.mapX == 0) { // canvas is at the left of the whole map
-        if(this.coordX - this.speed - FRAME_WIDTH / 2 <= 0) // move only player until hits left bound
-            this.coordX = 0 + FRAME_WIDTH / 2;
-        else
-            this.coordX -= this.speed;
-    }
-    else {
-        if(this.coordX - this.speed >= this.canvas.width / 2) // player not centered on x-axis
-            this.coordX -= this.speed;
-        else
-            this.mapRenderer.moveMap(this.speed, 0);            
+    if(!this.checkCollision(-this.speed, 0)) { // if no collision
+        // player movement
+        if(this.mapRenderer.currentMapInstance.mapX == 0) { // canvas is at the left of the whole map
+            if(this.coordX - this.speed - FRAME_WIDTH / 2 <= 0) // move only player until hits left bound
+                this.coordX = 0 + FRAME_WIDTH / 2;
+            else
+                this.coordX -= this.speed;
+        }
+        else {
+            if(this.coordX - this.speed >= this.canvas.width / 2) // player not centered on x-axis
+                this.coordX -= this.speed;
+            else
+                this.mapRenderer.moveMap(this.speed, 0);            
+        }
     }
     
     // sprite animation
@@ -144,24 +155,25 @@ _p.keyLeft = function() {
 }
 
 _p.keyRight = function() {
-    this.lastDirection = "right";
     
-    // player movement
-    var mapInstance = this.mapRenderer.currentMapInstance;
-    var rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
-    
-    if(mapInstance.mapX == rightBound) {// if canvas at pseudo right bound aka right bound of canvas is at right bound of whole map
-        if(this.coordX + this.speed + FRAME_WIDTH / 2 >= this.canvas.width) // move player until hits right bound
-            this.coordX = this.canvas.width - FRAME_WIDTH / 2;
-        else
-            this.coordX += this.speed;
-    }
-    else {
-        if(this.coordX + this.speed <= this.canvas.width / 2) // player not centered on x-axis
-            this.coordX += this.speed;
-        else
-            this.mapRenderer.moveMap(-this.speed, 0);
+    if(!this.checkCollision(this.speed, 0)) { // if no collision
+        // player movement
+        var mapInstance = this.mapRenderer.currentMapInstance;
+        var rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
 
+        if(mapInstance.mapX == rightBound) {// if canvas at pseudo right bound aka right bound of canvas is at right bound of whole map
+            if(this.coordX + this.speed + FRAME_WIDTH / 2 >= this.canvas.width) // move player until hits right bound
+                this.coordX = this.canvas.width - FRAME_WIDTH / 2;
+            else
+                this.coordX += this.speed;
+        }
+        else {
+            if(this.coordX + this.speed <= this.canvas.width / 2) // player not centered on x-axis
+                this.coordX += this.speed;
+            else
+                this.mapRenderer.moveMap(-this.speed, 0);
+
+        }
     }
     
     // sprite animation
@@ -169,7 +181,9 @@ _p.keyRight = function() {
     this.column = (this.column + 1) % FRAME_COLUMN_MAX;
 }
 
-
+_p.keyUnpressed = function() {
+    this.column = 0;
+}
 
 
 
