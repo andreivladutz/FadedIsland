@@ -78,7 +78,6 @@ _p = MapInstance.prototype;
 //returns true if the coords and tileId match an animated tile 
 _p.isAnimated = function(i, j, tileId) {
 	for (let animationArr of this.animationsArr) {
-		
 		for (let animationObj of animationArr) {
 			if (animationObj.tileid == tileId ) {
 				if (animationArr[POSITION_IN_MATRIX].i == i 
@@ -144,9 +143,45 @@ _p.updateViewportSize = function() {
 	this.viewportHeight = CanvasManagerFactory().canvas.height;
 }
 
-_p.moveMap = function(e) {
-	var movement = e.detail,
-		pixelsMapWidth = this.mapWidth * this.tileSize,
+//_p.moveMap = function(e) {
+//	var movement = e.detail,
+//		pixelsMapWidth = this.mapWidth * this.tileSize,
+//		pixelsMapHeight = this.mapHeight * this.tileSize;
+//	
+//	if (this.viewportWidth >= pixelsMapWidth) {
+//		this.mapX = (this.viewportWidth - pixelsMapWidth) / 2;
+//	}
+//	
+//	else {
+//		this.mapX = Math.min(
+//			this.mapX + movement.deltaX, 0
+//		);
+//		
+//		this.mapX = Math.max(
+//			- pixelsMapWidth + this.viewportWidth, this.mapX
+//		);
+//	}
+//	
+//	if (this.viewportHeight >= pixelsMapHeight) {
+//		this.mapY = (this.viewportHeight - pixelsMapHeight) / 2;
+//	}
+//	
+//	else {
+//		this.mapY = Math.min(
+//			this.mapY + movement.deltaY, 0
+//		);
+//
+//		this.mapY = Math.max(
+//			- pixelsMapHeight + this.viewportHeight, this.mapY
+//		);
+//	}
+//
+//	this.emit("movedMap", null);
+//}
+
+
+_p.moveMap = function(deltaX, deltaY) {
+	var pixelsMapWidth = this.mapWidth * this.tileSize,
 		pixelsMapHeight = this.mapHeight * this.tileSize;
 	
 	if (this.viewportWidth >= pixelsMapWidth) {
@@ -155,7 +190,7 @@ _p.moveMap = function(e) {
 	
 	else {
 		this.mapX = Math.min(
-			this.mapX + movement.deltaX, 0
+			this.mapX + deltaX, 0
 		);
 		
 		this.mapX = Math.max(
@@ -169,7 +204,7 @@ _p.moveMap = function(e) {
 	
 	else {
 		this.mapY = Math.min(
-			this.mapY + movement.deltaY, 0
+			this.mapY +  deltaY, 0
 		);
 
 		this.mapY = Math.max(

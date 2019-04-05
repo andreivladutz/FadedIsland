@@ -395,3 +395,8 @@ _p.tileCoordsToScreenCoords = function(coords) {
     
     return new_coords;
 }
+
+// function to move map from mapInstance
+_p.moveMap = function(deltaX, deltaY) {
+    this.currentMapInstance.moveMap(deltaX, deltaY);
+}

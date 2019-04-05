@@ -69,7 +69,7 @@ var CanvasManagerFactory = (function(canvasElement) {
 	return function instantiator(canvasElement = null) {
 		if (!canvasElement && !canvasManager) {
 			throw "First call to CanvasManagerFactory should be\
-				with the canvasElement";
+				   with the canvasElement";
 		}
 		
 		if (!canvasManager) {

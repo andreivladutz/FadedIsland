@@ -25,7 +25,7 @@ const MAPS_READY_EVENT = "mapRendererInitialised"
 /*
     all the global objects should be moved in a Game class later
 */
-var resourceLoader, canvasManager, mapRenderer, mapLoader;
+var resourceLoader, canvasManager, mapRenderer, mapLoader, player, loadedPromisesArr = [];
 
 function init() {
 	if (DEBUGGING) {
@@ -37,19 +37,37 @@ function init() {
 	canvasManager = CanvasManagerFactory(document.getElementById("gameCanvas"));
 	mapLoader = new MapLoader(resourceLoader);
     
-    mapLoader.on(MAPS_READY_EVENT, function() {
-        mapRenderer = mapLoader.getMapRenderer();
-        
-        //mapRenderer.showCollisions();
-		requestAnimationFrame(draw);
-    });
+    function loadedMap(resolve, reject) {
+        mapLoader.on(MAPS_READY_EVENT, function() {
+            mapRenderer = mapLoader.getMapRenderer();
+            player.setMapRenderer(mapRenderer);
+            mapRenderer.showCollisions();
+            resolve();
+        });
+    }
+    
+    
+    
+    // push map loading to pseudo-semaphore
+    loadedPromisesArr.push(promisify(loadedMap));
+    player = new Player(canvasManager.canvas, loadedPromisesArr);
+    
+    // wait on loadMap and loadPlayer
+    waitOnAllPromises(loadedPromisesArr).then(
+        function onResolved() {
+            requestAnimationFrame(draw);
+        },
+        function onRejected(err) {
+            console.error(err);
+        }
+    )
     
     mapLoader.load();
 }
 
 function draw() {
 	mapRenderer.draw();
-	
+	player.draw();
 	requestAnimationFrame(draw);
 }
 
