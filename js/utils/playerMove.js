@@ -15,14 +15,11 @@ class Player extends EventEmiter {
         super();
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.speed = 16;
+        this.speed = 32;
         
         // loading player sprite
         this.resLoader = new ResourceLoader();
         this.resLoader.add(RESOURCES);
-
-        // last movement direction
-        this.lastDirection = "down";
         
         // column, row for specific frame in sprite
         // expected order for frames top-down: up/0, left/1, down/2, right/3
@@ -38,7 +35,7 @@ class Player extends EventEmiter {
                 
                 // coords corespond to feet area
                 self.coordX = canvas.width / 2;
-                self.coordY = canvas.height / 2;
+                self.coordY = canvas.height / 2 - 16;
                 resolve();
             });
         }
@@ -59,7 +56,7 @@ class Player extends EventEmiter {
         this.keyEvents.addEventListener("down", this.keyDown.bind(this));
         this.keyEvents.addEventListener("left", this.keyLeft.bind(this));
         this.keyEvents.addEventListener("right", this.keyRight.bind(this));
-        this.keyEvents.addEventListener("keyunpressed", this.keyUnpressed.bind(this));
+        this.keyEvents.addEventListener("keyrelease", this.keyRelease.bind(this));
                
     }
 }
@@ -83,6 +80,14 @@ _p.checkCollision = function(x, y) { // x,y distance to be added
     return this.mapRenderer.currentMapInstance.collisionMatrix[tileCoords.y][tileCoords.x];
 }
 
+_p.resetXCoordsToCenter = function() {
+    this.coordX = this.canvas.width / 2;
+}
+
+_p.resetYCoordsToCenter = function() {
+    this.coordY = this.canvas.height / 2 - 16;
+}
+
 _p.keyUp = function() {
     
     if(!this.checkCollision(0, -this.speed)) { // if no collision
@@ -96,8 +101,10 @@ _p.keyUp = function() {
         else {
             if(this.coordY - this.speed >= this.canvas.height / 2) // player not centered on y-axis
                 this.coordY -= this.speed;
-            else
+            else {
+                this.resetYCoordsToCenter();
                 this.mapRenderer.moveMap(0, this.speed);
+            }   
         }
     }
     
@@ -121,8 +128,10 @@ _p.keyDown = function() {
         else {
             if(this.coordY + this.speed <= this.canvas.height / 2) // player not centered on y-axis
                 this.coordY += this.speed;
-            else
+            else {
+                this.resetYCoordsToCenter();
                 this.mapRenderer.moveMap(0, -this.speed); 
+            }    
         }
     }
     
@@ -144,8 +153,10 @@ _p.keyLeft = function() {
         else {
             if(this.coordX - this.speed >= this.canvas.width / 2) // player not centered on x-axis
                 this.coordX -= this.speed;
-            else
-                this.mapRenderer.moveMap(this.speed, 0);            
+            else {
+                this.resetXCoordsToCenter();
+                this.mapRenderer.moveMap(this.speed, 0);
+            }      
         }
     }
     
@@ -170,9 +181,10 @@ _p.keyRight = function() {
         else {
             if(this.coordX + this.speed <= this.canvas.width / 2) // player not centered on x-axis
                 this.coordX += this.speed;
-            else
-                this.mapRenderer.moveMap(-this.speed, 0);
-
+            else {
+                this.resetXCoordsToCenter();
+                this.mapRenderer.moveMap(-this.speed, 0);                
+            }
         }
     }
     
@@ -181,7 +193,7 @@ _p.keyRight = function() {
     this.column = (this.column + 1) % FRAME_COLUMN_MAX;
 }
 
-_p.keyUnpressed = function() {
+_p.keyRelease = function() {
     this.column = 0;
 }
 

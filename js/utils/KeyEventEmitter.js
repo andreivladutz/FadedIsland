@@ -44,6 +44,6 @@ _p.handleKeypress = function(e) {
 
 _p.handleKeyup = function(e) {
     if(e.key == this.dict["up"] || e.key == this.dict["down"] || e.key == this.dict["right"] || e.key == this.dict["left"])
-        this.emit("keyunpressed");
+        this.emit("keyrelease");
 }
 
