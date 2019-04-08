@@ -15,6 +15,26 @@ var RESOURCES = [
         itemType: "img",
         url: "/img/player/spriteAttack.png"
     },
+    {
+        name: "BodyArmour",
+        itemType: "img",
+        url: "/img/armour/chest_male.png"
+    },
+    {
+        name: "FeetArmour",
+        itemType: "img",
+        url: "/img/armour/golden_boots_male.png"
+    },
+    {
+        name: "ArmsArmour",
+        itemType: "img",
+        url: "/img/armour/arms_male.png"
+    },
+    {
+        name: "HeadArmour",
+        itemType: "img",
+        url: "/img/armour/golden_helm_male.png"
+    },
 ];
 
 
@@ -49,9 +69,39 @@ class Player extends EventEmiter {
                 resolve();
             });
         }
-        // push loading function to semaphore
+        // push loading function to pseudo-semaphore
         loadedPromisesArr.push(promisify(loadedPlayer));
-
+        
+        // load armour
+        function loadedBodyArmour(resolve, reject) {
+            self.resLoader.on("loadedBodyArmour", function() {
+                self.bodyArmour = self.resLoader.get("BodyArmour");
+            });
+        }
+        
+        function loadedFeetArmour(resolve, reject) {
+            self.resLoader.on("loadedFeetArmour", function() {
+                self.feetArmour = self.resLoader.get("FeetArmour");
+            });
+        }
+        
+        function loadedArmsArmour(resolve, reject) {
+            self.resLoader.on("loadedArmsArmour", function() {
+                self.armsArmour = self.resLoader.get("ArmsArmour");
+            });
+        }
+        
+        function loadedHeadArmour(resolve, reject) {
+            self.resLoader.on("loadedHeadArmour", function() {
+                self.headArmour = self.resLoader.get("HeadArmour");
+            });
+        }
+        
+        loadedPromisesArr.push(promisify(loadedBodyArmour));
+        loadedPromisesArr.push(promisify(loadedFeetArmour));
+        loadedPromisesArr.push(promisify(loadedArmsArmour));
+        loadedPromisesArr.push(promisify(loadedHeadArmour));
+        
         this.resLoader.load();
         
         // add listeners for movement
@@ -77,7 +127,21 @@ class Player extends EventEmiter {
 _p = Player.prototype;
 
 _p.draw = function() {
+    
+    // draw player
     this.ctx.drawImage(this.sprite, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
+                       this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
+    // draw armour
+    this.ctx.drawImage(this.bodyArmour, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
+                       this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
+    
+    this.ctx.drawImage(this.feetArmour, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
+                       this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
+    
+    this.ctx.drawImage(this.armsArmour, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
+                       this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
+    
+    this.ctx.drawImage(this.headArmour, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
                        this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
 	
 	this.ctx.fillStyle = "red";
