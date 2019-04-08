@@ -1,13 +1,19 @@
 const FRAME_WIDTH = 64, FRAME_HEIGHT = 64, 
       FRAME_ROW = 8, FRAME_COLUMN_MAX = 9;
-var RESOURCES = [
-  {
-    name: "Player",
-    itemType: "img",
-    url: "/img/player/sprite.png"
-  },
-];
+var interval, counter = 0;
 
+var RESOURCES = [
+    {
+        name: "Player",
+        itemType: "img",
+        url: "/img/player/sprite.png"
+    },
+    {
+        name: "Attack",
+        itemType: "img",
+        url: "/img/player/spriteAttack.png"
+    },
+];
 
 
 class Player extends EventEmiter {
@@ -15,7 +21,9 @@ class Player extends EventEmiter {
         super();
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
+        
         this.speed = 32;
+        this.power = 20; // attack power
         
         // loading player sprite
         this.resLoader = new ResourceLoader();
@@ -30,8 +38,8 @@ class Player extends EventEmiter {
         var self = this;
         
         function loadedPlayer(resolve, reject) {
-            self.resLoader.on("loadedPlayer", function() {
-                self.sprite = self.resLoader.get("Player");
+            self.resLoader.on("loadedAttack", function() {
+                self.sprite = self.resLoader.get("Attack");
                 
                 // coords corespond to feet area
                 self.coordX = canvas.width / 2;
@@ -49,7 +57,8 @@ class Player extends EventEmiter {
             "up": "w", 
             "down": "s",
             "left": "a",
-            "right": "d"
+            "right": "d",
+            "attack": "k"
         }
         this.keyEvents = new KeyEventEmitter(this.dict);
         this.keyEvents.addEventListener("up", this.keyUp.bind(this));
@@ -57,6 +66,7 @@ class Player extends EventEmiter {
         this.keyEvents.addEventListener("left", this.keyLeft.bind(this));
         this.keyEvents.addEventListener("right", this.keyRight.bind(this));
         this.keyEvents.addEventListener("keyrelease", this.keyRelease.bind(this));
+        this.keyEvents.addEventListener("attack", this.attack.bind(this));
                
     }
 }
@@ -197,8 +207,19 @@ _p.keyRelease = function() {
     this.column = 0;
 }
 
+_p.attack = function() {
+    this.row = 13;
+    
+    for(var i = 0; i < 6; i++) {
+        setTimeout(this.animatE, 1000);
+    }
+}
 
-
+_p.animatE = function() {
+    this.mapRenderer.draw();
+    this.column = (this.column + 1) % 6;
+    this.draw();
+}
 
 
 

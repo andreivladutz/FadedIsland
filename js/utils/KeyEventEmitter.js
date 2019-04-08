@@ -25,6 +25,10 @@ _p.moveLeft = function(e) {
     this.emit("left", null);
 }
 
+_p.attack = function() {
+    this.emit("attack", null);
+}
+
 _p.handleKeypress = function(e) {
     switch(e.key) {
         case this.dict["up"]:
@@ -38,6 +42,9 @@ _p.handleKeypress = function(e) {
             break;
         case this.dict["left"]:
             this.moveLeft(e);   
+            break;
+        case this.dict["attack"]:
+            this.attack();
             break;
     }
 }
