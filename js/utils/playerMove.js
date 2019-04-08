@@ -1,5 +1,6 @@
 const FRAME_WIDTH = 64, FRAME_HEIGHT = 64, 
       FRAME_ROW = 8, FRAME_COLUMN_MAX = 9;
+
 var RESOURCES = [
   {
     name: "Player",
@@ -7,7 +8,6 @@ var RESOURCES = [
     url: "/img/player/sprite.png"
   },
 ];
-
 
 
 class Player extends EventEmiter {
@@ -67,6 +67,9 @@ _p = Player.prototype;
 _p.draw = function() {
     this.ctx.drawImage(this.sprite, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
                        this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
+	
+	this.ctx.fillStyle = "red";
+	this.ctx.fillRect(this.coordX, this.coordY, 2, 2);
 }
 
 _p.setMapRenderer = function(mapRenderer) {
@@ -75,7 +78,15 @@ _p.setMapRenderer = function(mapRenderer) {
 
 // function to check if future tile to be walking on is obstacle or not
 _p.checkCollision = function(x, y) { // x,y distance to be added
-    var tileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + x, y: this.coordY + y});
+    var tileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + x, y: this.coordY + y}),
+		matrixCols = this.mapRenderer.currentMapInstance.collisionMatrix[0].length,
+		matrixRows = this.mapRenderer.currentMapInstance.collisionMatrix.length;
+	
+	// make sure tile coords aren't out of bounds
+	if (tileCoords.x >= matrixCols || tileCoords.y >= matrixRows) {
+		return false;
+	}
+	
     // return value from collisionMatrix in MapInstance
     return this.mapRenderer.currentMapInstance.collisionMatrix[tileCoords.y][tileCoords.x];
 }
