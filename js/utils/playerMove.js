@@ -117,9 +117,13 @@ class Player extends EventEmiter {
         this.keyEvents.addEventListener("down", this.keyDown.bind(this));
         this.keyEvents.addEventListener("left", this.keyLeft.bind(this));
         this.keyEvents.addEventListener("right", this.keyRight.bind(this));
+        this.keyEvents.addEventListener("upright", this.keyUpRight.bind(this));
+        this.keyEvents.addEventListener("upleft", this.keyUpLeft.bind(this));
+        this.keyEvents.addEventListener("downright", this.keyDownRight.bind(this));
+        this.keyEvents.addEventListener("downleft", this.keyDownLeft.bind(this));
         this.keyEvents.addEventListener("keyrelease", this.keyRelease.bind(this));
         this.keyEvents.addEventListener("attack", this.attack.bind(this));
-               
+        
     }
 }
 
@@ -145,7 +149,7 @@ _p.draw = function() {
                        this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
 	
 	this.ctx.fillStyle = "red";
-	this.ctx.fillRect(this.coordX, this.coordY, 2, 2);
+	this.ctx.fillRect(this.coordX, this.coordY, 10, 10);
 }
 
 _p.setMapRenderer = function(mapRenderer) {
@@ -279,6 +283,24 @@ _p.keyRight = function() {
     this.row = FRAME_ROW + 3;
     this.column = (this.column + 1) % FRAME_COLUMN_MAX;
 }
+
+_p.keyUpRight = function() {
+    
+}
+
+_p.keyUpLeft = function() {
+    
+}
+
+_p.keyDownRight = function() {
+    
+}
+
+_p.keyDownLeft = function() {
+    
+}
+
+
 
 _p.keyRelease = function() {
     this.column = 0;
