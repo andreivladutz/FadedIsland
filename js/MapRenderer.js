@@ -44,9 +44,6 @@ _p.changeMap = function(mapName) {
 	this.currentMapName = mapName;
 	this.currentMapInstance = MapRenderer.MAP_INSTANCES[mapName];
 		
-	this.currentMapInstance.on("movedMap", 
-							   this.draw.bind(this));
-	
 	//offDirty flag tells if the offscreenBuffer canvas should be redrawn
 	this.offDirty = true;
 }
@@ -93,8 +90,8 @@ _p.computeVisibleTileArea = function() {
 		tileSize = mI.tileSize;
 	
 	this.visibleTileArea = {
-		startX : Math.floor(Math.abs(mI.mapX) / tileSize),
-		startY : Math.floor(Math.abs(mI.mapY) / tileSize),
+		startX : Math.abs(mI.mapX) / tileSize,
+		startY : Math.abs(mI.mapY) / tileSize,
 		endX : Math.ceil((- mI.mapX + viewportWidth) / tileSize),
 		endY : Math.ceil((- mI.mapY + viewportHeight) / tileSize)
 	}
@@ -151,8 +148,8 @@ _p.drawOffScreenAnimatedTiles = function() {
 				tilesPerRow = animationArr[JSON_TILESET_WORKFILE][TILES_PER_ROW],
 				srcX = (tileNo % tilesPerRow) * tileSize,
 				srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
-				destX = (j - stX) * tileSize,
-				destY = (i - stY) * tileSize,
+				destX = Math.floor((j - stX) * tileSize),
+				destY = Math.floor((i - stY) * tileSize),
 				offCtx = CanvasManagerFactory().offScreenCtx;
 
 			offCtx.drawImage(
@@ -214,8 +211,8 @@ _p.drawOffScreenTile = function(i, j, animatedId) {
 		let tilesPerRow = usedTileset.JSONobject[TILES_PER_ROW],
 			srcX = (tileNo % tilesPerRow) * tileSize,
 			srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
-			destX = (j - stX) * tileSize,
-			destY = (i - stY) * tileSize;
+			destX = Math.floor((j - stX) * tileSize),
+			destY = Math.floor((i - stY) * tileSize);
 		
 		offCtx.drawImage(
 			usedTileset["image"], 
@@ -238,8 +235,8 @@ _p.redrawOffscreenBuffer = function() {
 	
 	offCtx.clearRect(0, 0, canvas.width, canvas.height);
 	
-	var stX = this.offScreenVisibleTileArea.startX,
-		stY = this.offScreenVisibleTileArea.startY,
+	var stX = Math.floor(this.offScreenVisibleTileArea.startX),
+		stY = Math.floor(this.offScreenVisibleTileArea.startY),
 		eX = this.offScreenVisibleTileArea.endX,
 		eY = this.offScreenVisibleTileArea.endY;
 	
@@ -274,8 +271,8 @@ _p.redrawOffscreenBuffer = function() {
 				let tilesPerRow = usedTileset.JSONobject[TILES_PER_ROW],
 					srcX = (tileNo % tilesPerRow) * tileSize,
 					srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
-					destX = (j - stX) * tileSize,
-					destY = (i - stY) * tileSize;
+					destX = Math.floor((j - stX) * tileSize),
+					destY = Math.floor((i - stY) * tileSize);
 
 				offCtx.drawImage(
 					usedTileset["image"], 
@@ -319,8 +316,8 @@ _p.draw = function() {
 		canvas = this.canvasManager.canvas,
 		offScreenCanvas = this.canvasManager.offScreenBuffer,
 		tileSize = this.currentMapInstance.tileSize,
-		srcX = (stX - offStX) * tileSize,
-		srcY = (stY - offStY) * tileSize;
+		srcX = Math.floor((stX - offStX) * tileSize),
+		srcY = Math.floor((stY - offStY) * tileSize);
 	
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	
@@ -398,5 +395,5 @@ _p.tileCoordsToScreenCoords = function(coords) {
 
 // function to move map from mapInstance
 _p.moveMap = function(deltaX, deltaY) {
-    this.currentMapInstance.moveMap(deltaX, deltaY);
+    this.currentMapInstance.moveMap(Math.floor(deltaX), Math.floor(deltaY));
 }

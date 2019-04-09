@@ -2,7 +2,7 @@ const OBJECT_X = "x", OBJECT_Y = "y", IMAGE_OF_TILESET = "image",
 	  FIRST_TILE_NUMBER = "firstgid", TILES_PER_ROW = "columns",
 	  DEFAULT_TILE = "defaultTile", JSON_TILESET_WORKFILE = "tilesetWorkfile"; 
 
-class MapInstance extends InputHandler {
+class MapInstance extends EventEmiter {
 	constructor(
 		mapName,
 		jsonMapObject,
@@ -14,9 +14,7 @@ class MapInstance extends InputHandler {
 		objectsArr,
 		collisionMatrix,
 		animationsArr) {
-			super(document.getElementById("gameCanvas"));
-			
-			this.on("move", this.moveMap.bind(this));
+			super();
 			//own map name
 			this.mapName = mapName;
 			
@@ -185,7 +183,7 @@ _p.moveMap = function(deltaX, deltaY) {
 		pixelsMapHeight = this.mapHeight * this.tileSize;
 	
 	if (this.viewportWidth >= pixelsMapWidth) {
-		this.mapX = (this.viewportWidth - pixelsMapWidth) / 2;
+		this.mapX = Math.floor((this.viewportWidth - pixelsMapWidth) / 2);
 	}
 	
 	else {
@@ -199,7 +197,7 @@ _p.moveMap = function(deltaX, deltaY) {
 	}
 	
 	if (this.viewportHeight >= pixelsMapHeight) {
-		this.mapY = (this.viewportHeight - pixelsMapHeight) / 2;
+		this.mapY = Math.floor((this.viewportHeight - pixelsMapHeight) / 2);
 	}
 	
 	else {
@@ -211,6 +209,4 @@ _p.moveMap = function(deltaX, deltaY) {
 			- pixelsMapHeight + this.viewportHeight, this.mapY
 		);
 	}
-
-	this.emit("movedMap", null);
 }
