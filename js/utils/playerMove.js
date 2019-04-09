@@ -120,6 +120,9 @@ _p.draw = function() {
 	
 	this.ctx.fillStyle = "red";
 	this.ctx.fillRect(this.coordX, this.coordY, 10, 10);
+<<<<<<< HEAD
+>>>>>>> parent of 2a6e71c... Solved bug
+=======
 >>>>>>> parent of 2a6e71c... Solved bug
 }
 
