@@ -61,7 +61,6 @@ class Player extends EventEmiter {
         // default for down movement frame
         this.row = FRAME_ROW + 2;
         this.column = 0;
-<<<<<<< HEAD
 		
 		// we keep the global promises array so we can use it in waitOn utility 
 		this.globalPromisesArr = loadedPromisesArr;
@@ -72,57 +71,6 @@ class Player extends EventEmiter {
 		this.waitOn("FeetArmour");
 		this.waitOn("ArmsArmour");
 		this.waitOn("HeadArmour");
-=======
-        
-        var self = this;
-        
-        function loadedPlayer(resolve, reject) {
-            self.resLoader.on("loadedAttack", function() {
-                self.sprite = self.resLoader.get("Attack");
-                
-                // coords corespond to feet area
-                self.coordX = canvas.width / 2;
-                self.coordY = canvas.height / 2 - 16;
-                resolve();
-            });
-        }
-        // push loading function to pseudo-semaphore
-        loadedPromisesArr.push(promisify(loadedPlayer));
-        
-        // load armour
-        function loadedBodyArmour(resolve, reject) {
-            self.resLoader.on("loadedBodyArmour", function() {
-                self.bodyArmour = self.resLoader.get("BodyArmour");
-                resolve();
-            });
-        }
-        
-        function loadedFeetArmour(resolve, reject) {
-            self.resLoader.on("loadedFeetArmour", function() {
-                self.feetArmour = self.resLoader.get("FeetArmour");
-                resolve();
-            });
-        }
-        
-        function loadedArmsArmour(resolve, reject) {
-            self.resLoader.on("loadedArmsArmour", function() {
-                self.armsArmour = self.resLoader.get("ArmsArmour");
-                resolve();
-            });
-        }
-        
-        function loadedHeadArmour(resolve, reject) {
-            self.resLoader.on("loadedHeadArmour", function() {
-                self.headArmour = self.resLoader.get("HeadArmour");
-                resolve();
-            });
-        }
-        
-        loadedPromisesArr.push(promisify(loadedBodyArmour));
-        loadedPromisesArr.push(promisify(loadedFeetArmour));
-        loadedPromisesArr.push(promisify(loadedArmsArmour));
-        loadedPromisesArr.push(promisify(loadedHeadArmour));
->>>>>>> 2a6e71c61ae24bfce23966ab650c3413fb7f4d53
         
         this.resLoader.load();
         
@@ -205,7 +153,6 @@ _p.draw = function() {
 	this.drawSpriteFrame(this.armsArmour);
 	this.drawSpriteFrame(this.headArmour);
 	
-<<<<<<< HEAD
 	var leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX - ACTUAL_PLAYER_WIDTH / 2,
 																	y: this.coordY}),
 		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + ACTUAL_PLAYER_WIDTH / 2,
@@ -215,10 +162,6 @@ _p.draw = function() {
 		var screen = this.mapRenderer.tileCoordsToScreenCoords({x:tileX, y:0});
 		this.ctx.fillRect(screen.x, this.coordY, 32, 32);
 	}
-=======
-	this.ctx.fillStyle = "red";
-	this.ctx.fillRect(this.coordX, this.coordY, 2, 2);
->>>>>>> 2a6e71c61ae24bfce23966ab650c3413fb7f4d53
 }
 
 _p.setMapRenderer = function(mapRenderer) {
