@@ -2,7 +2,7 @@ const OBJECT_X = "x", OBJECT_Y = "y", IMAGE_OF_TILESET = "image",
 	  FIRST_TILE_NUMBER = "firstgid", TILES_PER_ROW = "columns",
 	  DEFAULT_TILE = "defaultTile", JSON_TILESET_WORKFILE = "tilesetWorkfile"; 
 
-class MapInstance extends EventEmiter {
+class MapInstance extends InputHandler {
 	constructor(
 		mapName,
 		jsonMapObject,
@@ -14,7 +14,9 @@ class MapInstance extends EventEmiter {
 		objectsArr,
 		collisionMatrix,
 		animationsArr) {
-			super();
+			super(document.getElementById("gameCanvas"));
+			
+			this.on("move", this.moveMap.bind(this));
 			//own map name
 			this.mapName = mapName;
 			
