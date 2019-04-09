@@ -1,4 +1,5 @@
-const FRAME_WIDTH = 64, FRAME_HEIGHT = 64, 
+const FRAME_WIDTH = 64, FRAME_HEIGHT = 64,
+	  ACTUAL_PLAYER_WIDTH = 32,
       FRAME_ROW = 8, FRAME_COLUMN_MAX = 9;
 
 var interval, counter = 0;
@@ -44,8 +45,12 @@ class Player extends EventEmiter {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         
-        this.speed = 32;
+        this.speed = 16;
         this.power = 20; // attack power
+		
+		// coords corespond to feet area
+		this.coordX = canvas.width / 2;
+		this.coordY = canvas.height / 2;
         
         // loading player sprite
         this.resLoader = new ResourceLoader();
@@ -56,6 +61,18 @@ class Player extends EventEmiter {
         // default for down movement frame
         this.row = FRAME_ROW + 2;
         this.column = 0;
+<<<<<<< HEAD
+		
+		// we keep the global promises array so we can use it in waitOn utility 
+		this.globalPromisesArr = loadedPromisesArr;
+		
+		
+		this.waitOn("Attack", "sprite");
+		this.waitOn("BodyArmour");
+		this.waitOn("FeetArmour");
+		this.waitOn("ArmsArmour");
+		this.waitOn("HeadArmour");
+=======
         
         var self = this;
         
@@ -76,24 +93,28 @@ class Player extends EventEmiter {
         function loadedBodyArmour(resolve, reject) {
             self.resLoader.on("loadedBodyArmour", function() {
                 self.bodyArmour = self.resLoader.get("BodyArmour");
+                resolve();
             });
         }
         
         function loadedFeetArmour(resolve, reject) {
             self.resLoader.on("loadedFeetArmour", function() {
                 self.feetArmour = self.resLoader.get("FeetArmour");
+                resolve();
             });
         }
         
         function loadedArmsArmour(resolve, reject) {
             self.resLoader.on("loadedArmsArmour", function() {
                 self.armsArmour = self.resLoader.get("ArmsArmour");
+                resolve();
             });
         }
         
         function loadedHeadArmour(resolve, reject) {
             self.resLoader.on("loadedHeadArmour", function() {
                 self.headArmour = self.resLoader.get("HeadArmour");
+                resolve();
             });
         }
         
@@ -101,6 +122,7 @@ class Player extends EventEmiter {
         loadedPromisesArr.push(promisify(loadedFeetArmour));
         loadedPromisesArr.push(promisify(loadedArmsArmour));
         loadedPromisesArr.push(promisify(loadedHeadArmour));
+>>>>>>> 2a6e71c61ae24bfce23966ab650c3413fb7f4d53
         
         this.resLoader.load();
         
@@ -127,29 +149,76 @@ class Player extends EventEmiter {
     }
 }
 
-
 _p = Player.prototype;
 
-_p.draw = function() {
-    
-    // draw player
-    this.ctx.drawImage(this.sprite, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
-                       this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
-    // draw armour
-    this.ctx.drawImage(this.bodyArmour, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
-                       this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
-    
-    this.ctx.drawImage(this.feetArmour, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
-                       this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
-    
-    this.ctx.drawImage(this.armsArmour, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
-                       this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
-    
-    this.ctx.drawImage(this.headArmour, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
-                       this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
+// small utility to transform a name like FooName to fooName
+function getLowerCaseName(name) {
+	return name.charAt(0).toLowerCase() + name.substr(1);
+}
+
+/*
+	this utility promisifies a listener for a resource with resourceName,
+	pushes it to the global waiting array of promises and resolves when loading
+	has finished, adding the image object on this object under the name of propertyName
 	
+	by default the resourceName passed should be PascalCase and the property will be
+	the camelCase version of the resourceName. you can also specify a different propertyName
+*/
+_p.waitOn = function(resourceName, propertyName = getLowerCaseName(resourceName)) {
+	var self = this;
+	
+	function loadedResource(resolveFunc, rejectFunc) {
+		self.resLoader.on("loaded" + resourceName, function(e) {
+			// the image is also passed as an event so we don't 
+			// need to call the get method on resLoader 
+			self[propertyName] = e.detail;
+			
+			resolveFunc();
+		});
+		
+		// the global promises array will reject with this error
+		self.resLoader.on("error" + resourceName, function(err) {
+			rejectFunc(err);
+		});
+	}
+	
+	this.globalPromisesArr.push(promisify(loadedResource));
+}
+
+_p.drawSpriteFrame = function(image) {
+	var drawCoordX = Math.floor(this.coordX - FRAME_WIDTH / 2),
+		drawCoordY = this.coordY - FRAME_HEIGHT;
+	
+	this.ctx.drawImage(image, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
+                       drawCoordX, drawCoordY, FRAME_WIDTH, FRAME_HEIGHT);
+	
+	this.ctx.fillRect
+}
+
+_p.draw = function() {
+    // draw player
+	this.drawSpriteFrame(this.sprite);
+	
+    // draw armour
+	this.drawSpriteFrame(this.bodyArmour);
+	this.drawSpriteFrame(this.feetArmour);
+	this.drawSpriteFrame(this.armsArmour);
+	this.drawSpriteFrame(this.headArmour);
+	
+<<<<<<< HEAD
+	var leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX - ACTUAL_PLAYER_WIDTH / 2,
+																	y: this.coordY}),
+		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + ACTUAL_PLAYER_WIDTH / 2,
+																	 y: this.coordY});
+	
+	for (let tileX = leftTileCoords.x; tileX <= rightTileCoords.x; tileX++) {
+		var screen = this.mapRenderer.tileCoordsToScreenCoords({x:tileX, y:0});
+		this.ctx.fillRect(screen.x, this.coordY, 32, 32);
+	}
+=======
 	this.ctx.fillStyle = "red";
-	this.ctx.fillRect(this.coordX, this.coordY, 10, 10);
+	this.ctx.fillRect(this.coordX, this.coordY, 2, 2);
+>>>>>>> 2a6e71c61ae24bfce23966ab650c3413fb7f4d53
 }
 
 _p.setMapRenderer = function(mapRenderer) {
@@ -158,17 +227,33 @@ _p.setMapRenderer = function(mapRenderer) {
 
 // function to check if future tile to be walking on is obstacle or not
 _p.checkCollision = function(x, y) { // x,y distance to be added
-    var tileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + x, y: this.coordY + y}),
+	/*
+		player's feet make a segment and that segment can cross multiple tiles at once so we have
+		to check the collision with all the crossed tiles at that moment
+	*/
+    var tileSize = this.mapRenderer.currentMapInstance.tileSize,
+		leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + x - ACTUAL_PLAYER_WIDTH / 2,
+																	y: this.coordY + y}),
+		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + x + ACTUAL_PLAYER_WIDTH / 2,
+																	 y: this.coordY + y}),
 		matrixCols = this.mapRenderer.currentMapInstance.collisionMatrix[0].length,
 		matrixRows = this.mapRenderer.currentMapInstance.collisionMatrix.length;
 	
 	// make sure tile coords aren't out of bounds
-	if (tileCoords.x >= matrixCols || tileCoords.y >= matrixRows) {
-		return false;
+	if (leftTileCoords.x < 0 || rightTileCoords.x >= matrixCols || rightTileCoords.y >= matrixRows) {
+		return true;
 	}
 	
-    // return value from collisionMatrix in MapInstance
-    return this.mapRenderer.currentMapInstance.collisionMatrix[tileCoords.y][tileCoords.x];
+	// check all the crossed tiles
+	for (let tileX = leftTileCoords.x; tileX <= rightTileCoords.x; tileX++) {
+		// the y is the same for all crossed tiles
+		if (this.mapRenderer.currentMapInstance.collisionMatrix[leftTileCoords.y][tileX]) {
+			//debugger;
+			return true;
+		}
+	}
+	// no collision with any tile was found
+	return false;
 }
 
 _p.resetXCoordsToCenter = function() {
@@ -176,21 +261,20 @@ _p.resetXCoordsToCenter = function() {
 }
 
 _p.resetYCoordsToCenter = function() {
-    this.coordY = this.canvas.height / 2 - 16;
+    this.coordY = this.canvas.height / 2;
 }
 
 _p.keyUp = function() {
-    
-    if(!this.checkCollision(0, -this.speed)) { // if no collision
+    if (!this.checkCollision(0, -this.speed)) { // if no collision
         // player movement
-        if(this.mapRenderer.currentMapInstance.mapY == 0) { // canvas is at the top of the whole map
-            if(this.coordY - this.speed - FRAME_HEIGHT <= 0) // move only the player until it hits upper bound
+        if (this.mapRenderer.currentMapInstance.mapY == 0) { // canvas is at the top of the whole map
+            if (this.coordY - this.speed - FRAME_HEIGHT <= 0) // move only the player until it hits upper bound
                 this.coordY = 0 + FRAME_HEIGHT;
             else
                 this.coordY -= this.speed;
         }
         else {
-            if(this.coordY - this.speed >= this.canvas.height / 2) // player not centered on y-axis
+            if (this.coordY - this.speed >= this.canvas.height / 2 ) // player not centered on y-axis
                 this.coordY -= this.speed;
             else {
                 this.resetYCoordsToCenter();
@@ -217,7 +301,7 @@ _p.keyDown = function() {
                 this.coordY += this.speed;
         }
         else {
-            if(this.coordY + this.speed <= this.canvas.height / 2) // player not centered on y-axis
+            if(this.coordY + this.speed <= this.canvas.height / 2 ) // player not centered on y-axis
                 this.coordY += this.speed;
             else {
                 this.resetYCoordsToCenter();
@@ -315,7 +399,6 @@ _p.attack = function() {
 }
 
 _p.animatE = function() {
-    this.mapRenderer.draw();
     this.column = (this.column + 1) % 6;
     this.draw();
 }

@@ -73,15 +73,15 @@ _p.load = function(resourcesName = "") {
 					++self.loadedItems;
 					self.updateProgress();
 					
-					//handlere apelate pt cand resursa s-a incarcat
+					// handlere apelate pt cand resursa s-a incarcat
 					response.loadedObject._availableResource = true;
 					self.emit("loaded" + response.resourceName, response.loadedObject);
 				},
 				function rejection(response) {
-					//handlere apelate pt cand resursa nu a reusit sa se incarce
+					// handlere apelate pt cand resursa nu a reusit sa se incarce
 					self.emit("error" + response.resourceName, response.error);
 					
-					console.error(response.error);
+					throw response.error;
 				}
 			)
 		);
@@ -108,13 +108,13 @@ _p.moveResourcesTo = function(resLoader) {
 		let resource = this._resourceObjects[resName];
 		
 		if (!resource._availableResource) {
-			console.error("You're trying to move a resource that hasn't been loaded yet!");
+			throw new Error("You're trying to move a resource that hasn't been loaded yet!");
 			
 			return;
 		}
 		
 		if (resLoader._resourceObjects[resName]) {
-			console.error("You're trying to move a resource to a resourceLoader that has a name collision with your resource");
+			throw new Error("You're trying to move a resource to a resourceLoader that has a name collision with your resource");
 			
 			return;
 		}
@@ -232,7 +232,7 @@ _p.add = function(name, itemType, url) {
 
 _p.get = function(name) {
 	if (this._resourceObjects[name] && !this._resourceObjects[name]._availableResource) {
-		console.error("You are trying to access a resource that hasn't been loaded yet!");
+		throw new Error("You are trying to access a resource that hasn't been loaded yet!");
 		return undefined;	
 	}
 	
