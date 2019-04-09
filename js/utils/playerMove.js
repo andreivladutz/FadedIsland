@@ -61,6 +61,7 @@ class Player extends EventEmiter {
         // default for down movement frame
         this.row = FRAME_ROW + 2;
         this.column = 0;
+
 		
 		// we keep the global promises array so we can use it in waitOn utility 
 		this.globalPromisesArr = loadedPromisesArr;
@@ -71,6 +72,7 @@ class Player extends EventEmiter {
 		this.waitOn("FeetArmour");
 		this.waitOn("ArmsArmour");
 		this.waitOn("HeadArmour");
+
         
         this.resLoader.load();
         
@@ -152,7 +154,7 @@ _p.draw = function() {
 	this.drawSpriteFrame(this.feetArmour);
 	this.drawSpriteFrame(this.armsArmour);
 	this.drawSpriteFrame(this.headArmour);
-	
+
 	var leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX - ACTUAL_PLAYER_WIDTH / 2,
 																	y: this.coordY}),
 		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + ACTUAL_PLAYER_WIDTH / 2,
