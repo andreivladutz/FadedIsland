@@ -76,24 +76,28 @@ class Player extends EventEmiter {
         function loadedBodyArmour(resolve, reject) {
             self.resLoader.on("loadedBodyArmour", function() {
                 self.bodyArmour = self.resLoader.get("BodyArmour");
+                resolve();
             });
         }
         
         function loadedFeetArmour(resolve, reject) {
             self.resLoader.on("loadedFeetArmour", function() {
                 self.feetArmour = self.resLoader.get("FeetArmour");
+                resolve();
             });
         }
         
         function loadedArmsArmour(resolve, reject) {
             self.resLoader.on("loadedArmsArmour", function() {
                 self.armsArmour = self.resLoader.get("ArmsArmour");
+                resolve();
             });
         }
         
         function loadedHeadArmour(resolve, reject) {
             self.resLoader.on("loadedHeadArmour", function() {
                 self.headArmour = self.resLoader.get("HeadArmour");
+                resolve();
             });
         }
         
@@ -149,7 +153,7 @@ _p.draw = function() {
                        this.coordX - FRAME_WIDTH / 2, this.coordY - FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
 	
 	this.ctx.fillStyle = "red";
-	this.ctx.fillRect(this.coordX, this.coordY, 10, 10);
+	this.ctx.fillRect(this.coordX, this.coordY, 2, 2);
 }
 
 _p.setMapRenderer = function(mapRenderer) {
