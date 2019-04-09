@@ -57,7 +57,7 @@ _p.checkIfDirty = function() {
 		mapInst = this.currentMapInstance;
 	
 	if (visArea.startX < offVisArea.startX || visArea.startY < offVisArea.startY 
-		|| visArea.endX > offVisArea.endX 
+		|| visArea.endX >= offVisArea.endX 
 		|| (visArea.endY >= offVisArea.endY && offVisArea.endY != mapInst.mapHeight)) {
 		
 		this.offDirty = true;
