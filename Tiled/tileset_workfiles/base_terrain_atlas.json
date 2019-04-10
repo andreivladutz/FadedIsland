@@ -5,6 +5,15 @@
  "margin":0,
  "name":"base_terrain_atlas",
  "spacing":0,
+ "terrains":[
+        {
+         "name":"Stone Tiles",
+         "tile":0
+        }, 
+        {
+         "name":"Dark stone Tiles",
+         "tile":0
+        }],
  "tilecount":1024,
  "tiledversion":"1.2.3",
  "tileheight":32,
@@ -4596,7 +4605,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -5593,7 +5602,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -7835,7 +7844,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, -1, -1, 1]
         }, 
         {
          "id":849,
@@ -7844,7 +7854,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, -1, 1, 1]
         }, 
         {
          "id":850,
@@ -7853,7 +7864,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, -1, 1, -1]
         }, 
         {
          "id":851,
@@ -7862,7 +7874,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[1, 1, 1, 1]
         }, 
         {
          "id":852,
@@ -8123,7 +8136,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, 1, -1, 1]
         }, 
         {
          "id":881,
@@ -8132,7 +8146,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[1, 1, 1, 1]
         }, 
         {
          "id":882,
@@ -8141,7 +8156,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[1, -1, 1, -1]
         }, 
         {
          "id":883,
@@ -8150,7 +8166,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[1, 1, 1, 1]
         }, 
         {
          "id":884,
@@ -8411,7 +8428,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, 1, -1, -1]
         }, 
         {
          "id":913,
@@ -8420,7 +8438,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[1, 1, -1, -1]
         }, 
         {
          "id":914,
@@ -8429,7 +8448,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[1, -1, -1, -1]
         }, 
         {
          "id":915,
@@ -8438,7 +8458,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[1, 1, 1, 1]
         }, 
         {
          "id":916,
@@ -8744,7 +8765,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[0, 0, 0, -1]
         }, 
         {
          "id":950,
@@ -8753,7 +8775,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[0, 0, -1, -1]
         }, 
         {
          "id":951,
@@ -8762,7 +8785,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[0, 0, -1, 0]
         }, 
         {
          "id":952,
@@ -8771,7 +8795,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, -1, -1, 0]
         }, 
         {
          "id":953,
@@ -8780,7 +8805,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, -1, 0, -1]
         }, 
         {
          "id":954,
@@ -9032,7 +9058,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[0, -1, 0, -1]
         }, 
         {
          "id":982,
@@ -9041,7 +9068,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[0, 0, 0, 0]
         }, 
         {
          "id":983,
@@ -9050,7 +9078,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, 0, -1, 0]
         }, 
         {
          "id":984,
@@ -9059,7 +9088,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, 0, -1, -1]
         }, 
         {
          "id":985,
@@ -9068,7 +9098,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[0, -1, -1, -1]
         }, 
         {
          "id":986,
@@ -9320,7 +9351,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[0, -1, 0, 0]
         }, 
         {
          "id":1014,
@@ -9329,7 +9361,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, -1, 0, 0]
         }, 
         {
          "id":1015,
@@ -9338,7 +9371,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":true
-                }]
+                }],
+         "terrain":[-1, 0, 0, 0]
         }, 
         {
          "id":1016,

@@ -22,19 +22,15 @@
          "animation":[
                 {
                  "duration":100,
-                 "tileid":735
+                 "tileid":346
                 }, 
                 {
                  "duration":100,
-                 "tileid":703
+                 "tileid":314
                 }, 
                 {
                  "duration":100,
-                 "tileid":671
-                }, 
-                {
-                 "duration":100,
-                 "tileid":639
+                 "tileid":315
                 }],
          "id":0,
          "properties":[
@@ -2886,7 +2882,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[0, 0, 0, 0]
         }, 
         {
          "id":316,
@@ -3159,13 +3156,27 @@
                 }]
         }, 
         {
+         "animation":[
+                {
+                 "duration":100,
+                 "tileid":346
+                }, 
+                {
+                 "duration":100,
+                 "tileid":314
+                }, 
+                {
+                 "duration":100,
+                 "tileid":315
+                }],
          "id":346,
          "properties":[
                 {
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, 0, -1, -1]
         }, 
         {
          "id":347,
