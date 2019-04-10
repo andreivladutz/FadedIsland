@@ -9,32 +9,32 @@ var RESOURCES = [
     {
         name: "Player",
         itemType: "img",
-        url: "/img/player/sprite.png"
+        url: "./img/player/sprite.png"
     },
     {
         name: "Attack",
         itemType: "img",
-        url: "/img/player/spriteAttack.png"
+        url: "./img/player/spriteAttack.png"
     },
     {
         name: "BodyArmour",
         itemType: "img",
-        url: "/img/armour/chest_male.png"
+        url: "./img/armour/chest_male.png"
     },
     {
         name: "FeetArmour",
         itemType: "img",
-        url: "/img/armour/golden_boots_male.png"
+        url: "./img/armour/golden_boots_male.png"
     },
     {
         name: "ArmsArmour",
         itemType: "img",
-        url: "/img/armour/arms_male.png"
+        url: "./img/armour/arms_male.png"
     },
     {
         name: "HeadArmour",
         itemType: "img",
-        url: "/img/armour/golden_helm_male.png"
+        url: "./img/armour/golden_helm_male.png"
     },
 ];
 
