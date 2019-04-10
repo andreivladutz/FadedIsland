@@ -165,10 +165,21 @@ _p.processCollisionMatrixAnimations = function() {
 				
 				//if the resource isn't found locally than it is stored in the global resLoader
 				let tilesetWorkfile = usedTileset.JSONobject;
-				console.log(tilesetWorkfile)
+				
 				let tilesObjectArr = tilesetWorkfile[TILE_ARR_IN_TILESETWORKFILE],
 					realTileNo = tileNo - usedTileset[FIRST_TILE_NUMBER],
+					currTileObj;
+				
+				try{
 					currTileObj = tilesObjectArr[realTileNo];
+				} 
+				catch(err){
+					continue;
+				}
+				
+				if (!currTileObj) {
+					continue;
+				}
 				
 				if (PROPERTIES in currTileObj) {
 					let propertiesArr = currTileObj[PROPERTIES];
