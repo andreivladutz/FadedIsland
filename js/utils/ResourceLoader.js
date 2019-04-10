@@ -114,7 +114,7 @@ _p.moveResourcesTo = function(resLoader) {
 		}
 		
 		if (resLoader._resourceObjects[resName]) {
-			throw new Error("You're trying to move a resource to a resourceLoader that has a name collision with your resource");
+			//throw new Error("You're trying to move a resource to a resourceLoader that has a name collision with your resource");
 			
 			return;
 		}

@@ -35,6 +35,7 @@ function init() {
 	
 	resourceLoader = new ResourceLoader();
 	canvasManager = CanvasManagerFactory(document.getElementById("gameCanvas"));
+	
 	mapLoader = new MapLoader(resourceLoader);
     
     function loadedMap(resolve, reject) {

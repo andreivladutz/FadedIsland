@@ -316,21 +316,25 @@ _p.keyRight = function(e, speed = this.speed) {
 _p.keyUpRight = function(e) {
     this.keyRight(e, Math.floor(this.speed / 2));
     this.keyUp(e, Math.floor(this.speed / 2));
+	//this.mapRenderer.removeDiagonalNoise();
 }
 
 _p.keyUpLeft = function(e) {
     this.keyLeft(e, Math.floor(this.speed / 2));
     this.keyUp(e, Math.floor(this.speed / 2));
+	//this.mapRenderer.removeDiagonalNoise();
 }
 
 _p.keyDownRight = function(e) {
     this.keyRight(e, Math.floor(this.speed / 2));
     this.keyDown(e, Math.floor(this.speed / 2));
+	//this.mapRenderer.removeDiagonalNoise();
 }
 
 _p.keyDownLeft = function(e) {
     this.keyLeft(e, Math.floor(this.speed / 2));
     this.keyDown(e, Math.floor(this.speed / 2));
+	//this.mapRenderer.removeDiagonalNoise();
 }
 
 _p.keyRelease = function() {

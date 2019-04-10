@@ -90,11 +90,17 @@ _p.computeVisibleTileArea = function() {
 		tileSize = mI.tileSize;
 	
 	this.visibleTileArea = {
-		startX : Math.abs(mI.mapX) / tileSize,
-		startY : Math.abs(mI.mapY) / tileSize,
+		startX : Math.floor(Math.abs(mI.mapX) / tileSize),
+		startY : Math.floor(Math.abs(mI.mapY) / tileSize),
 		endX : Math.ceil((- mI.mapX + viewportWidth) / tileSize),
 		endY : Math.ceil((- mI.mapY + viewportHeight) / tileSize)
 	}
+	
+	//console.log("START X = " + this.visibleTileArea.startX);
+	//console.log("START Y = " + this.visibleTileArea.startY);
+	//if (this.offScreenVisibleTileArea){
+	//console.log("OFF START X = " + this.offScreenVisibleTileArea.startX);
+	//console.log("OFF START Y = " + this.offScreenVisibleTileArea.startY);}
 	
 	/* if the viewport is bigger than the map */
 	if (viewportWidth >= mI.mapWidth * tileSize) {
@@ -110,8 +116,8 @@ _p.computeVisibleTileArea = function() {
 
 _p.drawOffScreenAnimatedTiles = function() {
 	var mapInst = this.currentMapInstance,
-		stX = this.offScreenVisibleTileArea.startX,
-		stY = this.offScreenVisibleTileArea.startY,
+		stX = Math.floor(this.offScreenVisibleTileArea.startX),
+		stY = Math.floor(this.offScreenVisibleTileArea.startY),
 		eX = this.offScreenVisibleTileArea.endX,
 		eY = this.offScreenVisibleTileArea.endY;
 	
@@ -148,8 +154,8 @@ _p.drawOffScreenAnimatedTiles = function() {
 				tilesPerRow = animationArr[JSON_TILESET_WORKFILE][TILES_PER_ROW],
 				srcX = (tileNo % tilesPerRow) * tileSize,
 				srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
-				destX = Math.floor((j - stX) * tileSize),
-				destY = Math.floor((i - stY) * tileSize),
+				destX = Math.floor((j - stX)) * tileSize,
+				destY = Math.floor((i - stY)) * tileSize,
 				offCtx = CanvasManagerFactory().offScreenCtx;
 
 			offCtx.drawImage(
@@ -173,8 +179,8 @@ _p.drawOffScreenTile = function(i, j, animatedId) {
 		tilesets = mapInstance.tilesetsWorkfiles,
 		tileSize = mapInstance.tileSize;
 	
-	var stX = this.offScreenVisibleTileArea.startX,
-		stY = this.offScreenVisibleTileArea.startY,
+	var stX = Math.floor(this.offScreenVisibleTileArea.startX),
+		stY = Math.floor(this.offScreenVisibleTileArea.startY),
 		eX = this.offScreenVisibleTileArea.endX,
 		eY = this.offScreenVisibleTileArea.endY;
 	
@@ -211,8 +217,8 @@ _p.drawOffScreenTile = function(i, j, animatedId) {
 		let tilesPerRow = usedTileset.JSONobject[TILES_PER_ROW],
 			srcX = (tileNo % tilesPerRow) * tileSize,
 			srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
-			destX = Math.floor((j - stX) * tileSize),
-			destY = Math.floor((i - stY) * tileSize);
+			destX = Math.floor((j - stX)) * tileSize,
+			destY = Math.floor((i - stY)) * tileSize;
 		
 		offCtx.drawImage(
 			usedTileset["image"], 
@@ -235,8 +241,8 @@ _p.redrawOffscreenBuffer = function() {
 	
 	offCtx.clearRect(0, 0, canvas.width, canvas.height);
 	
-	var stX = Math.floor(this.offScreenVisibleTileArea.startX),
-		stY = Math.floor(this.offScreenVisibleTileArea.startY),
+	var stX = Math.round(this.offScreenVisibleTileArea.startX),
+		stY = Math.round(this.offScreenVisibleTileArea.startY),
 		eX = this.offScreenVisibleTileArea.endX,
 		eY = this.offScreenVisibleTileArea.endY;
 	
@@ -271,8 +277,8 @@ _p.redrawOffscreenBuffer = function() {
 				let tilesPerRow = usedTileset.JSONobject[TILES_PER_ROW],
 					srcX = (tileNo % tilesPerRow) * tileSize,
 					srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
-					destX = Math.floor((j - stX) * tileSize),
-					destY = Math.floor((i - stY) * tileSize);
+					destX = Math.floor((j - stX)) * tileSize,
+					destY = Math.floor((i - stY)) * tileSize;
 
 				offCtx.drawImage(
 					usedTileset["image"], 
@@ -316,8 +322,8 @@ _p.draw = function() {
 		canvas = this.canvasManager.canvas,
 		offScreenCanvas = this.canvasManager.offScreenBuffer,
 		tileSize = this.currentMapInstance.tileSize,
-		srcX = Math.floor((stX - offStX) * tileSize),
-		srcY = Math.floor((stY - offStY) * tileSize);
+		srcX = (Math.floor(stX) - Math.floor(offStX)) * tileSize,
+		srcY = (Math.floor(stY) - Math.floor(offStY)) * tileSize;
 	
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	
@@ -395,5 +401,35 @@ _p.tileCoordsToScreenCoords = function(coords) {
 
 // function to move map from mapInstance
 _p.moveMap = function(deltaX, deltaY) {
-    this.currentMapInstance.moveMap(Math.floor(deltaX), Math.floor(deltaY));
+    this.currentMapInstance.moveMap(deltaX, deltaY);
+}
+
+/*
+	we had diagonal movement so we check for "noise", i.e. along
+	one axis the map moved more tiles than on the other
+	(this would introduce screen shaking)
+*/
+_p.removeDiagonalNoise = function() {
+	var mI = this.currentMapInstance,
+		tileSize = mI.tileSize,
+		newStartX = Math.floor(Math.abs(mI.mapX) / tileSize),
+		newStartY = Math.floor(Math.abs(mI.mapY) / tileSize),
+		tilesMovedOnXAxis = Math.abs(this.visibleTileArea.startX - newStartX),
+		tilesMovedOnYAxis = Math.abs(this.visibleTileArea.startY - newStartY),
+		yAxisDirection =  Math.sign(this.visibleTileArea.startY - Math.abs(mI.mapY) / tileSize),
+		xAxisDirection =  Math.sign(this.visibleTileArea.startX - Math.abs(mI.mapX) / tileSize);
+
+	console.log("Tiles moved on x axis = ", tilesMovedOnXAxis);
+	console.log("Tiles moved on y axis = ", tilesMovedOnYAxis);
+	
+	// it moved more on the x axis
+	// so we want to move on the y axis
+	if (Math.abs(tilesMovedOnXAxis) > Math.abs(tilesMovedOnYAxis)) {
+		var tilesMovedMore = Math.abs(tilesMovedOnXAxis - tilesMovedOnYAxis),
+			deltaY = yAxisDirection *32;
+				//Math.abs((newStartY + tilesMovedMore) * tileSize - mI.mapY);
+		console.log("TILES MOVED MORE " + tilesMovedMore)
+		console.log("MOVING " + deltaY)
+		mI.moveMap(0, deltaY);
+	}
 }

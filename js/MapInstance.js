@@ -182,6 +182,9 @@ _p.moveMap = function(deltaX, deltaY) {
 	var pixelsMapWidth = this.mapWidth * this.tileSize,
 		pixelsMapHeight = this.mapHeight * this.tileSize;
 	
+	/* 
+		if the map can be displayed entireley on the screen we just center it
+	*/
 	if (this.viewportWidth >= pixelsMapWidth) {
 		this.mapX = Math.floor((this.viewportWidth - pixelsMapWidth) / 2);
 	}
@@ -196,6 +199,9 @@ _p.moveMap = function(deltaX, deltaY) {
 		);
 	}
 	
+	/* 
+		if the map can be displayed entireley on the screen we just center it
+	*/
 	if (this.viewportHeight >= pixelsMapHeight) {
 		this.mapY = Math.floor((this.viewportHeight - pixelsMapHeight) / 2);
 	}
