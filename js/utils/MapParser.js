@@ -168,7 +168,18 @@ _p.processCollisionMatrixAnimations = function() {
 				
 				let tilesObjectArr = tilesetWorkfile[TILE_ARR_IN_TILESETWORKFILE],
 					realTileNo = tileNo - usedTileset[FIRST_TILE_NUMBER],
+					currTileObj;
+				
+				try{
 					currTileObj = tilesObjectArr[realTileNo];
+				} 
+				catch(err){
+					continue;
+				}
+				
+				if (!currTileObj) {
+					continue;
+				}
 				
 				if (PROPERTIES in currTileObj) {
 					let propertiesArr = currTileObj[PROPERTIES];
