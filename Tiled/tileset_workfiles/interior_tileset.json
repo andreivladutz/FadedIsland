@@ -5,6 +5,15 @@
  "margin":0,
  "name":"interior_tileset",
  "spacing":0,
+ "terrains":[
+        {
+         "name":"Red Rug 2",
+         "tile":973
+        }, 
+        {
+         "name":"Beige Wall",
+         "tile":0
+        }],
  "tilecount":1024,
  "tiledversion":"1.2.3",
  "tileheight":32,
@@ -13,19 +22,15 @@
          "animation":[
                 {
                  "duration":100,
-                 "tileid":735
+                 "tileid":346
                 }, 
                 {
                  "duration":100,
-                 "tileid":703
+                 "tileid":314
                 }, 
                 {
                  "duration":100,
-                 "tileid":671
-                }, 
-                {
-                 "duration":100,
-                 "tileid":639
+                 "tileid":315
                 }],
          "id":0,
          "properties":[
@@ -1761,7 +1766,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, -1, -1, 1]
         }, 
         {
          "id":193,
@@ -1770,7 +1776,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, -1, 1, 1]
         }, 
         {
          "id":194,
@@ -1779,7 +1786,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, -1, 1, -1]
         }, 
         {
          "id":195,
@@ -2049,7 +2057,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, 1, -1, 1]
         }, 
         {
          "id":225,
@@ -2058,7 +2067,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[1, 1, 1, 1]
         }, 
         {
          "id":226,
@@ -2067,7 +2077,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[1, -1, 1, -1]
         }, 
         {
          "id":227,
@@ -2337,7 +2348,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, 1, -1, -1]
         }, 
         {
          "id":257,
@@ -2346,7 +2358,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[1, 1, -1, -1]
         }, 
         {
          "id":258,
@@ -2355,7 +2368,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[1, -1, -1, -1]
         }, 
         {
          "id":259,
@@ -2868,7 +2882,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[0, 0, 0, 0]
         }, 
         {
          "id":316,
@@ -3141,13 +3156,27 @@
                 }]
         }, 
         {
+         "animation":[
+                {
+                 "duration":100,
+                 "tileid":346
+                }, 
+                {
+                 "duration":100,
+                 "tileid":314
+                }, 
+                {
+                 "duration":100,
+                 "tileid":315
+                }],
          "id":346,
          "properties":[
                 {
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, 0, -1, -1]
         }, 
         {
          "id":347,
@@ -3686,7 +3715,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6321,7 +6350,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6330,7 +6359,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6600,7 +6629,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6609,7 +6638,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -8509,7 +8538,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, -1, -1, 0]
         }, 
         {
          "id":939,
@@ -8518,7 +8548,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, -1, 0, 0]
         }, 
         {
          "id":940,
@@ -8527,7 +8558,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, -1, 0, -1]
         }, 
         {
          "id":941,
@@ -8797,7 +8829,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, 0, -1, 0]
         }, 
         {
          "id":971,
@@ -8806,7 +8839,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[0, 0, 0, 0]
         }, 
         {
          "id":972,
@@ -8815,7 +8849,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[0, -1, 0, -1]
         }, 
         {
          "id":973,
@@ -9085,7 +9120,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[-1, 0, -1, -1]
         }, 
         {
          "id":1003,
@@ -9094,7 +9130,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[0, 0, -1, -1]
         }, 
         {
          "id":1004,
@@ -9103,7 +9140,8 @@
                  "name":"walkable",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "terrain":[0, -1, -1, -1]
         }, 
         {
          "id":1005,

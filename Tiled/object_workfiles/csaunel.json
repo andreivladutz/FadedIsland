@@ -1,0 +1,20 @@
+{ "object":
+    {
+     "gid":168,
+     "height":32,
+     "id":1,
+     "name":"",
+     "rotation":0,
+     "type":"",
+     "visible":true,
+     "width":32,
+     "x":4648,
+     "y":612
+    },
+ "tileset":
+    {
+     "firstgid":1,
+     "source":"..\/tileset_workfiles\/LPC_Ancient_Greece_Architecture.json"
+    },
+ "type":"template"
+}

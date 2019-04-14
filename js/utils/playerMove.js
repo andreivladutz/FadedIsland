@@ -9,32 +9,32 @@ var RESOURCES = [
     {
         name: "Player",
         itemType: "img",
-        url: "/img/player/sprite.png"
+        url: "./img/player/sprite.png"
     },
     {
         name: "Attack",
         itemType: "img",
-        url: "/img/player/spriteAttack.png"
+        url: "./img/player/spriteAttack.png"
     },
     {
         name: "BodyArmour",
         itemType: "img",
-        url: "/img/armour/chest_male.png"
+        url: "./img/armour/chest_male.png"
     },
     {
         name: "FeetArmour",
         itemType: "img",
-        url: "/img/armour/golden_boots_male.png"
+        url: "./img/armour/golden_boots_male.png"
     },
     {
         name: "ArmsArmour",
         itemType: "img",
-        url: "/img/armour/arms_male.png"
+        url: "./img/armour/arms_male.png"
     },
     {
         name: "HeadArmour",
         itemType: "img",
-        url: "/img/armour/golden_helm_male.png"
+        url: "./img/armour/golden_helm_male.png"
     },
 ];
 
@@ -137,12 +137,10 @@ _p.waitOn = function(resourceName, propertyName = getLowerCaseName(resourceName)
 
 _p.drawSpriteFrame = function(image) {
 	var drawCoordX = Math.floor(this.coordX - FRAME_WIDTH / 2),
-		drawCoordY = this.coordY - FRAME_HEIGHT;
+		drawCoordY = Math.floor(this.coordY - FRAME_HEIGHT);
 	
 	this.ctx.drawImage(image, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
                        drawCoordX, drawCoordY, FRAME_WIDTH, FRAME_HEIGHT);
-	
-	this.ctx.fillRect
 }
 
 _p.draw = function() {
@@ -155,6 +153,9 @@ _p.draw = function() {
 	this.drawSpriteFrame(this.armsArmour);
 	this.drawSpriteFrame(this.headArmour);
 
+	/*
+		some code that shows the collision area of the player
+	
 	var leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX - ACTUAL_PLAYER_WIDTH / 2,
 																	y: this.coordY}),
 		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + ACTUAL_PLAYER_WIDTH / 2,
@@ -164,6 +165,7 @@ _p.draw = function() {
 		var screen = this.mapRenderer.tileCoordsToScreenCoords({x:tileX, y:0});
 		this.ctx.fillRect(screen.x, this.coordY, 32, 32);
 	}
+	*/
 }
 
 _p.setMapRenderer = function(mapRenderer) {
@@ -202,28 +204,28 @@ _p.checkCollision = function(x, y) { // x,y distance to be added
 }
 
 _p.resetXCoordsToCenter = function() {
-    this.coordX = this.canvas.width / 2;
+    this.coordX = Math.floor(this.canvas.width / 2);
 }
 
 _p.resetYCoordsToCenter = function() {
-    this.coordY = this.canvas.height / 2;
+    this.coordY = Math.floor(this.canvas.height / 2);
 }
 
-_p.keyUp = function() {
-    if (!this.checkCollision(0, -this.speed)) { // if no collision
+_p.keyUp = function(e, speed = this.speed) {
+    if (!this.checkCollision(0, -speed)) { // if no collision
         // player movement
         if (this.mapRenderer.currentMapInstance.mapY == 0) { // canvas is at the top of the whole map
-            if (this.coordY - this.speed - FRAME_HEIGHT <= 0) // move only the player until it hits upper bound
+            if (this.coordY - speed - FRAME_HEIGHT <= 0) // move only the player until it hits upper bound
                 this.coordY = 0 + FRAME_HEIGHT;
             else
-                this.coordY -= this.speed;
+                this.coordY -= speed;
         }
         else {
-            if (this.coordY - this.speed >= this.canvas.height / 2 ) // player not centered on y-axis
-                this.coordY -= this.speed;
+            if (this.coordY - speed >= this.canvas.height / 2) // player not centered on y-axis
+                this.coordY -= speed;
             else {
                 this.resetYCoordsToCenter();
-                this.mapRenderer.moveMap(0, this.speed);
+                this.mapRenderer.moveMap(0, speed);
             }   
         }
     }
@@ -233,24 +235,24 @@ _p.keyUp = function() {
     this.column = (this.column + 1) % FRAME_COLUMN_MAX;
 }
 
-_p.keyDown = function() {
+_p.keyDown = function(e, speed = this.speed) {
     
-    if(!this.checkCollision(0, this.speed)) { // if no collision
+    if(!this.checkCollision(0, speed)) { // if no collision
         // player movement
         var mapInstance = this.mapRenderer.currentMapInstance;
         var lowerBound = this.canvas.height - mapInstance.mapHeight * mapInstance.tileSize; // pseudo bound
         if(mapInstance.mapY == lowerBound) { // if canvas at pseudo lower bound aka bottom of canvas is at bottom of whole map
-            if(this.coordY + this.speed >= this.canvas.height) // move player until it hits lower bound
+            if(this.coordY + speed >= this.canvas.height) // move player until it hits lower bound
                 this.coordY = this.canvas.height;
             else
-                this.coordY += this.speed;
+                this.coordY += speed;
         }
         else {
-            if(this.coordY + this.speed <= this.canvas.height / 2 ) // player not centered on y-axis
-                this.coordY += this.speed;
+            if(this.coordY + speed <= this.canvas.height / 2 ) // player not centered on y-axis
+                this.coordY += speed;
             else {
                 this.resetYCoordsToCenter();
-                this.mapRenderer.moveMap(0, -this.speed); 
+                this.mapRenderer.moveMap(0, -speed); 
             }    
         }
     }
@@ -260,22 +262,21 @@ _p.keyDown = function() {
     this.column = (this.column + 1) % FRAME_COLUMN_MAX;
 }
 
-_p.keyLeft = function() {
-    
-    if(!this.checkCollision(-this.speed, 0)) { // if no collision
+_p.keyLeft = function(e, speed = this.speed) {
+    if(!this.checkCollision(-speed, 0)) { // if no collision
         // player movement
         if(this.mapRenderer.currentMapInstance.mapX == 0) { // canvas is at the left of the whole map
-            if(this.coordX - this.speed - FRAME_WIDTH / 2 <= 0) // move only player until hits left bound
+            if(this.coordX - speed - FRAME_WIDTH / 2 <= 0) // move only player until hits left bound
                 this.coordX = 0 + FRAME_WIDTH / 2;
             else
-                this.coordX -= this.speed;
+                this.coordX -= speed;
         }
         else {
-            if(this.coordX - this.speed >= this.canvas.width / 2) // player not centered on x-axis
-                this.coordX -= this.speed;
+            if(this.coordX - speed >= this.canvas.width / 2) // player not centered on x-axis
+                this.coordX -= speed;
             else {
                 this.resetXCoordsToCenter();
-                this.mapRenderer.moveMap(this.speed, 0);
+                this.mapRenderer.moveMap(speed, 0);
             }      
         }
     }
@@ -285,25 +286,24 @@ _p.keyLeft = function() {
     this.column = (this.column + 1) % FRAME_COLUMN_MAX;
 }
 
-_p.keyRight = function() {
-    
-    if(!this.checkCollision(this.speed, 0)) { // if no collision
+_p.keyRight = function(e, speed = this.speed) {
+    if (!this.checkCollision(speed, 0)) { // if no collision
         // player movement
         var mapInstance = this.mapRenderer.currentMapInstance;
         var rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
 
         if(mapInstance.mapX == rightBound) {// if canvas at pseudo right bound aka right bound of canvas is at right bound of whole map
-            if(this.coordX + this.speed + FRAME_WIDTH / 2 >= this.canvas.width) // move player until hits right bound
+            if(this.coordX + speed + FRAME_WIDTH / 2 >= this.canvas.width) // move player until hits right bound
                 this.coordX = this.canvas.width - FRAME_WIDTH / 2;
             else
-                this.coordX += this.speed;
+                this.coordX += speed;
         }
         else {
-            if(this.coordX + this.speed <= this.canvas.width / 2) // player not centered on x-axis
-                this.coordX += this.speed;
+            if(this.coordX + speed <= this.canvas.width / 2) // player not centered on x-axis
+                this.coordX += speed;
             else {
                 this.resetXCoordsToCenter();
-                this.mapRenderer.moveMap(-this.speed, 0);                
+                this.mapRenderer.moveMap(-speed, 0);                
             }
         }
     }
@@ -313,23 +313,25 @@ _p.keyRight = function() {
     this.column = (this.column + 1) % FRAME_COLUMN_MAX;
 }
 
-_p.keyUpRight = function() {
-    
+_p.keyUpRight = function(e) {
+    this.keyRight(e, Math.floor(this.speed / 2));
+    this.keyUp(e, Math.floor(this.speed / 2));
 }
 
-_p.keyUpLeft = function() {
-    
+_p.keyUpLeft = function(e) {
+    this.keyLeft(e, Math.floor(this.speed / 2));
+    this.keyUp(e, Math.floor(this.speed / 2));
 }
 
-_p.keyDownRight = function() {
-    
+_p.keyDownRight = function(e) {
+    this.keyRight(e, Math.floor(this.speed / 2));
+    this.keyDown(e, Math.floor(this.speed / 2));
 }
 
-_p.keyDownLeft = function() {
-    
+_p.keyDownLeft = function(e) {
+    this.keyLeft(e, Math.floor(this.speed / 2));
+    this.keyDown(e, Math.floor(this.speed / 2));
 }
-
-
 
 _p.keyRelease = function() {
     this.column = 0;

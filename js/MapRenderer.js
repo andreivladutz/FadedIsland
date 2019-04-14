@@ -44,9 +44,6 @@ _p.changeMap = function(mapName) {
 	this.currentMapName = mapName;
 	this.currentMapInstance = MapRenderer.MAP_INSTANCES[mapName];
 		
-	this.currentMapInstance.on("movedMap", 
-							   this.draw.bind(this));
-	
 	//offDirty flag tells if the offscreenBuffer canvas should be redrawn
 	this.offDirty = true;
 }
@@ -93,11 +90,17 @@ _p.computeVisibleTileArea = function() {
 		tileSize = mI.tileSize;
 	
 	this.visibleTileArea = {
-		startX : Math.floor(Math.abs(mI.mapX) / tileSize),
-		startY : Math.floor(Math.abs(mI.mapY) / tileSize),
-		endX : Math.ceil((- mI.mapX + viewportWidth) / tileSize),
-		endY : Math.ceil((- mI.mapY + viewportHeight) / tileSize)
+		startX : Math.abs(mI.mapX) / tileSize,
+		startY : Math.abs(mI.mapY) / tileSize,
+		endX : (- mI.mapX + viewportWidth) / tileSize,
+		endY : (- mI.mapY + viewportHeight) / tileSize
 	}
+	
+	//console.log("START X = " + this.visibleTileArea.startX);
+	//console.log("START Y = " + this.visibleTileArea.startY);
+	//if (this.offScreenVisibleTileArea){
+	//console.log("OFF START X = " + this.offScreenVisibleTileArea.startX);
+	//console.log("OFF START Y = " + this.offScreenVisibleTileArea.startY);}
 	
 	/* if the viewport is bigger than the map */
 	if (viewportWidth >= mI.mapWidth * tileSize) {
@@ -238,10 +241,10 @@ _p.redrawOffscreenBuffer = function() {
 	
 	offCtx.clearRect(0, 0, canvas.width, canvas.height);
 	
-	var stX = this.offScreenVisibleTileArea.startX,
-		stY = this.offScreenVisibleTileArea.startY,
-		eX = this.offScreenVisibleTileArea.endX,
-		eY = this.offScreenVisibleTileArea.endY;
+	var stX = Math.floor(this.offScreenVisibleTileArea.startX),
+		stY = Math.floor(this.offScreenVisibleTileArea.startY),
+		eX = Math.ceil(this.offScreenVisibleTileArea.endX),
+		eY = Math.ceil(this.offScreenVisibleTileArea.endY);
 	
 	for (let tilesMatrix of tilesMatrices) {
 		for (let i = stY; i < eY; i++) {
@@ -274,8 +277,8 @@ _p.redrawOffscreenBuffer = function() {
 				let tilesPerRow = usedTileset.JSONobject[TILES_PER_ROW],
 					srcX = (tileNo % tilesPerRow) * tileSize,
 					srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
-					destX = (j - stX) * tileSize,
-					destY = (i - stY) * tileSize;
+					destX = (j - this.offScreenVisibleTileArea.startX) * tileSize,
+					destY = (i - this.offScreenVisibleTileArea.startY) * tileSize;
 
 				offCtx.drawImage(
 					usedTileset["image"], 

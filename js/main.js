@@ -9,11 +9,15 @@ MapLoader.RESOURCES = [
 		name : "MainMap",
 		itemType : "JSON",
 		url : "Tiled/map/map1.json"
+	},{
+		name : "CastleMap",
+		itemType : "JSON",
+		url : "Tiled/map/castle2.json"
 	},
 ];
 
 // in case the name of the map resources changes
-const MAIN_MAP = "MainMap", TEST_MAP = "TestMap";
+const MAIN_MAP = "MainMap", TEST_MAP = "TestMap", CASTLE_MAP = "CastleMap";
 
 /*
     when this event fires on the mapLoader instance 
@@ -35,6 +39,7 @@ function init() {
 	
 	resourceLoader = new ResourceLoader();
 	canvasManager = CanvasManagerFactory(document.getElementById("gameCanvas"));
+	
 	mapLoader = new MapLoader(resourceLoader);
     
     function loadedMap(resolve, reject) {
