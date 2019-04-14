@@ -1,0 +1,27 @@
+{ "columns":7,
+ "image":"..\/Custom-png\/dc-dngn-gateways.png",
+ "imageheight":128,
+ "imagewidth":224,
+ "margin":0,
+ "name":"dc-dngn-gateways",
+ "spacing":0,
+ "tilecount":28,
+ "tiledversion":"1.2.3",
+ "tileheight":32,
+ "tiles":[
+        {
+         "animation":[
+                {
+                 "duration":400,
+                 "tileid":14
+                }, 
+                {
+                 "duration":400,
+                 "tileid":15
+                }],
+         "id":14
+        }],
+ "tilewidth":32,
+ "type":"tileset",
+ "version":1.2
+}

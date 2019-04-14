@@ -1,0 +1,14 @@
+{ "columns":3,
+ "image":"..\/Custom-png\/dc-dngn-scaled-utility.png",
+ "imageheight":384,
+ "imagewidth":96,
+ "margin":0,
+ "name":"dc-dngn-scaled-utility",
+ "spacing":0,
+ "tilecount":36,
+ "tiledversion":"1.2.3",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":1.2
+}

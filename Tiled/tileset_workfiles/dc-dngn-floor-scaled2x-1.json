@@ -1,0 +1,14 @@
+{ "columns":4,
+ "image":"..\/Custom-png\/dc-dngn-floor-scaled2x-1.png",
+ "imageheight":1344,
+ "imagewidth":128,
+ "margin":0,
+ "name":"dc-dngn-floor-scaled2x-1",
+ "spacing":0,
+ "tilecount":168,
+ "tiledversion":"1.2.3",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":1.2
+}
