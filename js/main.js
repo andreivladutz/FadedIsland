@@ -14,10 +14,15 @@ MapLoader.RESOURCES = [
 		itemType : "JSON",
 		url : "Tiled/map/castle2.json"
 	},
+    {
+        name : "Dungeon",
+        itemType : "JSON",
+        url : "Tiled/map/dungeon.json"
+    },
 ];
 
 // in case the name of the map resources changes
-const MAIN_MAP = "MainMap", TEST_MAP = "TestMap", CASTLE_MAP = "CastleMap";
+const MAIN_MAP = "MainMap", TEST_MAP = "TestMap", CASTLE_MAP = "CastleMap", DUNGEON = "Dungeon";
 
 /*
     when this event fires on the mapLoader instance 
