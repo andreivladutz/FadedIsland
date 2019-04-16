@@ -21,6 +21,7 @@ class MapParser extends EventEmiter {
 		//the map .json object
 		var jObj = this.jsonMapObject = JSON.parse(jsonText);
 
+		// Array of Layer Objects
 		this.layers = jObj["layers"];
 
 		this.tilesetsWorkfiles = jObj[TILESETS_ARR];
@@ -224,6 +225,7 @@ _p.processCollisionMatrixAnimations = function() {
 				if (!currTileObj) {
 					continue;
 				}
+				
 				if(walkableTrigger === null) {
                     if (PROPERTIES in currTileObj) {
                         let propertiesArr = currTileObj[PROPERTIES];
@@ -332,7 +334,7 @@ _p.parseLayers = function(obj) {
     }
 
     else if (TILE_ARR in obj) {
-        this.applyLayer(obj[TILE_ARR]);
+        this.applyLayer(obj[TILE_ARR],obj["opacity"]);
     }
 
     else if (OBJECT_ARR in obj) {
@@ -352,8 +354,10 @@ _p.parseLayers = function(obj) {
 	}
 };*/
 
-_p.applyLayer = function(tileArray) {
+_p.applyLayer = function(tileArray, opacity) {
 	var arrInd = 0, layerMatrix = [];
+	
+	layerMatrix.opacity = opacity;
 	
 	//creating a matrix with mapHeight rows
 	//to represent this layer of tiles
