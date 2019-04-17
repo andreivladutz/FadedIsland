@@ -84,7 +84,7 @@ class Player extends EventEmiter {
             "right": "d",
             "attack": "k"
         }
-        this.keyEvents = new KeyEventEmitter(this.dict);
+        /*this.keyEvents = new KeyEventEmitter(this.dict);
         this.keyEvents.addEventListener("up", this.keyUp.bind(this));
         this.keyEvents.addEventListener("down", this.keyDown.bind(this));
         this.keyEvents.addEventListener("left", this.keyLeft.bind(this));
@@ -94,8 +94,7 @@ class Player extends EventEmiter {
         this.keyEvents.addEventListener("downright", this.keyDownRight.bind(this));
         this.keyEvents.addEventListener("downleft", this.keyDownLeft.bind(this));
         this.keyEvents.addEventListener("keyrelease", this.keyRelease.bind(this));
-        this.keyEvents.addEventListener("attack", this.attack.bind(this));
-        
+        this.keyEvents.addEventListener("attack", this.attack.bind(this));*/
     }
 }
 
@@ -210,6 +209,84 @@ _p.resetXCoordsToCenter = function() {
 _p.resetYCoordsToCenter = function() {
     this.coordY = Math.floor(this.canvas.height / 2);
 }
+
+//POSSIBLE FIX FOR STUTTERING PLAYER MOVE
+
+let trigger = {
+    w:{
+        value:1,
+        interval:null,
+        callback:null
+    },
+    a:{
+        value:1,
+        interval:null,
+        callback:null
+    },
+    s:{
+        value:1,
+        interval:null,
+        callback:null
+    },
+    d:{
+        value:1,
+        interval:null,
+        callback:null
+    },
+
+    binder: function(key, playerObject) {
+        trigger[key].callback = playerObject[trigger.keyMap(key)].bind(playerObject);
+    },
+
+    keyMap : function(key) {
+
+        if(key === "w")
+            return "keyUp";
+        if(key === "a")
+            return "keyLeft";
+        if(key === "s")
+            return "keyDown";
+        if(key === "d")
+            return "keyRight";
+    },
+
+    start : function(key) {
+
+        if(trigger[key].value === 1) {
+            trigger[key].value = 0;
+            trigger.binder(key, player);
+            trigger[key].interval = setInterval(trigger[key].callback, 50);
+        }
+    },
+
+    stop: function(key) {
+
+        trigger[key].value = 1;
+        clearInterval(trigger[key].interval);
+    }
+};
+
+window.addEventListener("keydown", function(e) {
+
+    let movementKeys = "wasd";
+
+    if( movementKeys.includes(e.key.toLowerCase()) ) {
+
+        trigger.start(e.key.toLowerCase());
+    }
+});
+
+window.addEventListener("keyup", function(e){
+
+    let movementKeys = "wasd";
+
+    if( movementKeys.includes(e.key.toLowerCase()) ) {
+
+        trigger.stop(e.key.toLowerCase());
+    }
+});
+
+// FIX ENDS HERE
 
 _p.keyUp = function(e, speed = this.speed) {
     if (!this.checkCollision(0, -speed)) { // if no collision
