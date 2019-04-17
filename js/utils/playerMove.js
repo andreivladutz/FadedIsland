@@ -212,79 +212,8 @@ _p.resetYCoordsToCenter = function() {
 
 //POSSIBLE FIX FOR STUTTERING PLAYER MOVE
 
-let trigger = {
-    w:{
-        value:1,
-        interval:null,
-        callback:null
-    },
-    a:{
-        value:1,
-        interval:null,
-        callback:null
-    },
-    s:{
-        value:1,
-        interval:null,
-        callback:null
-    },
-    d:{
-        value:1,
-        interval:null,
-        callback:null
-    },
 
-    binder: function(key, playerObject) {
-        trigger[key].callback = playerObject[trigger.keyMap(key)].bind(playerObject);
-    },
 
-    keyMap : function(key) {
-
-        if(key === "w")
-            return "keyUp";
-        if(key === "a")
-            return "keyLeft";
-        if(key === "s")
-            return "keyDown";
-        if(key === "d")
-            return "keyRight";
-    },
-
-    start : function(key) {
-
-        if(trigger[key].value === 1) {
-            trigger[key].value = 0;
-            trigger.binder(key, player);
-            trigger[key].interval = setInterval(trigger[key].callback, 50);
-        }
-    },
-
-    stop: function(key) {
-
-        trigger[key].value = 1;
-        clearInterval(trigger[key].interval);
-    }
-};
-
-window.addEventListener("keydown", function(e) {
-
-    let movementKeys = "wasd";
-
-    if( movementKeys.includes(e.key.toLowerCase()) ) {
-
-        trigger.start(e.key.toLowerCase());
-    }
-});
-
-window.addEventListener("keyup", function(e){
-
-    let movementKeys = "wasd";
-
-    if( movementKeys.includes(e.key.toLowerCase()) ) {
-
-        trigger.stop(e.key.toLowerCase());
-    }
-});
 
 // FIX ENDS HERE
 
