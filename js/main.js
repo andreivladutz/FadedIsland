@@ -46,7 +46,7 @@ function init() {
         mapLoader.on(MAPS_READY_EVENT, function() {
             mapRenderer = mapLoader.getMapRenderer();
             player.setMapRenderer(mapRenderer);
-            //mapRenderer.showCollisions();
+            mapRenderer.showCollisions();
             resolve();
         });
     }
