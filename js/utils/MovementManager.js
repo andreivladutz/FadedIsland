@@ -51,6 +51,11 @@ class MovementManager {
         };
         this.removeInput = function (key) {  //FUNCTION THAT MANAGES THE TWO STACKS, THIS VARIANT REMOVES THE INPUT FROM THE STACK WHEN IT'S CALLED, WE ARE SURE WE ARE GIVEN A VALID "WASD" KEY
 
+            this.inputs--;  //WE RELEASED A KEY SO INPUT DECREMENTS
+            if (this.inputs === 0) { //IF IT WAS LAST KEY PRESSED THAT WAS RELEASED
+                this.stopInterval(); //STOP THE INTERVAL
+            }
+
             if ("ws".includes(key)) {
                 if (this.getLSTop() !== key)  //IF IT'S NOT THE LAST KEY PRESSED...
                     this.longitudinalStack[1] = this.longitudinalStack[2]; //WE SHIFT THE LAST KEY PRESSED ON TOP OF THE KEY WE RELEASED
@@ -58,14 +63,9 @@ class MovementManager {
             }
             else {   //SAME AS ABOVE BUT FOR THE OTHER STACK
                 if (this.getTSTop() !== key)
-                    this.transversalStack[1] = this.longitudinalStack[2];
+                    this.transversalStack[1] = this.transversalStack[2];
                 this.transversalStack.pop();
             }
-            this.inputs--;  //WE RELEASED A KEY SO INPUT DECREMENTS
-            if (this.inputs === 0) { //IF IT WAS LAST KEY PRESSED THAT WAS RELEASED 
-                this.stopInterval(); //STOP THE INTERVAL
-			}
-
         };
     };
 	static keyMap(key) {  //THIS FUNCTION TAKES A STRING ARGUMENT THAT IS EITHER ONE KEY OR "WS" KEY + "AD" KEY AND RETURNS THE RESPECTIVE MOVEMENT FUNCTION IMPLEMENTED IN PLAYEROBJECT'S PROTOTYPE            if (key === "w")
