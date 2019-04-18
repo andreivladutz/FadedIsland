@@ -51,6 +51,7 @@ class Player extends EventEmiter {
 		// coords corespond to feet area
 		this.coordX = canvas.width / 2;
 		this.coordY = canvas.height / 2;
+        this.coordBodyY = this.coordY - FRAME_HEIGHT / 5; // y coord for body, collision when going up
         
         // loading player sprite
         this.resLoader = new ResourceLoader();
@@ -164,7 +165,7 @@ _p.setMapRenderer = function(mapRenderer) {
 }
 
 // function to check if future tile to be walking on is obstacle or not
-_p.checkCollision = function(x, y, cX = this.coordX, cY = this.coordY) { // x,y distance to be added | cX, cY coords to be added to
+_p.checkCollision = function(x, y, cY = this.coordY, cX = this.coordX) { // x,y distance to be added | cX, cY coords to be added to
 	/*
 		player's feet make a segment and that segment can cross multiple tiles at once so we have
 		to check the collision with all the crossed tiles at that moment
@@ -202,16 +203,9 @@ _p.resetYCoordsToCenter = function() {
     this.coordY = Math.floor(this.canvas.height / 2);
 }
 
-//POSSIBLE FIX FOR STUTTERING PLAYER MOVE
-
-
-
-
-// FIX ENDS HERE
-
 _p.keyUp = function(e, speed = this.speed) {
     for(var i = 0; i < speed; i++) {
-        if (!this.checkCollision(0, -1)) { // if no collision
+        if (!this.checkCollision(0, -1, this.coordBodyY)) { // if no collision
             // player movement
             if (this.mapRenderer.currentMapInstance.mapY == 0) { // canvas is at the top of the whole map
                 if (this.coordY - 1 - FRAME_HEIGHT <= 0) // move only the player until it hits upper bound
@@ -265,7 +259,7 @@ _p.keyDown = function(e, speed = this.speed) {
 
 _p.keyLeft = function(e, speed = this.speed) {
     for(var i = 0; i < speed; i++) {
-        if(!this.checkCollision(-1, 0)) { // if no collision
+        if(!this.checkCollision(-1, 0, this.coordBodyY)) { // if no collision
             // player movement
             if(this.mapRenderer.currentMapInstance.mapX == 0) { // canvas is at the left of the whole map
                 if(this.coordX - 1 - FRAME_WIDTH / 2 <= 0) // move only player until hits left bound
@@ -291,7 +285,7 @@ _p.keyLeft = function(e, speed = this.speed) {
 
 _p.keyRight = function(e, speed = this.speed) {
     for(var i = 0; i < speed; i++) {
-        if (!this.checkCollision(1, 0)) { // if no collision
+        if (!this.checkCollision(1, 0, this.coordBodyY)) { // if no collision
             // player movement
             var mapInstance = this.mapRenderer.currentMapInstance;
             var rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
