@@ -84,17 +84,9 @@ class Player extends EventEmiter {
             "right": "d",
             "attack": "k"
         }
-        /*this.keyEvents = new KeyEventEmitter(this.dict);
-        this.keyEvents.addEventListener("up", this.keyUp.bind(this));
-        this.keyEvents.addEventListener("down", this.keyDown.bind(this));
-        this.keyEvents.addEventListener("left", this.keyLeft.bind(this));
-        this.keyEvents.addEventListener("right", this.keyRight.bind(this));
-        this.keyEvents.addEventListener("upright", this.keyUpRight.bind(this));
-        this.keyEvents.addEventListener("upleft", this.keyUpLeft.bind(this));
-        this.keyEvents.addEventListener("downright", this.keyDownRight.bind(this));
-        this.keyEvents.addEventListener("downleft", this.keyDownLeft.bind(this));
+        this.keyEvents = new KeyEventEmitter(this.dict);
         this.keyEvents.addEventListener("keyrelease", this.keyRelease.bind(this));
-        this.keyEvents.addEventListener("attack", this.attack.bind(this));*/
+        this.keyEvents.addEventListener("attack", this.attack.bind(this));
     }
 }
 
@@ -172,16 +164,16 @@ _p.setMapRenderer = function(mapRenderer) {
 }
 
 // function to check if future tile to be walking on is obstacle or not
-_p.checkCollision = function(x, y) { // x,y distance to be added
+_p.checkCollision = function(x, y, cX = this.coordX, cY = this.coordY) { // x,y distance to be added | cX, cY coords to be added to
 	/*
 		player's feet make a segment and that segment can cross multiple tiles at once so we have
 		to check the collision with all the crossed tiles at that moment
 	*/
     var tileSize = this.mapRenderer.currentMapInstance.tileSize,
-		leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + x - ACTUAL_PLAYER_WIDTH / 2,
-																	y: this.coordY + y}),
-		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + x + ACTUAL_PLAYER_WIDTH / 2,
-																	 y: this.coordY + y}),
+		leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: cX + x - ACTUAL_PLAYER_WIDTH / 2,
+																	y: cY + y}),
+		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: cX + x + ACTUAL_PLAYER_WIDTH / 2,
+																	 y: cY + y}),
 		matrixCols = this.mapRenderer.currentMapInstance.collisionMatrix[0].length,
 		matrixRows = this.mapRenderer.currentMapInstance.collisionMatrix.length;
 	
@@ -218,21 +210,23 @@ _p.resetYCoordsToCenter = function() {
 // FIX ENDS HERE
 
 _p.keyUp = function(e, speed = this.speed) {
-    if (!this.checkCollision(0, -speed)) { // if no collision
-        // player movement
-        if (this.mapRenderer.currentMapInstance.mapY == 0) { // canvas is at the top of the whole map
-            if (this.coordY - speed - FRAME_HEIGHT <= 0) // move only the player until it hits upper bound
-                this.coordY = 0 + FRAME_HEIGHT;
-            else
-                this.coordY -= speed;
-        }
-        else {
-            if (this.coordY - speed >= this.canvas.height / 2) // player not centered on y-axis
-                this.coordY -= speed;
+    for(var i = 0; i < speed; i++) {
+        if (!this.checkCollision(0, -1)) { // if no collision
+            // player movement
+            if (this.mapRenderer.currentMapInstance.mapY == 0) { // canvas is at the top of the whole map
+                if (this.coordY - 1 - FRAME_HEIGHT <= 0) // move only the player until it hits upper bound
+                    this.coordY = 0 + FRAME_HEIGHT;
+                else
+                    this.coordY -= 1;
+            }
             else {
-                this.resetYCoordsToCenter();
-                this.mapRenderer.moveMap(0, speed);
-            }   
+                if (this.coordY - 1 >= this.canvas.height / 2) // player not centered on y-axis
+                    this.coordY -= 1;
+                else {
+                    this.resetYCoordsToCenter();
+                    this.mapRenderer.moveMap(0, 1);
+                }   
+            }
         }
     }
     
@@ -242,24 +236,25 @@ _p.keyUp = function(e, speed = this.speed) {
 }
 
 _p.keyDown = function(e, speed = this.speed) {
-    
-    if(!this.checkCollision(0, speed)) { // if no collision
-        // player movement
-        var mapInstance = this.mapRenderer.currentMapInstance;
-        var lowerBound = this.canvas.height - mapInstance.mapHeight * mapInstance.tileSize; // pseudo bound
-        if(mapInstance.mapY == lowerBound) { // if canvas at pseudo lower bound aka bottom of canvas is at bottom of whole map
-            if(this.coordY + speed >= this.canvas.height) // move player until it hits lower bound
-                this.coordY = this.canvas.height;
-            else
-                this.coordY += speed;
-        }
-        else {
-            if(this.coordY + speed <= this.canvas.height / 2 ) // player not centered on y-axis
-                this.coordY += speed;
+    for(var i = 0; i < speed; i++) {
+        if(!this.checkCollision(0, 1)) { // if no collision
+            // player movement
+            var mapInstance = this.mapRenderer.currentMapInstance;
+            var lowerBound = this.canvas.height - mapInstance.mapHeight * mapInstance.tileSize; // pseudo bound
+            if(mapInstance.mapY == lowerBound) { // if canvas at pseudo lower bound aka bottom of canvas is at bottom of whole map
+                if(this.coordY + 1 >= this.canvas.height) // move player until it hits lower bound
+                    this.coordY = this.canvas.height;
+                else
+                    this.coordY += 1;
+            }
             else {
-                this.resetYCoordsToCenter();
-                this.mapRenderer.moveMap(0, -speed); 
-            }    
+                if(this.coordY + 1 <= this.canvas.height / 2 ) // player not centered on y-axis
+                    this.coordY += 1;
+                else {
+                    this.resetYCoordsToCenter();
+                    this.mapRenderer.moveMap(0, -1); 
+                }    
+            }
         }
     }
     
@@ -269,21 +264,23 @@ _p.keyDown = function(e, speed = this.speed) {
 }
 
 _p.keyLeft = function(e, speed = this.speed) {
-    if(!this.checkCollision(-speed, 0)) { // if no collision
-        // player movement
-        if(this.mapRenderer.currentMapInstance.mapX == 0) { // canvas is at the left of the whole map
-            if(this.coordX - speed - FRAME_WIDTH / 2 <= 0) // move only player until hits left bound
-                this.coordX = 0 + FRAME_WIDTH / 2;
-            else
-                this.coordX -= speed;
-        }
-        else {
-            if(this.coordX - speed >= this.canvas.width / 2) // player not centered on x-axis
-                this.coordX -= speed;
+    for(var i = 0; i < speed; i++) {
+        if(!this.checkCollision(-1, 0)) { // if no collision
+            // player movement
+            if(this.mapRenderer.currentMapInstance.mapX == 0) { // canvas is at the left of the whole map
+                if(this.coordX - 1 - FRAME_WIDTH / 2 <= 0) // move only player until hits left bound
+                    this.coordX = 0 + FRAME_WIDTH / 2;
+                else
+                    this.coordX -= 1;
+            }
             else {
-                this.resetXCoordsToCenter();
-                this.mapRenderer.moveMap(speed, 0);
-            }      
+                if(this.coordX - 1 >= this.canvas.width / 2) // player not centered on x-axis
+                    this.coordX -= 1;
+                else {
+                    this.resetXCoordsToCenter();
+                    this.mapRenderer.moveMap(1, 0);
+                }      
+            }
         }
     }
     
@@ -293,23 +290,25 @@ _p.keyLeft = function(e, speed = this.speed) {
 }
 
 _p.keyRight = function(e, speed = this.speed) {
-    if (!this.checkCollision(speed, 0)) { // if no collision
-        // player movement
-        var mapInstance = this.mapRenderer.currentMapInstance;
-        var rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
+    for(var i = 0; i < speed; i++) {
+        if (!this.checkCollision(1, 0)) { // if no collision
+            // player movement
+            var mapInstance = this.mapRenderer.currentMapInstance;
+            var rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
 
-        if(mapInstance.mapX == rightBound) {// if canvas at pseudo right bound aka right bound of canvas is at right bound of whole map
-            if(this.coordX + speed + FRAME_WIDTH / 2 >= this.canvas.width) // move player until hits right bound
-                this.coordX = this.canvas.width - FRAME_WIDTH / 2;
-            else
-                this.coordX += speed;
-        }
-        else {
-            if(this.coordX + speed <= this.canvas.width / 2) // player not centered on x-axis
-                this.coordX += speed;
+            if(mapInstance.mapX == rightBound) {// if canvas at pseudo right bound aka right bound of canvas is at right bound of whole map
+                if(this.coordX + 1 + FRAME_WIDTH / 2 >= this.canvas.width) // move player until hits right bound
+                    this.coordX = this.canvas.width - FRAME_WIDTH / 2;
+                else
+                    this.coordX += 1;
+            }
             else {
-                this.resetXCoordsToCenter();
-                this.mapRenderer.moveMap(-speed, 0);                
+                if(this.coordX + 1 <= this.canvas.width / 2) // player not centered on x-axis
+                    this.coordX += 1;
+                else {
+                    this.resetXCoordsToCenter();
+                    this.mapRenderer.moveMap(-1, 0);                
+                }
             }
         }
     }
@@ -320,23 +319,23 @@ _p.keyRight = function(e, speed = this.speed) {
 }
 
 _p.keyUpRight = function(e) {
-    this.keyRight(e, Math.floor(this.speed / 2));
     this.keyUp(e, Math.floor(this.speed / 2));
+    this.keyRight(e, Math.floor(this.speed / 2));
 }
 
 _p.keyUpLeft = function(e) {
-    this.keyLeft(e, Math.floor(this.speed / 2));
     this.keyUp(e, Math.floor(this.speed / 2));
+    this.keyLeft(e, Math.floor(this.speed / 2));
 }
 
 _p.keyDownRight = function(e) {
-    this.keyRight(e, Math.floor(this.speed / 2));
     this.keyDown(e, Math.floor(this.speed / 2));
+    this.keyRight(e, Math.floor(this.speed / 2));
 }
 
 _p.keyDownLeft = function(e) {
-    this.keyLeft(e, Math.floor(this.speed / 2));
     this.keyDown(e, Math.floor(this.speed / 2));
+    this.keyLeft(e, Math.floor(this.speed / 2));
 }
 
 _p.keyRelease = function() {
