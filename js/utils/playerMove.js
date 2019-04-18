@@ -319,23 +319,23 @@ _p.keyRight = function(e, speed = this.speed) {
 }
 
 _p.keyUpRight = function(e) {
-    this.keyUp(e, Math.floor(this.speed / 2));
-    this.keyRight(e, Math.floor(this.speed / 2));
+    this.keyUp(e, Math.floor(this.speed * 0.7));
+    this.keyRight(e, Math.floor(this.speed * 0.7));
 }
 
 _p.keyUpLeft = function(e) {
-    this.keyUp(e, Math.floor(this.speed / 2));
-    this.keyLeft(e, Math.floor(this.speed / 2));
+    this.keyUp(e, Math.floor(this.speed * 0.7));
+    this.keyLeft(e, Math.floor(this.speed * 0.7));
 }
 
 _p.keyDownRight = function(e) {
-    this.keyDown(e, Math.floor(this.speed / 2));
-    this.keyRight(e, Math.floor(this.speed / 2));
+    this.keyDown(e, Math.floor(this.speed * 0.7));
+    this.keyRight(e, Math.floor(this.speed * 0.7));
 }
 
 _p.keyDownLeft = function(e) {
-    this.keyDown(e, Math.floor(this.speed / 2));
-    this.keyLeft(e, Math.floor(this.speed / 2));
+    this.keyDown(e, Math.floor(this.speed * 0.7));
+    this.keyLeft(e, Math.floor(this.speed * 0.7));
 }
 
 _p.keyRelease = function() {
