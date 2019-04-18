@@ -201,21 +201,28 @@ _p.resetXCoordsToCenter = function() {
 
 _p.resetYCoordsToCenter = function() {
     this.coordY = Math.floor(this.canvas.height / 2);
+    this.coordBodyY = this.coordY - FRAME_HEIGHT / 5;
 }
 
 _p.keyUp = function(e, speed = this.speed) {
     for(var i = 0; i < speed; i++) {
-        if (!this.checkCollision(0, -1, this.coordBodyY)) { // if no collision
+        if (!this.checkCollision(0, -1, this.coordBodyY, this.coordX)) { // if no collision
             // player movement
             if (this.mapRenderer.currentMapInstance.mapY == 0) { // canvas is at the top of the whole map
-                if (this.coordY - 1 - FRAME_HEIGHT <= 0) // move only the player until it hits upper bound
+                if (this.coordBodyY - 1 - FRAME_HEIGHT <= 0) { // move only the player until it hits upper bound
+                    this.coordBodyY = 0 + FRAME_HEIGHT;
                     this.coordY = 0 + FRAME_HEIGHT;
-                else
+                }
+                else {
+                    this.coordBodyY -= 1;
                     this.coordY -= 1;
+                }
             }
             else {
-                if (this.coordY - 1 >= this.canvas.height / 2) // player not centered on y-axis
+                if (this.coordBodyY - 1 >= this.canvas.height / 2) { // player not centered on y-axis
+                    this.coordBodyY -= 1;
                     this.coordY -= 1;
+                }
                 else {
                     this.resetYCoordsToCenter();
                     this.mapRenderer.moveMap(0, 1);
@@ -236,14 +243,20 @@ _p.keyDown = function(e, speed = this.speed) {
             var mapInstance = this.mapRenderer.currentMapInstance;
             var lowerBound = this.canvas.height - mapInstance.mapHeight * mapInstance.tileSize; // pseudo bound
             if(mapInstance.mapY == lowerBound) { // if canvas at pseudo lower bound aka bottom of canvas is at bottom of whole map
-                if(this.coordY + 1 >= this.canvas.height) // move player until it hits lower bound
+                if(this.coordY + 1 >= this.canvas.height) { // move player until it hits lower bound
                     this.coordY = this.canvas.height;
-                else
+                    this.coordY = this.canvas.height - FRAME_HEIGHT / 5;
+                }
+                else {
                     this.coordY += 1;
+                    this.coordBodyY += 1;
+                }
             }
             else {
-                if(this.coordY + 1 <= this.canvas.height / 2 ) // player not centered on y-axis
+                if(this.coordY + 1 <= this.canvas.height / 2 ) { // player not centered on y-axis
                     this.coordY += 1;
+                    this.coordBodyY += 1;
+                }
                 else {
                     this.resetYCoordsToCenter();
                     this.mapRenderer.moveMap(0, -1); 
@@ -259,7 +272,7 @@ _p.keyDown = function(e, speed = this.speed) {
 
 _p.keyLeft = function(e, speed = this.speed) {
     for(var i = 0; i < speed; i++) {
-        if(!this.checkCollision(-1, 0, this.coordBodyY)) { // if no collision
+        if(!this.checkCollision(-1, 0, this.coordY, this.coordX)) { // if no collision
             // player movement
             if(this.mapRenderer.currentMapInstance.mapX == 0) { // canvas is at the left of the whole map
                 if(this.coordX - 1 - FRAME_WIDTH / 2 <= 0) // move only player until hits left bound
@@ -285,7 +298,7 @@ _p.keyLeft = function(e, speed = this.speed) {
 
 _p.keyRight = function(e, speed = this.speed) {
     for(var i = 0; i < speed; i++) {
-        if (!this.checkCollision(1, 0, this.coordBodyY)) { // if no collision
+        if (!this.checkCollision(1, 0, this.coordY, this.coordX)) { // if no collision
             // player movement
             var mapInstance = this.mapRenderer.currentMapInstance;
             var rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
