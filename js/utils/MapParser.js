@@ -20,7 +20,10 @@ class MapParser extends EventEmiter {
 		
 		//the map .json object
 		var jObj = this.jsonMapObject = JSON.parse(jsonText);
-		
+
+		// Array of Layer Objects
+		this.layers = jObj["layers"];
+
 		this.tilesetsWorkfiles = jObj[TILESETS_ARR];
 		this.tileSize = jObj[TILE_SIZE];
 		this.mapWidth = jObj[MAP_WIDTH];
@@ -133,16 +136,58 @@ _p.loadTilesetsWorkfiles = function() {
 	);
 	
 	this.resourceLoader.load(WORKFILES_NAME);
+};
+
+function returnAllLayers(layers) {
+
+	let realLayers = [];
+
+    for(let layer of layers) {
+
+        if("layers" in layer) {
+            realLayers = realLayers.concat(returnAllLayers(layer["layers"]));
+        }
+        else if(layer["type"] === "tilelayer") realLayers.push(layer);
+    }
+
+    return realLayers;
+}
+
+function hasCustomProperty(layer, name) {
+
+	if("properties" in layer) {
+    	for(let property of layer["properties"]) {
+
+    		if(property["name"] === name)
+    			return property["value"];
+		}
+		return null;
+	}
+	return null;
 }
 
 _p.processCollisionMatrixAnimations = function() {
+
+	let realLayers = returnAllLayers(this.layers);
+	let layersCounter = 0;
+	let walkableTrigger;
+
 	for (let tileMatrix of this.tilesMatrices) {
+
+		walkableTrigger = hasCustomProperty(realLayers[layersCounter], "walkable");
+		layersCounter++;
+
 		for (let i = 0; i < tileMatrix.length; i++) {
 			for (let j = 0; j < tileMatrix[i].length; j++) {
+
+                if(walkableTrigger !== null && realLayers[layersCounter - 1]["data"][i * tileMatrix.length + j] !== 0) {
+                    this.collisionMatrix[i][j] = !walkableTrigger;
+                }
+
 				let tileNo = tileMatrix[i][j],
 					tilesets = this.tilesetsWorkfiles,
 					usedTileset;
-				
+
 				if (tileNo == NO_TILE) {
 					continue;
 				}
@@ -160,51 +205,53 @@ _p.processCollisionMatrixAnimations = function() {
 
 				//the current tile is from the last tileset in the tilesets array
 				if (!usedTileset) {
-					usedTileset = tilesets[tilesets.length - 1];	
+					usedTileset = tilesets[tilesets.length - 1];
 				}
-				
+
 				//if the resource isn't found locally than it is stored in the global resLoader
 				let tilesetWorkfile = usedTileset.JSONobject;
-				
+
 				let tilesObjectArr = tilesetWorkfile[TILE_ARR_IN_TILESETWORKFILE],
 					realTileNo = tileNo - usedTileset[FIRST_TILE_NUMBER],
 					currTileObj;
-				
+
 				try{
 					currTileObj = tilesObjectArr[realTileNo];
-				} 
+				}
 				catch(err){
 					continue;
 				}
-				
+
 				if (!currTileObj) {
 					continue;
 				}
 				
-				if (PROPERTIES in currTileObj) {
-					let propertiesArr = currTileObj[PROPERTIES];
-					
-					for (let property of propertiesArr) {
-						if (property[PROPERTY_NAME] === WALKABLE) {
-							let value = property[PROPERTY_VALUE];
-							
-							//the tile is non-walkable so collision is true
-							if (value === false) {
-								this.collisionMatrix[i][j] = true;
-							}
-						}
-					}
-				}
-				
+				if(walkableTrigger === null) {
+                    if (PROPERTIES in currTileObj) {
+                        let propertiesArr = currTileObj[PROPERTIES];
+
+                        for (let property of propertiesArr) {
+                            if (property[PROPERTY_NAME] === WALKABLE) {
+                                let value = property[PROPERTY_VALUE];
+
+                                //the tile is non-walkable so collision is true
+                                if (value === false) {
+                                    this.collisionMatrix[i][j] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
 				if (ANIMATION in currTileObj) {
 					//making a copy of the animation array
-					let currAnimationArr = 
+					let currAnimationArr =
 						JSON.parse(JSON.stringify(currTileObj[ANIMATION]));
-					
+
 					this.animationsArr.push(
 						currAnimationArr
 					);
-					
+
 					Object.defineProperties(currAnimationArr, {
 						"matrixPosition" : {
 							value : {i, j},
@@ -279,25 +326,38 @@ _p.loadTilesetImage = function(imgSrc, tileset, imageResources) {
 
 _p.parseLayers = function(obj) {
 	if (LAYER_ARR in obj) {
-		var layerArr = obj[LAYER_ARR];
-		
-		for (var obj of layerArr) {
-			this.parseLayers(obj);
-		}
-	}
-	
-	else if (TILE_ARR in obj) {
-		this.applyLayer(obj[TILE_ARR]);
-	}
-	
-	else if (OBJECT_ARR in obj) {
-		this.objectsArr = this.objectsArr.concat(obj[OBJECT_ARR]);
-	}
+        var layerArr = obj[LAYER_ARR];
+
+        for (let obj of layerArr) {
+            this.parseLayers(obj);
+        }
+    }
+
+    else if (TILE_ARR in obj) {
+        this.applyLayer(obj[TILE_ARR],obj["opacity"]);
+    }
+
+    else if (OBJECT_ARR in obj) {
+        this.objectsArr = this.objectsArr.concat(obj[OBJECT_ARR]);
+    }
 }
 
+/*_p.parseLayers = function(json) {
 
-_p.applyLayer = function(tileArray) {
+	let allLayers = returnAllLayers(json["layers"]);
+	console.log(allLayers.length);
+	for(let layer of allLayers) {
+		if(layer["type"] === "tilelayer")
+			this.applyLayer(layer["data"]);
+		else if(layer["type"] === "objectgroup")
+            this.objectsArr = this.objectsArr.concat(json[OBJECT_ARR]);
+	}
+};*/
+
+_p.applyLayer = function(tileArray, opacity) {
 	var arrInd = 0, layerMatrix = [];
+	
+	layerMatrix.opacity = opacity;
 	
 	//creating a matrix with mapHeight rows
 	//to represent this layer of tiles

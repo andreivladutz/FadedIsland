@@ -55,7 +55,7 @@ _p.load = function() {
 	);
 	
 	waitOnAllPromises(this.loadedResourcesPromises).then(function() {
-		self.mapRenderer = new MapRenderer(MAIN_MAP);
+		self.mapRenderer = new MapRenderer(DUNGEON);
         self.resLoader.moveResourcesTo(self.globalResLoader);
         
         self.emit(MAPS_READY_EVENT, null);

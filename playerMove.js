@@ -84,7 +84,8 @@ class Player extends EventEmiter {
             "right": "d",
             "attack": "k"
         }
-        /*this.keyEvents = new KeyEventEmitter(this.dict);
+        this.keyEvents = new KeyEventEmitter(this.dict);
+		/*
         this.keyEvents.addEventListener("up", this.keyUp.bind(this));
         this.keyEvents.addEventListener("down", this.keyDown.bind(this));
         this.keyEvents.addEventListener("left", this.keyLeft.bind(this));
@@ -92,9 +93,9 @@ class Player extends EventEmiter {
         this.keyEvents.addEventListener("upright", this.keyUpRight.bind(this));
         this.keyEvents.addEventListener("upleft", this.keyUpLeft.bind(this));
         this.keyEvents.addEventListener("downright", this.keyDownRight.bind(this));
-        this.keyEvents.addEventListener("downleft", this.keyDownLeft.bind(this));
+        this.keyEvents.addEventListener("downleft", this.keyDownLeft.bind(this));*/
         this.keyEvents.addEventListener("keyrelease", this.keyRelease.bind(this));
-        this.keyEvents.addEventListener("attack", this.attack.bind(this));*/
+        /*this.keyEvents.addEventListener("attack", this.attack.bind(this));*/
     }
 }
 
@@ -340,6 +341,7 @@ _p.keyDownLeft = function(e) {
 }
 
 _p.keyRelease = function() {
+	console.log("SALSLASLAL");
     this.column = 0;
 }
 
