@@ -1,0 +1,14 @@
+{ "columns":7,
+ "image":"..\/Custom-png\/dc-dngn-water.png",
+ "imageheight":320,
+ "imagewidth":224,
+ "margin":0,
+ "name":"dc-dngn-water",
+ "spacing":0,
+ "tilecount":70,
+ "tiledversion":"1.2.3",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":1.2
+}

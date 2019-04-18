@@ -68,7 +68,9 @@ function init() {
             console.error(err);
         }
     )
-    
+
+	let movementManager = new MovementManager(player);
+
     mapLoader.load();
 }
 

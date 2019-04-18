@@ -1,0 +1,14 @@
+{ "columns":7,
+ "image":"..\/tileset_images\/dc-dngn-wall.png",
+ "imageheight":898,
+ "imagewidth":224,
+ "margin":0,
+ "name":"dc-dngn-wall",
+ "spacing":0,
+ "tilecount":196,
+ "tiledversion":"1.2.3",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":1.2
+}

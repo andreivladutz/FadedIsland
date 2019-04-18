@@ -201,7 +201,6 @@ function returnAllLayers(layers) {
 }
 
 function hasCustomProperty(layer, name) {
-
 	if ("properties" in layer) {
     	for (let property of layer["properties"]) {
 

@@ -1,0 +1,14 @@
+{ "columns":8,
+ "image":"..\/tileset_images\/dc-dngn-gateways-scaled2x.png",
+ "imageheight":448,
+ "imagewidth":256,
+ "margin":0,
+ "name":"dc-dngn-gateways-scaled2x",
+ "spacing":0,
+ "tilecount":112,
+ "tiledversion":"1.2.3",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":1.2
+}
