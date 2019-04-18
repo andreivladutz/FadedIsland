@@ -2,28 +2,30 @@ var DEBUGGING = true;
 
 MapLoader.RESOURCES = [
 	{
-		name : "TestMap",
-		itemType : "JSON",
-		url : "Tiled/map/test.json"
-	},{
 		name : "MainMap",
 		itemType : "JSON",
 		url : "Tiled/map/map1.json"
-	},{
+	},
+	{
 		name : "CastleMap",
 		itemType : "JSON",
 		url : "Tiled/map/castle2.json"
 	},
+    {
+        name : "Dungeon",
+        itemType : "JSON",
+        url : "Tiled/map/dungeon.json"
+    },
 ];
 
 // in case the name of the map resources changes
-const MAIN_MAP = "MainMap", TEST_MAP = "TestMap", CASTLE_MAP = "CastleMap";
+const MAIN_MAP = "MainMap", CASTLE_MAP = "CastleMap", DUNGEON = "Dungeon";
 
 /*
     when this event fires on the mapLoader instance 
     it means the mapRenderer has been initialised
 */
-const MAPS_READY_EVENT = "mapRendererInitialised"
+const MAPS_READY_EVENT = "mapRendererInitialised";
 
 
 /*

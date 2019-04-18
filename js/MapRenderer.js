@@ -184,14 +184,18 @@ _p.drawOffScreenTile = function(i, j, animatedId) {
 		eX = this.offScreenVisibleTileArea.endX,
 		eY = this.offScreenVisibleTileArea.endY;
 	
+	// for every layer of tiles
 	for (let tilesMatrix of tilesMatrices) {
 		let tileNo = tilesMatrix[i][j],
 			usedTileset;
-
+		
+		// NO_TILE means an empty tile
 		if (tileNo == NO_TILE) {
 			continue;
 		}
 
+		// going through all objects of tilesets used at the end of the map.json file
+		// looking at the "firstgid" property to understand to which tileset the current tile belongs to
 		for (let tilesetInd = 0; tilesetInd < tilesets.length - 1; tilesetInd++) {
 			let currTileset = tilesets[tilesetInd],
 				nextTileset = tilesets[tilesetInd + 1];
@@ -203,28 +207,50 @@ _p.drawOffScreenTile = function(i, j, animatedId) {
 			}
 		}
 
-		//the current tile is from the last tileset in the tilesets array
+		// the loop through the tilesets object didn't find two consecutive firgid properties
+		// to fit the used tile number in so probably
+		// the current tile is from the last tileset in the tilesets array
 		if (!usedTileset) {
 			usedTileset = tilesets[tilesets.length - 1];	
 		}
 
+		// the actual tileNo in the actual tileset.json is the id from the map data - firstgid number
 		tileNo -= usedTileset[FIRST_TILE_NUMBER];
 		
+		// skipping the animated tile
 		if (tileNo == animatedId) {
 			continue;
 		}
-
+		
+		// doing some quick maths to know which tile to draw and where
 		let tilesPerRow = usedTileset.JSONobject[TILES_PER_ROW],
 			srcX = (tileNo % tilesPerRow) * tileSize,
 			srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
 			destX = (j - stX) * tileSize,
 			destY = (i - stY) * tileSize;
 		
+		if ("opacity" in tilesMatrix && tilesMatrix["opacity"] != 1) {
+			offCtx.save();
+			offCtx.globalAlpha = tilesMatrix["opacity"];
+		}
+		
 		offCtx.drawImage(
 			usedTileset["image"], 
 			srcX, srcY, tileSize, tileSize,
 			destX, destY, tileSize, tileSize
 		);
+		
+		if ("opacity" in tilesMatrix && tilesMatrix["opacity"] != 1) {
+			offCtx.restore();
+		}
+		
+		// showing the collision tiles with red in debugging mode
+		if (this._showCollisions_ && mapInstance.collisionMatrix[i][j]) {
+			let color = "rgba(255, 0, 0, 0.2)";
+
+			offCtx.fillStyle = color;
+			offCtx.fillRect(destX, destY, tileSize, tileSize);
+		}
 	}
 }
 
@@ -246,57 +272,46 @@ _p.redrawOffscreenBuffer = function() {
 		eX = Math.ceil(this.offScreenVisibleTileArea.endX),
 		eY = Math.ceil(this.offScreenVisibleTileArea.endY);
 	
-	for (let tilesMatrix of tilesMatrices) {
-		for (let i = stY; i < eY; i++) {
-			for (let j = stX; j < eX; j++) {
-				let tileNo = tilesMatrix[i][j],
-					usedTileset;
-				
-				if (tileNo == NO_TILE) {
-					continue;
-				}
-
-				for (let tilesetInd = 0; tilesetInd < tilesets.length - 1; tilesetInd++) {
-					let currTileset = tilesets[tilesetInd],
-						nextTileset = tilesets[tilesetInd + 1];
-
-					//the tile to be drawn belongs to the currentTileset
-					if (tileNo >= currTileset[FIRST_TILE_NUMBER] && tileNo < nextTileset[FIRST_TILE_NUMBER]) {
-						usedTileset = currTileset;
-						break;
-					}
-				}
-
-				//the current tile is from the last tileset in the tilesets array
-				if (!usedTileset) {
-					usedTileset = tilesets[tilesets.length - 1];	
-				}
-
-				tileNo -= usedTileset[FIRST_TILE_NUMBER];
-
-				let tilesPerRow = usedTileset.JSONobject[TILES_PER_ROW],
-					srcX = (tileNo % tilesPerRow) * tileSize,
-					srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
-					destX = (j - this.offScreenVisibleTileArea.startX) * tileSize,
-					destY = (i - this.offScreenVisibleTileArea.startY) * tileSize;
-
-				offCtx.drawImage(
-					usedTileset["image"], 
-					srcX, srcY, tileSize, tileSize,
-					destX, destY, tileSize, tileSize
-				);
-				
-				if (this._showCollisions_ && mapInstance.collisionMatrix[i][j]) {
-					let color = "rgba(255, 0, 0, 0.2)";
-					
-					offCtx.fillStyle = color;
-					offCtx.fillRect(destX, destY, tileSize, tileSize);
-				}
-			}
+	for (let i = stY; i < eY; i++) {
+		for (let j = stX; j < eX; j++) {
+			// drawing all the tiles on each layer
+			this.drawOffScreenTile(i, j, NaN);
 		}
 	}
 	
+	this.drawOffScreenObjects();
+	
+	// redrew evth so the offScreenCanvas is not dirty anymore
 	this.offDirty = false;
+}
+
+// the function that draws all drawableObjects in mapInstance if they are in sight
+_p.drawOffScreenObjects = function() {
+	var mapInst = this.currentMapInstance,
+		tileSize = mapInst.tileSize,
+		stX = this.offScreenVisibleTileArea.startX * tileSize,
+		stY = this.offScreenVisibleTileArea.startY * tileSize,
+		eX = this.offScreenVisibleTileArea.endX * tileSize,
+		eY = this.offScreenVisibleTileArea.endY * tileSize,
+		offCtx = CanvasManagerFactory().offScreenCtx;
+	
+	for (let obj of mapInst.drawableObjects) {
+		// we are getting the filepath src of the template object workfile as this is the
+		// key of the template object details in mapInstance.objectTemplates dictionary
+		let src = obj["template"],
+			templateObj = mapInst.objectTemplates[src],
+			objwidth = templateObj.width, objheight = templateObj.height;
+		
+		// skipping this object as it is not in sight
+		if (obj.x + objwidth < stX || obj.x - objwidth > eX || obj.y + objheight < stY || obj.y - objheight > eY) {
+			continue;
+		}
+		
+		
+		// for some reason the x, y coords given by Tiled are the coords of the bottom left corner of the object
+		offCtx.drawImage(templateObj.image, obj.srcX, obj.srcY, objwidth, objheight,
+						obj.x - stX, obj.y - stY - objheight, objwidth, objheight);
+	}
 }
 
 /*
