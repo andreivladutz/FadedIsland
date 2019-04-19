@@ -1,9 +1,7 @@
 class ResourceLoaderBase extends EventEmiter {
 	constructor() {
 		super();
-		this.loadedItems = 0;
 		this.totalItems = 0;
-		this.totalItemsToLoad = 0;
 		
 		this._resources = [];
 		this._resourceObjects = {};
@@ -33,8 +31,8 @@ _p._addItem = function(obj, onLoadedSetter, onFailSetter, beginLoading) {
 	this.totalItems++;
 }
 
-_p.updateProgress = function() {
-	console.log ("Loaded " + this.loadedItems + " out of " + this.totalItemsToLoad);
+_p.updateProgress = function(loadedItems, totalItemsToLoad) {
+	console.log ("Loaded " + loadedItems + " out of " + totalItemsToLoad);
 }
 
 /*
@@ -48,8 +46,7 @@ _p.updateProgress = function() {
 	updatez bara de incarcare  
 */
 _p.load = function(resourcesName = "") {
-	this.loadedItems = 0;
-	this.totalItemsToLoad = 0;
+	var loadedItems = 0, totalItemsToLoad = 0;
 	
 	var self = this;
 	
@@ -58,7 +55,7 @@ _p.load = function(resourcesName = "") {
 		if (this._resources[i].resourceObject._availableResource)
 			continue;
 		
-		this.totalItemsToLoad++;
+		totalItemsToLoad++;
 		
 		let currRes = this._resources[i];
 		
@@ -70,8 +67,8 @@ _p.load = function(resourcesName = "") {
 				currRes.beginLoading();
 			}).then(
 				function fulfillment(response) {
-					++self.loadedItems;
-					self.updateProgress();
+					++loadedItems;
+					self.updateProgress(loadedItems, totalItemsToLoad);
 					
 					// handlere apelate pt cand resursa s-a incarcat
 					response.loadedObject._availableResource = true;
@@ -87,7 +84,7 @@ _p.load = function(resourcesName = "") {
 		);
 	}
 	
-	this.updateProgress();
+	this.updateProgress(loadedItems, totalItemsToLoad);
 	
 	Promise.all(this._loadingPromises).then(
 		function() {

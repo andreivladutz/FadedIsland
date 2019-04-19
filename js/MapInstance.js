@@ -12,6 +12,7 @@ class MapInstance extends EventEmiter {
 		mapHeight,
 		tilesMatrices,
 		objectsArr,
+		objectTemplates,
 		collisionMatrix,
 		animationsArr) {
 			super();
@@ -39,8 +40,21 @@ class MapInstance extends EventEmiter {
 			//each matrix is a layer of tiles
 			this.tilesMatrices = tilesMatrices;
 			
-			//the array of objects from the map.json file
+			// the array of objects from the map.json file
+			// the objects can be of more than one type -> spawn points, template
 			this.objectsArr = objectsArr;
+			
+			// the array of template objects that can be drawn (they have a tileset)
+			this.drawableObjects = [];
+			
+			/*
+				the dictionary(object) of object templates
+				
+				where the key is the source of the json tileset workfile 
+				corresponding to the object template
+				
+			*/
+			this.objectTemplates = objectTemplates;
 			
 			//true => we cannot walk on the tile 
 			//false => no collision with the tile
@@ -57,6 +71,7 @@ class MapInstance extends EventEmiter {
 			
 			this.animationsArr = animationsArr;
 			this.processAnimations();
+			this.processObjects();
 			
 			//the map coordinates
 			this.mapX = 0;
@@ -135,6 +150,51 @@ _p.processAnimations = function() {
 	}
 }
 
+_p.processObjects = function() {
+	// bringing properties closer to be accessed easier
+	for (let src in this.objectTemplates) {
+		let obj = this.objectTemplates[src];
+		
+		obj.image = obj.jsonTemplateWorkfile.tileset.image;
+		obj.JSONobject = obj.jsonTemplateWorkfile.tileset.JSONobject;
+		
+		obj.width = obj.JSONobject.tilewidth;
+		obj.height = obj.JSONobject.tileheight;
+		obj.tilesPerRow = obj.JSONobject[TILES_PER_ROW];
+	}
+	
+	// for each real object we select only the ones that come from a template
+	// (those are drawable) and compute the scrX and srcY coordinates of the 
+	// object image in the whole tileset image
+	for (let obj of this.objectsArr) {
+		if ("template" in obj) {
+			let src = obj["template"],
+				correspondingTemplate = this.objectTemplates[src],
+				tileNo = correspondingTemplate.jsonTemplateWorkfile.object.gid - 
+					correspondingTemplate.jsonTemplateWorkfile.tileset.firstgid,
+				tilesPerRow = correspondingTemplate.tilesPerRow;
+			
+			obj.srcX = (tileNo % tilesPerRow) * correspondingTemplate.width;
+			obj.srcY = Math.floor(tileNo / tilesPerRow) * correspondingTemplate.height;
+			
+			obj.x = Math.floor(obj.x);
+			obj.y = Math.floor(obj.y);
+				
+			this.drawableObjects.push(obj);
+		}
+	}
+	
+	// sorting the drawable objects by y and x so they are drawn in the correct order
+	
+	this.drawableObjects.sort(function cmp(a, b) {
+		if (a.y === b.y) {
+			return a.x - b.x;
+		}
+		
+		return a.y - b.y;
+	});
+}
+ 
 _p.updateViewportSize = function() {
 	//the size of the viewport in pixels
 	this.viewportWidth = CanvasManagerFactory().canvas.width;
