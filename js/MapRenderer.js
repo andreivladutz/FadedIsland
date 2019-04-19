@@ -295,6 +295,10 @@ _p.drawOffScreenObjects = function() {
 		eY = this.offScreenVisibleTileArea.endY * tileSize,
 		offCtx = CanvasManagerFactory().offScreenCtx;
 	
+	// we keep count of the drawn objects for later checks
+	// e.g. checking player collision against them
+	this.lastDrawnObjects = [];
+	
 	for (let obj of mapInst.drawableObjects) {
 		// we are getting the filepath src of the template object workfile as this is the
 		// key of the template object details in mapInstance.objectTemplates dictionary
@@ -307,6 +311,7 @@ _p.drawOffScreenObjects = function() {
 			continue;
 		}
 		
+		this.lastDrawnObjects.push(obj);
 		
 		// for some reason the x, y coords given by Tiled are the coords of the bottom left corner of the object
 		offCtx.drawImage(templateObj.image, obj.srcX, obj.srcY, objwidth, objheight,
@@ -417,4 +422,12 @@ _p.tileCoordsToScreenCoords = function(coords) {
 // function to move map from mapInstance
 _p.moveMap = function(deltaX, deltaY) {
     this.currentMapInstance.moveMap(deltaX, deltaY);
+}
+
+_p.getLastDrawnObjects = function() {
+	return this.lastDrawnObjects;
+}
+
+_p.getTemplateObjects = function() {
+	return this.currentMapInstance.objectTemplates;
 }
