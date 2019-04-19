@@ -54,7 +54,7 @@ _p.checkIfDirty = function() {
 		mapInst = this.currentMapInstance;
 	
 	if (visArea.startX < offVisArea.startX || visArea.startY < offVisArea.startY 
-		|| visArea.endX >= offVisArea.endX 
+		|| (visArea.endX >= offVisArea.endX && offVisArea.endX != mapInst.mapWidth)
 		|| (visArea.endY >= offVisArea.endY && offVisArea.endY != mapInst.mapHeight)) {
 		
 		this.offDirty = true;
@@ -92,8 +92,12 @@ _p.computeVisibleTileArea = function() {
 	this.visibleTileArea = {
 		startX : Math.abs(mI.mapX) / tileSize,
 		startY : Math.abs(mI.mapY) / tileSize,
-		endX : (- mI.mapX + viewportWidth) / tileSize,
-		endY : (- mI.mapY + viewportHeight) / tileSize
+		endX : Math.min(
+			(- mI.mapX + viewportWidth) / tileSize, mI.mapWidth
+		),
+		endY : Math.min(
+			(- mI.mapY + viewportHeight) / tileSize, mI.mapHeight
+		)
 	}
 	
 	//console.log("START X = " + this.visibleTileArea.startX);
