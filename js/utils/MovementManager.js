@@ -26,7 +26,7 @@ class MovementManager {
         };                                                         //THE REASONING BEHIND IT IS: KEYMAP RETURNS A FUNCTION NAME BASED ON THE KEYSTRING IT RECEIVES
 																   //SO WE ALWAYS GIVE IT THE LAST "WS" KEY PRESSED AND LAST "AD" KEY PRESSED, OR EMPTY STRING IF ONE OF THEM IS NOT PRESSED
         this.startInterval = function () { //INTERVAL THAT CALLS THE FUNCTION THAT APPLIES MOVEMENT FUNCTIONS BASED ON KEYS PRESSED, EACH X SECONDS, DEFAULT CASE IS 50
-            this.__intervalReference = setInterval(this.applyInputs, 50);
+            this.__intervalReference = setInterval(this.applyInputs, 16);
         };
         this.stopInterval = function () {  //FUNCTION TO STOP THE INTERVAL
             clearInterval(this.__intervalReference);

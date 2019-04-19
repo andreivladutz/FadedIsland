@@ -45,7 +45,7 @@ class Player extends EventEmiter {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         
-        this.speed = 16;
+        this.speed = 5;
         this.power = 20; // attack power
 		
 		// coords corespond to feet area
