@@ -45,7 +45,7 @@ class Player extends EventEmiter {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         
-        this.speed = 5;
+        this.speed = 2;
         this.power = 20; // attack power
 		
 		// coords corespond to feet area
@@ -271,6 +271,7 @@ _p.keyDown = function(e, speed = this.speed) {
 }
 
 _p.keyLeft = function(e, speed = this.speed) {
+    console.log(speed);
     for(var i = 0; i < speed; i++) {
         if(!this.checkCollision(-1, 0, this.coordY, this.coordX)) { // if no collision
             // player movement
@@ -326,23 +327,23 @@ _p.keyRight = function(e, speed = this.speed) {
 }
 
 _p.keyUpRight = function(e) {
-    this.keyUp(e, Math.floor(this.speed * 0.7));
-    this.keyRight(e, Math.floor(this.speed * 0.7));
+    this.keyUp(e, this.speed * 0.7);
+    this.keyRight(e, this.speed * 0.7);
 }
 
 _p.keyUpLeft = function(e) {
-    this.keyUp(e, Math.floor(this.speed * 0.7));
-    this.keyLeft(e, Math.floor(this.speed * 0.7));
+    this.keyUp(e, this.speed * 0.7);
+    this.keyLeft(e, this.speed * 0.7);
 }
 
 _p.keyDownRight = function(e) {
-    this.keyDown(e, Math.floor(this.speed * 0.7));
-    this.keyRight(e, Math.floor(this.speed * 0.7));
+    this.keyDown(e, this.speed * 0.7);
+    this.keyRight(e, this.speed * 0.7);
 }
 
 _p.keyDownLeft = function(e) {
-    this.keyDown(e, Math.floor(this.speed * 0.7));
-    this.keyLeft(e, Math.floor(this.speed * 0.7));
+    this.keyDown(e, this.speed * 0.7);
+    this.keyLeft(e, this.speed * 0.7);
 }
 
 _p.keyRelease = function() {
