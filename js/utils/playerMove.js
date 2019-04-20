@@ -47,7 +47,25 @@ class Player extends EventEmiter {
         
         this.speed = 2;
         this.power = 20; // attack power
-		
+		this.steps = {
+		    up: {
+		        skips: 0,
+                frames: 0
+            },
+            down: {
+                skips: 0,
+                frames: 0
+            },
+		    left: {
+                skips: 0,
+                frames: 0
+            },
+            right: {
+                skips: 0,
+                frames: 0
+            },
+            frameCount: 12
+        };
 		// coords corespond to feet area
 		this.coordX = canvas.width / 2;
 		this.coordY = canvas.height / 2;
@@ -204,6 +222,17 @@ _p.resetYCoordsToCenter = function() {
     this.coordBodyY = this.coordY - FRAME_HEIGHT / 5;
 }
 
+_p.verifyAndUpdateFrameStatus = function(direction) {
+    let answer;
+
+    if(this.steps[direction]["skips"] === 0)
+        answer = 1;
+    else answer = 0;
+    this.steps[direction]["skips"] = (this.steps[direction]["skips"] + 1) % this.steps["frameCount"];
+
+    return answer;
+}
+
 _p.keyUp = function(e, speed = this.speed) {
     for(var i = 0; i < speed; i++) {
         if (!this.checkCollision(0, -1, this.coordBodyY, this.coordX)) { // if no collision
@@ -233,7 +262,10 @@ _p.keyUp = function(e, speed = this.speed) {
     
     // sprite animation
     this.row = FRAME_ROW + 0;
-    this.column = (this.column + 1) % FRAME_COLUMN_MAX;
+    if(MovementManager.selfReference.getTSTop() === "") {
+        let frameChanger = this.verifyAndUpdateFrameStatus("down");
+        this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
+    }
 }
 
 _p.keyDown = function(e, speed = this.speed) {
@@ -267,11 +299,14 @@ _p.keyDown = function(e, speed = this.speed) {
     
     // sprite animation
     this.row = FRAME_ROW + 2;
-    this.column = (this.column + 1) % FRAME_COLUMN_MAX;
+
+    if(MovementManager.selfReference.getTSTop() === "") {
+        let frameChanger = this.verifyAndUpdateFrameStatus("down");
+        this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
+    }
 }
 
 _p.keyLeft = function(e, speed = this.speed) {
-    console.log(speed);
     for(var i = 0; i < speed; i++) {
         if(!this.checkCollision(-1, 0, this.coordY, this.coordX)) { // if no collision
             // player movement
@@ -294,7 +329,8 @@ _p.keyLeft = function(e, speed = this.speed) {
     
     // sprite animation
     this.row = FRAME_ROW + 1;
-    this.column = (this.column + 1) % FRAME_COLUMN_MAX;
+    let frameChanger = this.verifyAndUpdateFrameStatus("left");
+    this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
 }
 
 _p.keyRight = function(e, speed = this.speed) {
@@ -323,7 +359,9 @@ _p.keyRight = function(e, speed = this.speed) {
     
     // sprite animation
     this.row = FRAME_ROW + 3;
-    this.column = (this.column + 1) % FRAME_COLUMN_MAX;
+
+    let frameChanger = this.verifyAndUpdateFrameStatus("right");
+        this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
 }
 
 _p.keyUpRight = function(e) {
