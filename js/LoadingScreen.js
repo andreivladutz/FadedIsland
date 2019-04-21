@@ -23,10 +23,12 @@ class LoadingScreen {
     this.content = loading_content;
     this.title = title;
     this.load_bar = load_bar;
+    this.details = load_details;
         
         //This creates the effect on the title screen
     this.generateTitle();
     this.generateLoadBar();
+    this.fetchInformation();
     } 
 }
 
@@ -45,9 +47,14 @@ _p.generateTitle = function(){
 
 _p.generateLoadBar = function(){
     var bar = document.createElement("div");
+    this.load_bar.appendChild(bar);
     
 }
 
+_p.fetchInformation = function(){
+    var self = this.details;
+    self.appendChild(document.createTextNode("Gathering information..."));
+}
 
 _p.removeLoadingScreen = function(){
     var load_screen = document.getElementById("load_screen");

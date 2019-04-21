@@ -1,3 +1,4 @@
+/*this is the background for the loading screen*/
 #load_screen{
     background: black;
     opacity: 1;
@@ -11,6 +12,7 @@
     background-repeat: repeat;
 }
 
+/*hue-ing the background a darker color without altering the loading content box*/
 #load_screen_filter{
     background: black;
     opacity: 0.5;
@@ -22,7 +24,7 @@
     z-index: 101;
 }
 
-
+/*loading content box*/
 #loading{
     position: absolute;
     left: 50%;
@@ -32,7 +34,9 @@
     width: 500px;
     margin-left: -250px;
     text-align: center;
+    overflow: hidden;
     
+    /*change HERE to try out different fonts*/
     font-family: Verdana, Geneva, sans-serif;
     
     display: grid;
@@ -45,18 +49,13 @@
     
 }
 
+/*styling the title*/
 #loading>div:first-child{
     margin-top: 25px;
     margin-bottom: 25px;
     font-size: 50px;
 }
-#loading>div:nth-child(2){
-    
-}
-#loading>div:nth-child(3){
-    
-}
-
+/*animating the title*/
 .animate span{
     display: inline-block;
     opacity: 0;
@@ -64,7 +63,6 @@
     animation: wiggle 1.3s forwards;
     animation-iteration-count: infinite;
 }
-
 @keyframes wiggle{
     10%{
         transform: translate(0, -50px) rotate(180deg) scale(1);
@@ -81,7 +79,6 @@
         opacity: 1;
     }
 }
-
 .animate span:nth-of-type(2){
     animation-delay: .05s;   
 }
@@ -119,8 +116,24 @@
     animation-delay: .65s;
 }
 
+/*styling the loading bar*/
+#loading>div:nth-child(2) div{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 80%;
+    height: 30px;
+    
+    background-color: greenyellow;
+    
+}
 
-
+/*styling the loading information*/
+#loading>div:nth-child(3){
+    margin: 10px auto 14px auto;
+    font-size: 22px;
+}
 
 
 
