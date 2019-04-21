@@ -117,7 +117,7 @@
 }
 
 /*styling the loading bar*/
-#loading>div:nth-child(2) div{
+#loading>div:nth-child(2)>div{
     margin-left: auto;
     margin-right: auto;
     margin-top: 10px;
@@ -125,9 +125,19 @@
     width: 80%;
     height: 30px;
     
-    background-color: greenyellow;
+    border: 1px solid black;
     
+    background-color: antiquewhite;
+    /*background-color: greenyellow;*/
 }
+
+.load_bars{
+    height: 100%;
+    width: 10%;
+    display: inline-block;
+}
+
+
 
 /*styling the loading information*/
 #loading>div:nth-child(3){
