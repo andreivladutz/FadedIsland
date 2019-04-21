@@ -26,7 +26,6 @@ class LoadingScreen {
         
         //This creates the effect on the title screen
     this.generateTitle();
-    //this.wiggleTitle();
     } 
 }
 
@@ -41,51 +40,6 @@ _p.generateTitle = function(){
         this.title.appendChild(span);
     }
 }
-_p.wiggleTitle = function(){
-    var self = this;
-    setTimeout(function(){
-        self.title.classList.remove("animate");
-        self.title.classList.add("animate");
-    }, 10000)
-}
-
-/*  OLD idea - got scrapped
-_p.generateNewTitle = function(desiredText, pos, garbageLetters){
-    var currentText = desiredText.substring(0,pos);
-    for(let i = pos; i < desiredText.length; i++){
-        let randomInt = Math.floor(Math.random()*(garbageLetters.length));
-        let randomletter = garbageLetters[randomInt];
-        currentText = currentText + randomletter;
-    }
-    return currentText;
-}
-
-_p.wiggleTitle = function(){
-    var self = this;
-    
-    var desiredText = "Loading...";
-    var garbageLetters = "-+*|}{[]~\\\":;?/.><=/+-_)(*&^%$#@!)}";
-    
-    //initiating title with some random text
-    var currentText = this.generateNewTitle(desiredText, 0, garbageLetters);
-    var currentTextInDOM = document.createTextNode(currentText);
-    self.title.appendChild(currentTextInDOM);
-    
-    for(let i = 0; i < desiredText.length; i++){
-        setTimeout(function(){
-            console.log("hi");
-            //var changeTitle = setInterval(function(){
-                currentText = self.generateNewTitle(desiredText, i, garbageLetters)
-                self.title.replaceChild(document.createTextNode(currentText), self.title.firstChild);
-            //}, 200);    
-        }, 500);
-        
-    }
-    
-}
-*/
-
-
 
 
 function removeLoadingScreen(){

@@ -61,15 +61,20 @@
     display: inline-block;
     opacity: 0;
     transform: translate(0, -100px) rotate(360deg) scale(0);
-    animation: wiggle .3s forwards;
+    animation: wiggle 1.3s forwards;
+    animation-iteration-count: infinite;
 }
 
 @keyframes wiggle{
-    30%{
+    10%{
         transform: translate(0, -50px) rotate(180deg) scale(1);
     }
-    60%{
+    20%{
         transform: translate(0, 20px) scale(.8) rotate(0deg);
+    }
+    30%{
+        transform: translate(0) scale(1) rotate(0deg);
+        opacity: 1;
     }
     100%{
         transform: translate(0) scale(1) rotate(0deg);
