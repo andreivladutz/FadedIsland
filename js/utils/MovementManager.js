@@ -6,6 +6,7 @@ class MovementManager {
         this.longitudinalStack = [""];    //STACK FOR "W" AND "S" KEYS
         this.transversalStack = [""];     //STACK FOR "A" AND "D" KEYS
         this.__intervalReference = undefined;   //REFERENCE FOR THE INTERVAL THAT PROCESSES THE INPUTS
+        this.intervalDelay = 8;
         this.alreadyPressed = {    //TRIGGER FOR ALREADY PRESSED KEYS SO THAT KEYDOWN EVENT WON'T FIRE MULTIPLE TIMES ON SAME INPUT
             w : 0,
             a : 0,
@@ -26,7 +27,7 @@ class MovementManager {
         };                                                         //THE REASONING BEHIND IT IS: KEYMAP RETURNS A FUNCTION NAME BASED ON THE KEYSTRING IT RECEIVES
 																   //SO WE ALWAYS GIVE IT THE LAST "WS" KEY PRESSED AND LAST "AD" KEY PRESSED, OR EMPTY STRING IF ONE OF THEM IS NOT PRESSED
         this.startInterval = function () { //INTERVAL THAT CALLS THE FUNCTION THAT APPLIES MOVEMENT FUNCTIONS BASED ON KEYS PRESSED, EACH X SECONDS, DEFAULT CASE IS 50
-            this.__intervalReference = setInterval(this.applyInputs, 0);
+            this.__intervalReference = setInterval(this.applyInputs, this.intervalDelay);
         };
         this.stopInterval = function () {  //FUNCTION TO STOP THE INTERVAL
             clearInterval(this.__intervalReference);

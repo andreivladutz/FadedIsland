@@ -45,7 +45,7 @@ class Player extends EventEmiter {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         
-        this.speed = 2;
+        this.speed = 4;
         this.power = 20; // attack power
 		this.steps = {
 		    up: {
