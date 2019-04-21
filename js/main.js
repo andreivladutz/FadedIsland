@@ -67,7 +67,7 @@ function init() {
     waitOnAllPromises(loadedPromisesArr).then(
         function onResolved() {
             requestAnimationFrame(draw);
-            //removeLoadingScreen();
+            loadingScreen.removeLoadingScreen();
         },
         function onRejected(err) {
             console.error(err);

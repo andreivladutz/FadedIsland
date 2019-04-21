@@ -26,23 +26,30 @@ class LoadingScreen {
         
         //This creates the effect on the title screen
     this.generateTitle();
+    this.generateLoadBar();
     } 
 }
 
 _p = LoadingScreen.prototype;
 
 _p.generateTitle = function(){
-    this.title.classList.add("animate");
+    var self = this.title;
+    self.classList.add("animate");
     text = "Loading...";
     for(let letter in text){
         let span = document.createElement("span");
         span.appendChild(document.createTextNode(text[letter]));
-        this.title.appendChild(span);
+        self.appendChild(span);
     }
 }
 
+_p.generateLoadBar = function(){
+    var bar = document.createElement("div");
+    
+}
 
-function removeLoadingScreen(){
+
+_p.removeLoadingScreen = function(){
     var load_screen = document.getElementById("load_screen");
     document.body.removeChild(load_screen);
 }
