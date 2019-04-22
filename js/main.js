@@ -34,6 +34,7 @@ const MAPS_READY_EVENT = "mapRendererInitialised";
 var resourceLoader, canvasManager, mapRenderer, mapLoader, player, loadedPromisesArr = [];
 
 function init() {
+    loadingScreen = new LoadingScreen();
 	if (DEBUGGING) {
 		var stats = new xStats();
 		document.body.appendChild(stats.element);
@@ -63,6 +64,7 @@ function init() {
     waitOnAllPromises(loadedPromisesArr).then(
         function onResolved() {
             requestAnimationFrame(draw);
+            loadingScreen.removeLoadingScreen();
         },
         function onRejected(err) {
             console.error(err);
