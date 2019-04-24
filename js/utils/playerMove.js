@@ -45,7 +45,7 @@ class Player extends EventEmiter {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         
-        this.speed = 4;
+        this.speed = 3;
         this.power = 20; // attack power
 
         this.steps = {
@@ -65,7 +65,7 @@ class Player extends EventEmiter {
                 skips: 0,
                 frames: 0
             },
-            frameCount: 12
+            frameCount: 8
         };
 
 		// coords corespond to feet area
@@ -260,7 +260,6 @@ _p.resetYCoordsToCenter = function() {
 
 _p.verifyAndUpdateFrameStatus = function(direction) {
     let answer;
-
     if(this.steps[direction]["skips"] === 0)
         answer = 1;
     else answer = 0;
@@ -269,7 +268,7 @@ _p.verifyAndUpdateFrameStatus = function(direction) {
     return answer;
 }
 
-_p.keyUp = function(e, speed = this.speed) {
+_p.keyUp = function(e, speed = this.speed, diagonalMovement = false) {
     for(var i = speed; i >= 0; i--) {
         if (!this.checkCollision(0, -i, this.coordBodyY, this.coordX)) { // if no collision
             // player movement
@@ -294,18 +293,19 @@ _p.keyUp = function(e, speed = this.speed) {
                 }   
             }
 			
-			// sprite animation
-			this.row = FRAME_ROW + 0;
-            let frameChanger = this.verifyAndUpdateFrameStatus("right");
-            this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
-
+			if (!diagonalMovement) {
+				// sprite animation
+				this.row = FRAME_ROW + 0;
+				let frameChanger = this.verifyAndUpdateFrameStatus("up");
+				this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
+			}
 
             return;
         }
     }
 }
 
-_p.keyDown = function(e, speed = this.speed) {
+_p.keyDown = function(e, speed = this.speed, diagonalMovement = false) {
     for(var i = speed; i >= 0; i--) {
         if(!this.checkCollision(0, i)) { // if no collision
             // player movement
@@ -332,11 +332,12 @@ _p.keyDown = function(e, speed = this.speed) {
                 }    
             }
 			
-			// sprite animation
-			this.row = FRAME_ROW + 2;
-            let frameChanger = this.verifyAndUpdateFrameStatus("right");
-            this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
-
+			if (!diagonalMovement) {
+				// sprite animation
+				this.row = FRAME_ROW + 2;
+            	let frameChanger = this.verifyAndUpdateFrameStatus("down");
+            	this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
+			}
 
             return;
         }
@@ -364,7 +365,7 @@ _p.keyLeft = function(e, speed = this.speed) {
         	
 			// sprite animation
 			this.row = FRAME_ROW + 1;
-            let frameChanger = this.verifyAndUpdateFrameStatus("right");
+            let frameChanger = this.verifyAndUpdateFrameStatus("left");
             this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
 
 
@@ -409,22 +410,22 @@ _p.keyRight = function(e, speed = this.speed) {
 }
 
 _p.keyUpRight = function(e) {
-    this.keyUp(e, Math.round(this.speed * 0.7));
+    this.keyUp(e, Math.round(this.speed * 0.7), true);
     this.keyRight(e, Math.round(this.speed * 0.7));
 }
 
 _p.keyUpLeft = function(e) {
-    this.keyUp(e, Math.round(this.speed * 0.7));
+    this.keyUp(e, Math.round(this.speed * 0.7), true);
     this.keyLeft(e, Math.round(this.speed * 0.7));
 }
 
 _p.keyDownRight = function(e) {
-    this.keyDown(e, Math.round(this.speed * 0.7));
+    this.keyDown(e, Math.round(this.speed * 0.7), true);
     this.keyRight(e, Math.round(this.speed * 0.7));
 }
 
 _p.keyDownLeft = function(e) {
-    this.keyDown(e, Math.round(this.speed * 0.7));
+    this.keyDown(e, Math.round(this.speed * 0.7), true);
     this.keyLeft(e, Math.round(this.speed * 0.7));
 }
 
