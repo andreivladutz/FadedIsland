@@ -35,9 +35,28 @@ class MapParser extends EventEmiter {
 		this.tilesMatrices = [];
 		
 		this.objectsArr = [];
+		
+		// many objects have a common template so we store it separately to spare some memory.
+		// templates are indexed by the "template" property's src string
+		this.objectTemplates = {
+			
+		};
+		
 		this.animationsArr = [];
 		
+		// we parse all layers : of tiles, of objects recursively
+		// so if there are groups of layers they are expanded and parsed
 		this.parseLayers(jObj);
+		
+		// this promise will be changed in the parseObjects method
+		// if there are any templated objects
+		this.loadedObjectTemplateWorkfilesPromise = new Promise(function(resolve) {
+			// just a dummy fullfiled promise if there aren't any templateWorkfiles to load
+			resolve();
+		});
+		
+		// after all the layers have been parsed we kick the parsing of game objects
+		this.parseObjects();
 		
 		//false means "no collision" while true means "collision a.k.a. non-walkable"
 		this.collisionMatrix = [];
@@ -49,7 +68,22 @@ class MapParser extends EventEmiter {
 			}
 		}
 		
-		this.loadTilesetsWorkfiles();
+		var self = this;
+		
+		// we wait for the objectTemplate workfiles to load before starting the load
+		// of the tilesetWorkfiles because objectTemplates also have tilesets to be loaded
+		this.loadedObjectTemplateWorkfilesPromise
+			.then(
+			function onResolved() {
+				self.loadTilesetsWorkfiles();
+			}, 
+			function onRejected(err) {
+				self.loadTilesetsWorkfiles();
+				
+				console.error("Something went wrong with the loading of the object template workfiles!");
+				throw err;
+			});
+		
 	}
 }
 
@@ -81,14 +115,17 @@ _p.loadTilesetsWorkfiles = function() {
 	
 	var self = this;
 	
+	// going through every tileset workfile
 	for (let tileset of this.tilesetsWorkfiles) {
 		let src = tileset[WORKFILE_SOURCE],
 			existingResource = this.globalResLoader.get(src);
 		
 		//tileset workfile was already loaded
 		if (existingResource && existingResource._availableResource) {
+			// we just add a copy of it on the current tileset
 			tileset.JSONobject = JSON.parse(existingResource.response);
 			
+			// getting the source of the tileset image from the object
 			let imgSrc = tileset.JSONobject[TILESET_IMAGE],
 				existingImage = this.globalResLoader.get(imgSrc);
 		
@@ -103,14 +140,19 @@ _p.loadTilesetsWorkfiles = function() {
 			continue;
 		}
 		
-		//loading the json workfile
+		// pushing the json workfile in a resource array to be loaded
 		tilesetsJsonRes.push({
 			name : src,
 			itemType : "JSON",
 			url : src.replace("..", TILED_PATH)
 		});
 		
+		// adding listener for the loading of this workfile event 
 		this.resourceLoader.on("loaded" + src, function(e) {
+			// has already been called so we exit
+			if (tileset.JSONobject) {
+				return;
+			}
 			tileset.JSONobject = JSON.parse(e.detail.response);
 			
 			self.loadTilesetImage(tileset.JSONobject[TILESET_IMAGE],
@@ -119,8 +161,10 @@ _p.loadTilesetsWorkfiles = function() {
 		});
 	}
 	
+	// adding the whole resource array to start loading
 	this.resourceLoader.add(tilesetsJsonRes);
 	
+	// name of the resources bundle
 	const WORKFILES_NAME = "TilesetWorkfiles";
 	
 	//once we finished loading all tileset .json files we start loading tileset images
@@ -130,16 +174,19 @@ _p.loadTilesetsWorkfiles = function() {
 				self.startLoadingTilsetImages(imageResources);
 				self.processCollisionMatrixAnimations();
 				
+				// remove the tilesets which belong to the custom objects
+				self.removeCustomObjectTilesets();
+				
 				resolve();
 			});
 		})
 	);
 	
+	// kick-start the loading of the resources
 	this.resourceLoader.load(WORKFILES_NAME);
 };
 
 function returnAllLayers(layers) {
-
 	let realLayers = [];
 
     for(let layer of layers) {
@@ -154,11 +201,10 @@ function returnAllLayers(layers) {
 }
 
 function hasCustomProperty(layer, name) {
+	if ("properties" in layer) {
+    	for (let property of layer["properties"]) {
 
-	if("properties" in layer) {
-    	for(let property of layer["properties"]) {
-
-    		if(property["name"] === name)
+    		if (property["name"] === name)
     			return property["value"];
 		}
 		return null;
@@ -302,10 +348,12 @@ _p.startLoadingTilsetImages = function(imageResources) {
 	
 	this.resourceLoader.load(IMAGES_NAME);
 }						
-						
+
+// actually just pushing the image to be loaded at a later time
 _p.loadTilesetImage = function(imgSrc, tileset, imageResources) {
 	let existingResource = this.globalResLoader.get(imgSrc);
-
+	
+	// checking if the image has already been loaded
 	if (existingResource && existingResource._availableResource) {
 		tileset.image = existingResource;
 		return;
@@ -324,22 +372,128 @@ _p.loadTilesetImage = function(imgSrc, tileset, imageResources) {
 	});
 }
 
+// parsing the layers of the map recursively 
 _p.parseLayers = function(obj) {
 	if (LAYER_ARR in obj) {
         var layerArr = obj[LAYER_ARR];
 
-        for (let obj of layerArr) {
-            this.parseLayers(obj);
+        for (let object of layerArr) {
+            this.parseLayers(object);
         }
     }
 
     else if (TILE_ARR in obj) {
-        this.applyLayer(obj[TILE_ARR],obj["opacity"]);
+        this.applyLayer(obj[TILE_ARR], obj["opacity"]);
     }
 
     else if (OBJECT_ARR in obj) {
         this.objectsArr = this.objectsArr.concat(obj[OBJECT_ARR]);
     }
+}
+
+/*
+	parsing objects by loading template.json files
+*/
+_p.parseObjects = function() {
+	const TEMPLATE = "template";
+	
+	// the paths will occur many times as there are 
+	// more objects of the same type on each map
+	let objTemplatesPaths = new Set(),
+		// the array of resources to be loaded
+		templateWorkfilesResArr = [];
+	
+	for (obj of this.objectsArr) {
+		// the curr object is a template object so we need to load it's template.json
+		if (TEMPLATE in obj) {
+			if (obj[TEMPLATE] === "../object_workfiles/WaterFountain.json") {
+				console.log(obj);
+			}
+			objTemplatesPaths.add(obj[TEMPLATE]);
+		}
+	}
+	
+	/*
+		There are no template workfiles to be loaded
+	*/
+	
+	if (!objTemplatesPaths.size) {
+		return;
+	}
+	
+	var self = this;
+	
+	for (let src of objTemplatesPaths) {
+		// pushing the json workfile in a resource array to be loaded
+		templateWorkfilesResArr.push({
+			name : src,
+			itemType : "JSON",
+			url : src.replace("..", TILED_PATH)
+		});
+		
+		// adding listener for the loading of this workfile event 
+		this.resourceLoader.on("loaded" + src, function(e) {
+			/*
+				when the template workfile has finished loading:
+					- we parse and add it in the objectTemplates by the src key 
+			*/
+			self.objectTemplates[src] = {
+				jsonTemplateWorkfile: JSON.parse(e.detail.response),
+			}
+		});
+	}
+	
+	// adding the whole resource array to start loading
+	this.resourceLoader.add(templateWorkfilesResArr);
+	
+	// name of the resources bundle
+	const WORKFILES_NAME = "ObjectTemplatesWorkfiles";
+	
+	// we change the promise to really wait for the loading of the object template json files
+	this.loadedObjectTemplateWorkfilesPromise = promisify(
+		function(resolve, reject) {
+			self.resourceLoader.on("finishedLoading" + WORKFILES_NAME, function() {
+				self.addCustomObjectTilesets();
+				
+				resolve();
+			});
+		}
+	);
+	
+	// we wait globally for the loading of the workfiles
+	this.loadedResourcesPromises.push(
+		this.loadedObjectTemplateWorkfilesPromise
+	);
+	
+	// kick-start the loading of the resources
+	this.resourceLoader.load(WORKFILES_NAME);
+}
+
+
+/*
+	This function takes the tilesets in object templates and adds them with
+	the rest of the tilesets to be loaded
+	
+	After the loading is complete removeCustomObjectTilesets should be called
+*/
+_p.addCustomObjectTilesets = function() {
+	for (src in this.objectTemplates) {
+		// obtaining an object tileset reference
+		let tilesetRef = this.objectTemplates[src].jsonTemplateWorkfile["tileset"];
+		// adding a flag so we know which tilesets to remove after the loading
+		tilesetRef["objectTemplate"] = true;
+		
+		this.tilesetsWorkfiles.push(tilesetRef);
+	}
+}
+
+// removing the extra tilesets added in the function above
+_p.removeCustomObjectTilesets = function() {
+	let tileArr = this.tilesetsWorkfiles;
+	
+	while (tileArr[tileArr.length - 1]["objectTemplate"]) {
+		tileArr.pop();
+	}
 }
 
 /*_p.parseLayers = function(json) {
@@ -384,6 +538,7 @@ _p.getMapInstance = function(mapName) {
 		this.mapHeight,
 		this.tilesMatrices,
 		this.objectsArr,
+		this.objectTemplates,
 		this.collisionMatrix,
 		this.animationsArr
 	);

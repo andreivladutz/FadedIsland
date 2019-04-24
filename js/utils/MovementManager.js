@@ -6,6 +6,7 @@ class MovementManager {
         this.longitudinalStack = [""];    //STACK FOR "W" AND "S" KEYS
         this.transversalStack = [""];     //STACK FOR "A" AND "D" KEYS
         this.__intervalReference = undefined;   //REFERENCE FOR THE INTERVAL THAT PROCESSES THE INPUTS
+        this.intervalDelay = 8;
         this.alreadyPressed = {    //TRIGGER FOR ALREADY PRESSED KEYS SO THAT KEYDOWN EVENT WON'T FIRE MULTIPLE TIMES ON SAME INPUT
             w : 0,
             a : 0,
@@ -26,7 +27,7 @@ class MovementManager {
         };                                                         //THE REASONING BEHIND IT IS: KEYMAP RETURNS A FUNCTION NAME BASED ON THE KEYSTRING IT RECEIVES
 																   //SO WE ALWAYS GIVE IT THE LAST "WS" KEY PRESSED AND LAST "AD" KEY PRESSED, OR EMPTY STRING IF ONE OF THEM IS NOT PRESSED
         this.startInterval = function () { //INTERVAL THAT CALLS THE FUNCTION THAT APPLIES MOVEMENT FUNCTIONS BASED ON KEYS PRESSED, EACH X SECONDS, DEFAULT CASE IS 50
-            this.__intervalReference = setInterval(this.applyInputs, 50);
+            this.__intervalReference = setInterval(this.applyInputs, this.intervalDelay);
         };
         this.stopInterval = function () {  //FUNCTION TO STOP THE INTERVAL
             clearInterval(this.__intervalReference);
@@ -51,6 +52,11 @@ class MovementManager {
         };
         this.removeInput = function (key) {  //FUNCTION THAT MANAGES THE TWO STACKS, THIS VARIANT REMOVES THE INPUT FROM THE STACK WHEN IT'S CALLED, WE ARE SURE WE ARE GIVEN A VALID "WASD" KEY
 
+            this.inputs--;  //WE RELEASED A KEY SO INPUT DECREMENTS
+            if (this.inputs === 0) { //IF IT WAS LAST KEY PRESSED THAT WAS RELEASED
+                this.stopInterval(); //STOP THE INTERVAL
+            }
+
             if ("ws".includes(key)) {
                 if (this.getLSTop() !== key)  //IF IT'S NOT THE LAST KEY PRESSED...
                     this.longitudinalStack[1] = this.longitudinalStack[2]; //WE SHIFT THE LAST KEY PRESSED ON TOP OF THE KEY WE RELEASED
@@ -58,14 +64,9 @@ class MovementManager {
             }
             else {   //SAME AS ABOVE BUT FOR THE OTHER STACK
                 if (this.getTSTop() !== key)
-                    this.transversalStack[1] = this.longitudinalStack[2];
+                    this.transversalStack[1] = this.transversalStack[2];
                 this.transversalStack.pop();
             }
-            this.inputs--;  //WE RELEASED A KEY SO INPUT DECREMENTS
-            if (this.inputs === 0) { //IF IT WAS LAST KEY PRESSED THAT WAS RELEASED 
-                this.stopInterval(); //STOP THE INTERVAL
-			}
-
         };
     };
 	static keyMap(key) {  //THIS FUNCTION TAKES A STRING ARGUMENT THAT IS EITHER ONE KEY OR "WS" KEY + "AD" KEY AND RETURNS THE RESPECTIVE MOVEMENT FUNCTION IMPLEMENTED IN PLAYEROBJECT'S PROTOTYPE            if (key === "w")
