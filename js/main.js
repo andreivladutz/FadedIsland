@@ -31,7 +31,7 @@ const MAPS_READY_EVENT = "mapRendererInitialised";
 /*
     all the global objects should be moved in a Game class later
 */
-var resourceLoader, canvasManager, mapRenderer, mapLoader, player, loadedPromisesArr = [];
+var resourceLoader, canvasManager, mapRenderer, mapLoader, player, movementManager, loadedPromisesArr = [];
 
 function init() {
     loadingScreen = new LoadingScreen();
@@ -56,9 +56,11 @@ function init() {
     
     
     
-    // push map loading to pseudo-semaphore
+    // push map loading to pseudo-semaphore so we wait on all the maps
     loadedPromisesArr.push(promisify(loadedMap));
     player = new Player(canvasManager.canvas, loadedPromisesArr);
+	// initialise the movementManager with the player reference
+	movementManager = new MovementManager(player);
     
     // wait on loadMap and loadPlayer
     waitOnAllPromises(loadedPromisesArr).then(
@@ -69,9 +71,7 @@ function init() {
         function onRejected(err) {
             console.error(err);
         }
-    )
-
-	let movementManager = new MovementManager(player);
+    );
 
     mapLoader.load();
 }

@@ -235,6 +235,10 @@ _p.setDeceleration = function(deceleration) {
 	this._deceleration = deceleration;
 };
 
+_p.getLoopsSkipped = function() {
+	return this.loopsSkipped;
+}
+
 
 /**
  * In the default implementation the preprocessor takes into the account
@@ -302,17 +306,17 @@ _p.update = function(timer) {
 	if (this._timeSinceLoopStart >= this._duration) {
 
 		// Just in case, we skipped more than one loop, determine how many loops did we miss
-		var loopsSkipped = Math.floor(this._timeSinceLoopStart/this._duration);
+		this.loopsSkipped = Math.floor(this._timeSinceLoopStart/this._duration);
 		this._timeSinceLoopStart %= this._duration;
 
 		// truncate to the number of loops skipped. Even if we skipped 5 loops,
 		// but there was only 3 left, we don't want to fire extra listeners.
-		if (this._repeatCount != Animator.INFINITE && loopsSkipped > this._repeatCount - this._loopsDone) {
-			loopsSkipped = this._repeatCount - this._loopsDone;
+		if (this._repeatCount != Animator.INFINITE && this.loopsSkipped > this._repeatCount - this._loopsDone) {
+			this.loopsSkipped = this._repeatCount - this._loopsDone;
 		}
 
 		// Call the hook for each of the skipped loops
-		for (var i = 1; i <= loopsSkipped; i++) {
+		for (var i = 1; i <= this.loopsSkipped; i++) {
 			this._loopsDone++;
 			this._reverseLoop = this._repeatBehavior == Animator.RepeatBehavior.REVERSE && this._loopsDone % 2 == 1;
 			this._onLoopEnd(this._loopsDone);
@@ -336,6 +340,7 @@ _p.update = function(timer) {
 
 	// Call update
 	this._onUpdate(fraction, this._loopsDone);
+	
 	return fraction;
 };
 

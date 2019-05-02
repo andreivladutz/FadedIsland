@@ -1,6 +1,7 @@
+"use strict";
 const FRAME_WIDTH = 64, FRAME_HEIGHT = 64,
 	  ACTUAL_PLAYER_WIDTH = 32,
-      FRAME_ROW = 8, FRAME_COLUMN_MAX = 9;
+      FRAME_ROW = 8;
 
 var interval, counter = 0;
 
@@ -10,11 +11,6 @@ var RESOURCES = [
         name: "Player",
         itemType: "img",
         url: "./img/player/sprite.png"
-    },
-    {
-        name: "Attack",
-        itemType: "img",
-        url: "./img/player/spriteAttack.png"
     },
     {
         name: "BodyArmour",
@@ -45,28 +41,8 @@ class Player extends EventEmiter {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         
-        this.speed = 3;
+        this.speed = 2;
         this.power = 20; // attack power
-
-        this.steps = {
-            up: {
-                skips: 0,
-                frames: 0
-            },
-            down: {
-                skips: 0,
-                frames: 0
-            },
-            left: {
-                skips: 0,
-                frames: 0
-            },
-            right: {
-                skips: 0,
-                frames: 0
-            },
-            frameCount: 8
-        };
 
 		// coords corespond to feet area
 		this.coordX = canvas.width / 2;
@@ -88,7 +64,7 @@ class Player extends EventEmiter {
 		this.globalPromisesArr = loadedPromisesArr;
 		
 		
-		this.waitOn("Attack", "sprite");
+		this.waitOn("Player", "sprite");
 		this.waitOn("BodyArmour");
 		this.waitOn("FeetArmour");
 		this.waitOn("ArmsArmour");
@@ -96,7 +72,10 @@ class Player extends EventEmiter {
 
         
         this.resLoader.load();
+		this.initAnimators();
         
+		
+		/* code not used anymore
         // add listeners for movement
         this.dict = {
             "up": "w", 
@@ -105,11 +84,23 @@ class Player extends EventEmiter {
             "right": "d",
             "attack": "k"
         }
-        this.keyEvents = new KeyEventEmitter(this.dict);
+        
+		//
+		
+		this.keyEvents = new KeyEventEmitter(this.dict);
         this.keyEvents.addEventListener("keyrelease", this.keyRelease.bind(this));
         this.keyEvents.addEventListener("attack", this.attack.bind(this));
-    }
+    	*/
+	}
 }
+
+// duration of one frame in ms
+Player.MOVEMENT_DURATION = 50;
+// number of frames for walking animation
+Player.WALK_MAX_COLUMNS = 9;
+
+// standstill column
+Player.STANDSTILL_POSITION = 0;
 
 _p = Player.prototype;
 
@@ -145,6 +136,21 @@ _p.waitOn = function(resourceName, propertyName = getLowerCaseName(resourceName)
 	}
 	
 	this.globalPromisesArr.push(promisify(loadedResource));
+}
+
+// initialise all animators
+_p.initAnimators = function() {
+	// separate animator for the walking animation (the frame animation)
+	// the total duration of one movement loop
+	this.walkingFrameAnimator = new Animator(Player.MOVEMENT_DURATION * Player.WALK_MAX_COLUMNS);
+	// infinite animation, we use the start and stop methods on this animator 
+	// to stop and resume the walk animation
+	this.walkingFrameAnimator.setRepeatCount(Animator.INFINITE);
+	
+	// separate animator for the player movement when walking (in coordinates)
+	this.walkingMovementAnimator = new Animator(Player.MOVEMENT_DURATION);
+	// same as walkingFrameAnimator
+	this.walkingMovementAnimator.setRepeatCount(Animator.INFINITE);
 }
 
 _p.drawSpriteFrame = function(image) {
@@ -258,17 +264,37 @@ _p.resetYCoordsToCenter = function() {
     this.coordBodyY = this.coordY - FRAME_HEIGHT / 5;
 }
 
-_p.verifyAndUpdateFrameStatus = function(direction) {
-    let answer;
-    if(this.steps[direction]["skips"] === 0)
-        answer = 1;
-    else answer = 0;
-    this.steps[direction]["skips"] = (this.steps[direction]["skips"] + 1) % this.steps["frameCount"];
-
-    return answer;
+_p.updateMovementAnimation = function(speedIn) {
+	// if no movement timer has been created or it has been stopped by keyRelease()
+	// another instance of Timer is created (so lastUpdateTime is reinitialised to now)
+	if (!this.movementTimer) {
+		this.movementTimer = new Timer();
+		this.walkingFrameAnimator.start();
+		this.walkingMovementAnimator.start();
+	}
+	
+	// pass the timer to get the deltaTime
+	this.column = Math.floor(this.walkingFrameAnimator.update(this.movementTimer) * Player.WALK_MAX_COLUMNS);
+	
+	/* speed is now dependent on the time passed
+	 * this.walkingMovementAnimator.getLoopsSkipped() is the number of times we should have moved with speed but skipped
+	 */
+	//console.log("SPEED FRACTION = " + this.walkingMovementAnimator.update(this.movementTimer));
+	//console.log("SKIPPED = " + this.walkingMovementAnimator.getLoopsSkipped());
+	let speedOut = this.walkingMovementAnimator.update(this.movementTimer) * speedIn +
+		this.walkingMovementAnimator.getLoopsSkipped() * speedIn;
+	
+	
+	// we updated now
+	this.movementTimer.lastUpdatedNow();
+	
+	return speedOut;
 }
 
-_p.keyUp = function(e, speed = this.speed, diagonalMovement = false) {
+_p.keyUp = function(e, speed = this.speed) {
+	this.row = FRAME_ROW + 0;
+	speed = Math.round(this.updateMovementAnimation(speed));
+	
     for(var i = speed; i >= 0; i--) {
         if (!this.checkCollision(0, -i, this.coordBodyY, this.coordX)) { // if no collision
             // player movement
@@ -292,20 +318,16 @@ _p.keyUp = function(e, speed = this.speed, diagonalMovement = false) {
                     this.mapRenderer.moveMap(0, i);
                 }   
             }
-			
-			if (!diagonalMovement) {
-				// sprite animation
-				this.row = FRAME_ROW + 0;
-				let frameChanger = this.verifyAndUpdateFrameStatus("up");
-				this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
-			}
 
             return;
         }
     }
 }
 
-_p.keyDown = function(e, speed = this.speed, diagonalMovement = false) {
+_p.keyDown = function(e, speed = this.speed) {
+	this.row = FRAME_ROW + 2;
+	speed = Math.round(this.updateMovementAnimation(speed));
+	
     for(var i = speed; i >= 0; i--) {
         if(!this.checkCollision(0, i)) { // if no collision
             // player movement
@@ -331,13 +353,6 @@ _p.keyDown = function(e, speed = this.speed, diagonalMovement = false) {
                     this.mapRenderer.moveMap(0, -i); 
                 }    
             }
-			
-			if (!diagonalMovement) {
-				// sprite animation
-				this.row = FRAME_ROW + 2;
-            	let frameChanger = this.verifyAndUpdateFrameStatus("down");
-            	this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
-			}
 
             return;
         }
@@ -345,6 +360,10 @@ _p.keyDown = function(e, speed = this.speed, diagonalMovement = false) {
 }
 
 _p.keyLeft = function(e, speed = this.speed) {
+	// sprite animation
+	this.row = FRAME_ROW + 1;
+	speed = Math.round(this.updateMovementAnimation(speed));
+	
     for(var i = speed; i >= 0; i--) {
         if(!this.checkCollision(-i, 0, this.coordY, this.coordX)) { // if no collision
             // player movement
@@ -362,12 +381,6 @@ _p.keyLeft = function(e, speed = this.speed) {
                     this.mapRenderer.moveMap(i, 0);
                 }      
             }
-        	
-			// sprite animation
-			this.row = FRAME_ROW + 1;
-            let frameChanger = this.verifyAndUpdateFrameStatus("left");
-            this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
-
 
             return;
 		}
@@ -377,6 +390,10 @@ _p.keyLeft = function(e, speed = this.speed) {
 }
 
 _p.keyRight = function(e, speed = this.speed) {
+	// sprite animation
+	this.row = FRAME_ROW + 3;
+	speed = Math.round(this.updateMovementAnimation(speed));
+	
     for(var i = speed; i >= 0; i--) {
         if (!this.checkCollision(i, 0, this.coordY, this.coordX)) { // if no collision
             // player movement
@@ -397,41 +414,43 @@ _p.keyRight = function(e, speed = this.speed) {
                     this.mapRenderer.moveMap(-i, 0);                
                 }
             }
-        }
+		}
 		
-		// sprite animation
-		this.row = FRAME_ROW + 3;
-        let frameChanger = this.verifyAndUpdateFrameStatus("right");
-        this.column = (this.column + frameChanger) % FRAME_COLUMN_MAX;
-
-
         return;
     }   
 }
 
 _p.keyUpRight = function(e) {
-    this.keyUp(e, Math.round(this.speed * 0.7), true);
-    this.keyRight(e, Math.round(this.speed * 0.7));
+    this.keyUp(e, this.speed * 0.7);
+    this.keyRight(e, this.speed * 0.7);
 }
 
 _p.keyUpLeft = function(e) {
-    this.keyUp(e, Math.round(this.speed * 0.7), true);
-    this.keyLeft(e, Math.round(this.speed * 0.7));
+    this.keyUp(e, this.speed * 0.7);
+    this.keyLeft(e, this.speed * 0.7);
 }
 
 _p.keyDownRight = function(e) {
-    this.keyDown(e, Math.round(this.speed * 0.7), true);
-    this.keyRight(e, Math.round(this.speed * 0.7));
+    this.keyDown(e, this.speed * 0.7);
+    this.keyRight(e, this.speed * 0.7);
 }
 
 _p.keyDownLeft = function(e) {
-    this.keyDown(e, Math.round(this.speed * 0.7), true);
-    this.keyLeft(e, Math.round(this.speed * 0.7));
+    this.keyDown(e, this.speed * 0.7);
+    this.keyLeft(e, this.speed * 0.7);
 }
 
 _p.keyRelease = function() {
-    this.column = 0;
+    this.column = Player.STANDSTILL_POSITION;
+	
+	// stop the animator so it is resetted the next time the player starts moving again
+	this.movementTimer = null;
+	this.walkingFrameAnimator.stop();
+	this.walkingMovementAnimator.stop();
 }
+
+/*
+// this really annoyed me so had to comment it out 
 
 _p.attack = function() {
     this.row = 13;
@@ -445,6 +464,7 @@ _p.animatE = function() {
     this.column = (this.column + 1) % 6;
     this.draw();
 }
+*/
 
 
 

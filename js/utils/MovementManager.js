@@ -55,6 +55,8 @@ class MovementManager {
             this.inputs--;  //WE RELEASED A KEY SO INPUT DECREMENTS
             if (this.inputs === 0) { //IF IT WAS LAST KEY PRESSED THAT WAS RELEASED
                 this.stopInterval(); //STOP THE INTERVAL
+				// let the player know all keys have been released
+				playerObject.keyRelease();
             }
 
             if ("ws".includes(key)) {
