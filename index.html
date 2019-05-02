@@ -6,20 +6,27 @@
 		<link href="css/general.css" rel="stylesheet" type="text/css">
         <link href="css/loadscreen.css" rel="stylesheet" type="text/css">
 		
+		<!-- UTILITIES -->
 		<script src="js/utils/xstats.js"></script>
 		<script src="js/utils/promisesUtilities.js"></script>
 		<script src="js/utils/EventEmiter.js"></script>
-		<script src="js/utils/MapParser.js"></script>
-		
 		<script src="js/utils/ResourceLoader.js"></script>
-        <script src="js/LoadingScreen.js"></script>
-		<script src="js/CanvasManager.js"></script>
-		<script src="js/MapInstance.js"></script>
-		<script src="js/MapRenderer.js"></script>
-        <script src="js/MapLoader.js"></script>
+		<script src="js/utils/Animator.js"></script>
         <script src="js/utils/KeyEventEmitter.js"></script>
 		<script src="js/utils/MovementManager.js"></script>
-        <script src="js/utils/playerMove.js"></script>
+			
+		<!-- MAP CLASSES -->
+		<script src="js/MapClasses/MapParser.js"></script>
+		<script src="js/MapClasses/MapInstance.js"></script>
+		<script src="js/MapClasses/MapRenderer.js"></script>
+        <script src="js/MapClasses/MapLoader.js"></script>
+		
+		<!-- ACTORS CLASSES -->
+		<script src="js/ActorsClasses/Player.js"></script>
+		
+		<!-- GENERAL CODE -->
+		<script src="js/LoadingScreen.js"></script>
+		<script src="js/CanvasManager.js"></script>
 		<script src="js/main.js"></script>
 	</head>
 	<body onload="init()">
