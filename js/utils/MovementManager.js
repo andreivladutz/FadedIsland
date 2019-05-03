@@ -6,7 +6,7 @@ class MovementManager {
         this.longitudinalStack = [""];    //STACK FOR "W" AND "S" KEYS
         this.transversalStack = [""];     //STACK FOR "A" AND "D" KEYS
         this.__intervalReference = undefined;   //REFERENCE FOR THE INTERVAL THAT PROCESSES THE INPUTS
-        this.intervalDelay = 8;
+        this.intervalDelay = Player.KEYDOWN_INTERVAL_DELAY;
         this.alreadyPressed = {    //TRIGGER FOR ALREADY PRESSED KEYS SO THAT KEYDOWN EVENT WON'T FIRE MULTIPLE TIMES ON SAME INPUT
             w : 0,
             a : 0,
@@ -24,7 +24,10 @@ class MovementManager {
         this.applyInputs = function () {  //THE MAIN FUNCTION THAT COMPUTES THE INPUTS AND DECIDES WHAT MOVEMENT FUNCTION TO APPLY
             playerObject[MovementManager.keyMap(MovementManager.selfReference.getLSTop()   //WE USE THE SUPPORT FUNCTION "KEYMAP" DEFINED AND EXPLAINED BELOW
                 + MovementManager.selfReference.getTSTop())]();    //WE GIVE IT THE TOP OF EACH STACK AS ARGUMENT
-        };                                                         //THE REASONING BEHIND IT IS: KEYMAP RETURNS A FUNCTION NAME BASED ON THE KEYSTRING IT RECEIVES
+			
+			// if a timer has been started we moved once so we update the time of lastUpdate
+			playerObject.walkMovementTimer && playerObject.walkMovementTimer.lastUpdatedNow();
+		};                                                         //THE REASONING BEHIND IT IS: KEYMAP RETURNS A FUNCTION NAME BASED ON THE KEYSTRING IT RECEIVES
 																   //SO WE ALWAYS GIVE IT THE LAST "WS" KEY PRESSED AND LAST "AD" KEY PRESSED, OR EMPTY STRING IF ONE OF THEM IS NOT PRESSED
         this.startInterval = function () { //INTERVAL THAT CALLS THE FUNCTION THAT APPLIES MOVEMENT FUNCTIONS BASED ON KEYS PRESSED, EACH X SECONDS, DEFAULT CASE IS 50
             this.__intervalReference = setInterval(this.applyInputs, this.intervalDelay);
@@ -55,6 +58,8 @@ class MovementManager {
             this.inputs--;  //WE RELEASED A KEY SO INPUT DECREMENTS
             if (this.inputs === 0) { //IF IT WAS LAST KEY PRESSED THAT WAS RELEASED
                 this.stopInterval(); //STOP THE INTERVAL
+				// let the player know all keys have been released
+				playerObject.keyRelease();
             }
 
             if ("ws".includes(key)) {

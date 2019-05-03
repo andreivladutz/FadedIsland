@@ -125,8 +125,12 @@ _p.drawOffScreenAnimatedTiles = function() {
 		eX = this.offScreenVisibleTileArea.endX,
 		eY = this.offScreenVisibleTileArea.endY;
 	
-	if (!this.startOfAnimation) {
-		this.startOfAnimation = new Date().getTime();
+	/* 
+	 *	the first call to this function instantiates a timer and one Animator utility for each animated tile
+	 *	which are then used at later calls to update the frames of the animations
+	 */
+	if (!this.animationTimer) {
+		this.animationTimer = new Timer();
 	}
 	
 	for (let animationArr of mapInst.animationsArr) {
@@ -138,14 +142,30 @@ _p.drawOffScreenAnimatedTiles = function() {
 		}
 		
 		let currFrame = animationArr[CURRENT_FRAME],
-			frameDuration = animationArr[currFrame][FRAME_DURATION],
-			timeNow = new Date().getTime();
+			frameCount = animationArr.length;
 		
-		var newFrame = 
-			Math.floor(
-				(timeNow - this.startOfAnimation) / frameDuration
-			) % animationArr.length;
+		// no animator instance for this animated tile so we create one 
+		if (!animationArr._ANIMATOR) {
+			let frameDuration = animationArr[currFrame][FRAME_DURATION];
+			
+			// we init the ._ANIMATOR with the total duration of the animation
+			animationArr._ANIMATOR = new Animator(frameDuration * frameCount);
+			// all animations are infinite i.e. after they end they start again
+			animationArr._ANIMATOR.setRepeatCount(Animator.INFINITE);
+			// start the animator
+			animationArr._ANIMATOR.start();
+		}
 		
+		/*
+		 *	There's only a global timer for all the animated tiles so we send it as 
+		 *	a parameter to each animator, updating the internal lastUpdateTime only after
+		 *	all the animated tiles have been drawn (so they keep the same rythm and are all synchronized)
+		 */
+		var newFrame = Math.floor(
+			animationArr._ANIMATOR.update(this.animationTimer) * frameCount
+		);
+		
+		// if the frame changed we have to draw the new frame
 		if (newFrame != currFrame) {
 			currFrame = newFrame;
 			animationArr[CURRENT_FRAME] = currFrame;
@@ -170,6 +190,10 @@ _p.drawOffScreenAnimatedTiles = function() {
 			
 		}
 	}
+	
+	// when the *for loop* which updates all animated tiles ended it's time to update the global timer ->
+	// we have just updated all the tiles so the lastUpdate time is right now
+	this.animationTimer.lastUpdatedNow();
 }
 
 //draws all of the layers of a tile without animated ones
