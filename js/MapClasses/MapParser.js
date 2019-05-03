@@ -9,8 +9,11 @@ const LAYER_ARR = "layers", OBJECT_ARR = "objects", TILE_ARR = "data",
 	  CURRENT_FRAME = "currentFrame", LOADED_TILESETS_EVENT = "tilesetLoadFinished";
 
 class MapParser extends EventEmiter {
-	constructor(resLoader, jsonText, loadedResourcesPromisesArr) {
+	constructor(resLoader, jsonText, loadedResourcesPromisesArr, mapName) {
 		super();
+		
+		// save map name for debugging purposes
+		this._mapName = mapName;
 		
 		this.globalResLoader = resLoader;
 		this.resourceLoader = new ResourceLoader();
@@ -190,7 +193,6 @@ function returnAllLayers(layers) {
 	let realLayers = [];
 
     for(let layer of layers) {
-
         if("layers" in layer) {
             realLayers = realLayers.concat(returnAllLayers(layer["layers"]));
         }
@@ -203,7 +205,6 @@ function returnAllLayers(layers) {
 function hasCustomProperty(layer, name) {
 	if ("properties" in layer) {
     	for (let property of layer["properties"]) {
-
     		if (property["name"] === name)
     			return property["value"];
 		}
@@ -213,13 +214,12 @@ function hasCustomProperty(layer, name) {
 }
 
 _p.processCollisionMatrixAnimations = function() {
-
 	let realLayers = returnAllLayers(this.layers);
 	let layersCounter = 0;
 	let walkableTrigger;
 
+	// matrix of tile ids
 	for (let tileMatrix of this.tilesMatrices) {
-
 		walkableTrigger = hasCustomProperty(realLayers[layersCounter], "walkable");
 		layersCounter++;
 
@@ -229,7 +229,14 @@ _p.processCollisionMatrixAnimations = function() {
                 if(walkableTrigger !== null && realLayers[layersCounter - 1]["data"][i * tileMatrix.length + j] !== 0) {
                     this.collisionMatrix[i][j] = !walkableTrigger;
                 }
-
+				
+				
+				/*
+				 * 
+				 * looking for the tile id in all the tilesets to find to which tileset it belongs 
+				 *
+				 *
+				 */
 				let tileNo = tileMatrix[i][j],
 					tilesets = this.tilesetsWorkfiles,
 					usedTileset;
@@ -251,24 +258,41 @@ _p.processCollisionMatrixAnimations = function() {
 
 				//the current tile is from the last tileset in the tilesets array
 				if (!usedTileset) {
+					console.log("PICKING LAST TILESET " + this._mapName + " TILE NO = " + tileNo);
 					usedTileset = tilesets[tilesets.length - 1];
 				}
+				/*
+				 * 
+				 * search for the tileset ends here
+				 *
+				 */
+				
 
-				//if the resource isn't found locally than it is stored in the global resLoader
+				//if the resource isn't found locally then it is stored in the global resLoader
 				let tilesetWorkfile = usedTileset.JSONobject;
-
+				
+				if (usedTileset === undefined) {
+					console.log("DIDN T FIND TILESET WHERE TILE BELONGS!!");
+				}
+				
+				
+				// the TILESET has a "tiles" (= TILE_ARR_IN_TILESETWORKFILE) property
+				// which is an array of objects where each object corresponds to a tile
 				let tilesObjectArr = tilesetWorkfile[TILE_ARR_IN_TILESETWORKFILE],
 					realTileNo = tileNo - usedTileset[FIRST_TILE_NUMBER],
 					currTileObj;
-
+				
 				try{
 					currTileObj = tilesObjectArr[realTileNo];
 				}
 				catch(err){
+					if (this._mapName != "Dungeon")
+						console.log("CAUGHT ERROR " + this._mapName);
 					continue;
 				}
 
 				if (!currTileObj) {
+					console.log("NO TILE OBJ " + this._mapName);
 					continue;
 				}
 				
