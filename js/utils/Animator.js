@@ -304,7 +304,6 @@ _p.update = function(timer) {
 	// If we exceeded the loop time, we must take care of what to do next:
 	// adjust the direction of the animation, call hook functions etc.
 	if (this._timeSinceLoopStart >= this._duration) {
-
 		// Just in case, we skipped more than one loop, determine how many loops did we miss
 		this.loopsSkipped = Math.floor(this._timeSinceLoopStart/this._duration);
 		this._timeSinceLoopStart %= this._duration;
