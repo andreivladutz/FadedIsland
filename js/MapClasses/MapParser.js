@@ -175,11 +175,10 @@ _p.loadTilesetsWorkfiles = function() {
 		promisify(function(resolve, reject) {
 			self.resourceLoader.on("finishedLoading" + WORKFILES_NAME, function startLoadingImages() {				
 				self.startLoadingTilsetImages(imageResources);
-				self.processCollisionMatrixAnimations();
-				
 				// remove the tilesets which belong to the custom objects
 				self.removeCustomObjectTilesets();
-				
+				// after removing custom tilesets we start processing animations and collisions
+				self.processCollisionMatrixAnimations();
 				resolve();
 			});
 		})
@@ -217,6 +216,14 @@ _p.processCollisionMatrixAnimations = function() {
 	let realLayers = returnAllLayers(this.layers);
 	let layersCounter = 0;
 	let walkableTrigger;
+	
+	// getting the last tileset in the array of tilesets workfiles
+	// getting the array of tiles for that last tileset so we know 
+	// the maximum possible value for the id of a tile
+	let tilesets = this.tilesetsWorkfiles, 
+		lastTilesetWorkfile = tilesets[tilesets.length - 1].JSONobject,
+		lastTileObjArr = lastTilesetWorkfile[TILE_ARR_IN_TILESETWORKFILE],
+		maximumIdPossible = tilesets[tilesets.length - 1].firstgid + lastTileObjArr.length - 1;
 
 	// matrix of tile ids
 	for (let tileMatrix of this.tilesMatrices) {
@@ -225,7 +232,8 @@ _p.processCollisionMatrixAnimations = function() {
 
 		for (let i = 0; i < tileMatrix.length; i++) {
 			for (let j = 0; j < tileMatrix[i].length; j++) {
-
+				
+				// whole layer is walkable / non-walkable and the current tile is not 0 (there's no real tile here)
                 if(walkableTrigger !== null && realLayers[layersCounter - 1]["data"][i * tileMatrix.length + j] !== 0) {
                     this.collisionMatrix[i][j] = !walkableTrigger;
                 }
@@ -238,10 +246,19 @@ _p.processCollisionMatrixAnimations = function() {
 				 *
 				 */
 				let tileNo = tileMatrix[i][j],
-					tilesets = this.tilesetsWorkfiles,
 					usedTileset;
 
 				if (tileNo == NO_TILE) {
+					continue;
+				}
+				
+				/* 
+					the castle map has a weird bug from Tiled: it has tile numbers bigger than existing tile ids
+					so we have to ignore them
+				 */
+				if (tileNo > maximumIdPossible) {
+					// also remove them from the tile layer matrix
+					tileMatrix[i][j] = NO_TILE;
 					continue;
 				}
 
@@ -258,7 +275,6 @@ _p.processCollisionMatrixAnimations = function() {
 
 				//the current tile is from the last tileset in the tilesets array
 				if (!usedTileset) {
-					console.log("PICKING LAST TILESET " + this._mapName + " TILE NO = " + tileNo);
 					usedTileset = tilesets[tilesets.length - 1];
 				}
 				/*
@@ -271,28 +287,22 @@ _p.processCollisionMatrixAnimations = function() {
 				//if the resource isn't found locally then it is stored in the global resLoader
 				let tilesetWorkfile = usedTileset.JSONobject;
 				
-				if (usedTileset === undefined) {
-					console.log("DIDN T FIND TILESET WHERE TILE BELONGS!!");
-				}
-				
-				
 				// the TILESET has a "tiles" (= TILE_ARR_IN_TILESETWORKFILE) property
 				// which is an array of objects where each object corresponds to a tile
 				let tilesObjectArr = tilesetWorkfile[TILE_ARR_IN_TILESETWORKFILE],
 					realTileNo = tileNo - usedTileset[FIRST_TILE_NUMBER],
 					currTileObj;
 				
-				try{
+				// if no property is added on the tiles of a particular tileset
+				// then it will not have a tilesObjectArr i.e. the "tiles" property described above
+				try {
 					currTileObj = tilesObjectArr[realTileNo];
 				}
-				catch(err){
-					if (this._mapName != "Dungeon")
-						console.log("CAUGHT ERROR " + this._mapName);
+				catch(err) {
 					continue;
 				}
 
 				if (!currTileObj) {
-					console.log("NO TILE OBJ " + this._mapName);
 					continue;
 				}
 				
@@ -430,9 +440,6 @@ _p.parseObjects = function() {
 	for (obj of this.objectsArr) {
 		// the curr object is a template object so we need to load it's template.json
 		if (TEMPLATE in obj) {
-			if (obj[TEMPLATE] === "../object_workfiles/WaterFountain.json") {
-				console.log(obj);
-			}
 			objTemplatesPaths.add(obj[TEMPLATE]);
 		}
 	}

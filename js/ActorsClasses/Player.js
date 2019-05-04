@@ -84,7 +84,9 @@ class Player extends EventEmiter {
 
 // duration of one frame in ms
 Player.MOVEMENT_DURATION = 80;
-// number of frames for walking animation
+// number of frames for walking animation 
+// ALTHOUGH THE FIRST ONE IS STANDSTILL POSITION 
+// WHICH WE WILL IGNORE WHEN WALKING!!!
 Player.WALK_MAX_COLUMNS = 9;
 
 // launching "fake" keypresses so they are launched as uniformly as possible
@@ -138,7 +140,8 @@ _p.waitOn = function(resourceName, propertyName = getLowerCaseName(resourceName)
 _p.initAnimators = function() {
 	// separate animator for the walking animation (the frame animation)
 	// the total duration of one movement loop
-	this.walkingFrameAnimator = new Animator(Player.MOVEMENT_DURATION * Player.WALK_MAX_COLUMNS);
+	// WALK_COLUMNS - 1 bc we ignore the standstill position
+	this.walkingFrameAnimator = new Animator(Player.MOVEMENT_DURATION * (Player.WALK_MAX_COLUMNS - 1));
 	// infinite animation, we use the start and stop methods on this animator 
 	// to stop and resume the walk animation
 	this.walkingFrameAnimator.setRepeatCount(Animator.INFINITE);
@@ -275,7 +278,8 @@ _p.updateMovementAnimation = function(speed) {
 	}
 	
 	// pass the timer to get the deltaTime and compute the frame that should be drawn right now
-	this.column = Math.floor(this.walkingFrameAnimator.update(this.walkAnimationTimer) * Player.WALK_MAX_COLUMNS);
+	// We get the number of a frame between 0 and NumberOfFrames - 1 which we offset by 1 so we skip the 0 frame which is STANDSTILL_POSITION
+	this.column = Math.floor(this.walkingFrameAnimator.update(this.walkAnimationTimer) * (Player.WALK_MAX_COLUMNS - 1)) + 1;
 	
 	// MOVED THIS LINE IN THE MOVEMENT MANAGER. REASON: 
 	// If the movement was diagonal we want to account for lost speed on both directions
