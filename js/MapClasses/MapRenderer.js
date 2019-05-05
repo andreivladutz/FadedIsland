@@ -1,3 +1,4 @@
+"use strict";
 const LAST_ANIMATION_TIME = "lastAnimationTime", FRAME_DURATION = "duration";
 
 class MapRenderer {
@@ -137,10 +138,6 @@ _p.drawOffScreenAnimatedTiles = function() {
 		let i = animationArr[POSITION_IN_MATRIX].i,
 			j = animationArr[POSITION_IN_MATRIX].j;
 		
-		if (i < stY || i > eY || j < stX || j > eX) {
-			continue;
-		}
-		
 		let currFrame = animationArr[CURRENT_FRAME],
 			frameCount = animationArr.length;
 		
@@ -170,6 +167,11 @@ _p.drawOffScreenAnimatedTiles = function() {
 			currFrame = newFrame;
 			animationArr[CURRENT_FRAME] = currFrame;
 			animationArr[CURRENT_ID] = animationArr[currFrame].tileid;
+			
+			// update all Animations but if they are out of sight do not redraw them 
+			if (i < stY || i > eY || j < stX || j > eX) {
+				continue;
+			}
 			
 			this.drawOffScreenTile(i, j, animationArr[DEFAULT_TILE]);
 			
@@ -214,34 +216,28 @@ _p.drawOffScreenTile = function(i, j, animatedId) {
 	
 	// for every layer of tiles
 	for (let tilesMatrix of tilesMatrices) {
-		let tileNo = tilesMatrix[i][j],
-			usedTileset;
+		/*
+		 * now that tiles layers are kept as sparse matrices we first have to check
+		 * if the row of the tile we want to draw really exists or is full of null tiles
+		 */
 		
-		// NO_TILE means an empty tile
-		if (tileNo == NO_TILE) {
+		//AND
+		
+		/*
+		 * we check if our tile is an empty tile and if it is we skip it
+		 * BEFORE: it was equal to zero but NOW: we don't keep the null tiles in memory anymore
+		 * so if it was a NO_TILE (i.e. equal to 0) now it simply doesn't exist in the sparse matrix
+		 */
+		if (!tilesMatrix[i] || !tilesMatrix[i][j]) {
 			continue;
 		}
-
-		// going through all objects of tilesets used at the end of the map.json file
-		// looking at the "firstgid" property to understand to which tileset the current tile belongs to
-		for (let tilesetInd = 0; tilesetInd < tilesets.length - 1; tilesetInd++) {
-			let currTileset = tilesets[tilesetInd],
-				nextTileset = tilesets[tilesetInd + 1];
-
-			//the tile to be drawn belongs to the currentTileset
-			if (tileNo >= currTileset[FIRST_TILE_NUMBER] && tileNo < nextTileset[FIRST_TILE_NUMBER]) {
-				usedTileset = currTileset;
-				break;
-			}
-		}
-
-		// the loop through the tilesets object didn't find two consecutive firgid properties
-		// to fit the used tile number in so probably
-		// the current tile is from the last tileset in the tilesets array
-		if (!usedTileset) {
-			usedTileset = tilesets[tilesets.length - 1];	
-		}
-
+		
+		let tileNo = tilesMatrix[i][j].value;
+		
+		/*
+			usedTileset is the tileset which the current tile belongs to from tilesetWorkfiles
+		*/
+		let usedTileset = tilesMatrix[i][j].usedTileset;
 		// the actual tileNo in the actual tileset.json is the id from the map data - firstgid number
 		tileNo -= usedTileset[FIRST_TILE_NUMBER];
 		

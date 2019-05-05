@@ -1,3 +1,4 @@
+"use strict";
 const LAYER_ARR = "layers", OBJECT_ARR = "objects", TILE_ARR = "data",
 	  TILE_SIZE = "tilewidth", MAP_HEIGHT = "height", MAP_WIDTH = "width",
 	  TILESETS_ARR = "tilesets", NO_TILE = 0, WORKFILE_SOURCE = "source",
@@ -34,6 +35,14 @@ class MapParser extends EventEmiter {
 		/*
 			building an array of matrices with mapHeight rows
 			each layer of tiles is transformed in a matrix of tiles
+			
+			LATER ADD:
+			transforming every matrix of tiles to a sparse matrix 
+			(i.e. the array of arrays is now an object of objects)
+			
+			REASON:
+			many tile layers have a lot of empty cells (i.e. they are sparse = have a lot of zeros)
+			so we could get some memory boost from eliminating empty cells and empty rows
 		*/
 		this.tilesMatrices = [];
 		
@@ -228,26 +237,21 @@ _p.processCollisionMatrixAnimations = function() {
 		walkableTrigger = hasCustomProperty(realLayers[layersCounter], "walkable");
 		layersCounter++;
 
-		for (let i = 0; i < tileMatrix.length; i++) {
-			for (let j = 0; j < tileMatrix[i].length; j++) {
+		for (let i = 0; i < this.mapHeight; i++) {
+			for (let j = 0; j < this.mapWidth; j++) {
 				
 				// whole layer is walkable / non-walkable and the current tile is not 0 (there's no real tile here)
-                if(walkableTrigger !== null && realLayers[layersCounter - 1]["data"][i * tileMatrix.length + j] !== 0) {
+                if(walkableTrigger !== null && realLayers[layersCounter - 1]["data"][i * this.mapWidth + j] !== 0) {
                     this.collisionMatrix[i][j] = !walkableTrigger;
                 }
 				
-				/*
-				 * 
-				 * looking for the tile id in all the tilesets to find to which tileset it belongs 
-				 *
-				 *
-				 */
-				let tileNo = tileMatrix[i][j],
-					usedTileset;
-
-				if (tileNo == NO_TILE) {
+				// this row of tiles is full of null tiles or this tile is null
+				if (!tileMatrix[i] || !tileMatrix[i][j]) {
 					continue;
 				}
+				
+				let tileNo = tileMatrix[i][j].value,
+					usedTileset;
 				
 				/* 
 					the castle map has a weird bug from Tiled: it has tile numbers bigger than existing tile ids
@@ -255,12 +259,17 @@ _p.processCollisionMatrixAnimations = function() {
 				 */
 				if (tileNo > maximumIdPossible) {
 					// also remove them from the tile layer matrix
-					tileMatrix[i][j] = NO_TILE;
+					delete tileMatrix[i][j];
 					continue;
 				}
 				
+				/*
+				 * 
+				 * looking for the tile id in all the tilesets to find which tileset it belongs to
+				 *
+				 */
 				// going through all objects of tilesets used at the end of the map.json file
-				// looking at the "firstgid" property to understand to which tileset the current tile belongs to
+				// looking at the "firstgid" property to understand which tileset the current tile belongs to
 				for (let tilesetInd = 0; tilesetInd < tilesets.length - 1; tilesetInd++) {
 					let currTileset = tilesets[tilesetInd],
 						nextTileset = tilesets[tilesetInd + 1];
@@ -282,6 +291,7 @@ _p.processCollisionMatrixAnimations = function() {
 				 *
 				 */
 				
+				tileMatrix[i][j].usedTileset = usedTileset;
 
 				//if the resource isn't found locally then it is stored in the global resLoader
 				let tilesetWorkfile = usedTileset.JSONobject;
@@ -472,7 +482,7 @@ _p.parseObjects = function() {
 		// the array of resources to be loaded
 		templateWorkfilesResArr = [];
 	
-	for (obj of this.objectsArr) {
+	for (let obj of this.objectsArr) {
 		// the curr object is a template object so we need to load it's template.json
 		if (TEMPLATE in obj) {
 			objTemplatesPaths.add(obj[TEMPLATE]);
@@ -543,7 +553,7 @@ _p.parseObjects = function() {
 	After the loading is complete removeCustomObjectTilesets should be called
 */
 _p.addCustomObjectTilesets = function() {
-	for (src in this.objectTemplates) {
+	for (let src in this.objectTemplates) {
 		// obtaining an object tileset reference
 		let tilesetRef = this.objectTemplates[src].jsonTemplateWorkfile["tileset"];
 		// adding a flag so we know which tilesets to remove after the loading
@@ -562,32 +572,39 @@ _p.removeCustomObjectTilesets = function() {
 	}
 }
 
-/*_p.parseLayers = function(json) {
-
-	let allLayers = returnAllLayers(json["layers"]);
-	console.log(allLayers.length);
-	for(let layer of allLayers) {
-		if(layer["type"] === "tilelayer")
-			this.applyLayer(layer["data"]);
-		else if(layer["type"] === "objectgroup")
-            this.objectsArr = this.objectsArr.concat(json[OBJECT_ARR]);
-	}
-};*/
-
+/*
+	every layer of tiles in Tiled is kept as a single array so we have to convert it to a matrix
+	the matrix won't be a normal array of arrays, but a sparse matrix kept internally as an object of objects
+	
+	the outer object is the "sparse array" of lines and each line is an object which represents "a sparse array" of tiles.
+	this way we don't occupy memory with useless zeros = no tile exists there
+*/
 _p.applyLayer = function(tileArray, opacity) {
-	var arrInd = 0, layerMatrix = [];
+	var arrInd = 0, layerMatrix = {};
 	
-	layerMatrix.opacity = opacity;
+	Object.defineProperty(layerMatrix, "opacity", {
+		value : opacity,
+		enumerable : false,
+		writable : true,
+		configurable : true
+	});
 	
-	//creating a matrix with mapHeight rows
+	//creating a matrix with mapHeight rows and mapWidth columns
 	//to represent this layer of tiles
 	for (let i = 0; i < this.mapHeight; i++) {
-		layerMatrix.push([]);
-	}
-	
-	for (let i = 0; i < this.mapHeight; i++) {
 		for (let j = 0; j < this.mapWidth; j++) {
-			layerMatrix[i][j] = tileArray[arrInd++];
+			// if we find a tile id that's non zero we add it in the sparse matrix
+			if (tileArray[arrInd] !== NO_TILE) {
+				// the row hasn't been created
+				if (!layerMatrix[i]) {
+					// create a sparse row in the matrix
+					layerMatrix[i] = {};
+				}
+				// add the tile id in the sparse matrix and continue to the next tile
+				// in the array of tiles which is the current layer we're parsing
+				layerMatrix[i][j] = {value : tileArray[arrInd]};
+			}
+			arrInd++;
 		}
 	}
 	
@@ -597,7 +614,6 @@ _p.applyLayer = function(tileArray, opacity) {
 _p.getMapInstance = function(mapName) {
 	return new MapInstance(
 		mapName,
-		this.jsonMapObject,
 		this.tilesetsWorkfiles,
 		this.tileSize,
 		this.mapWidth,

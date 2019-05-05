@@ -5,7 +5,6 @@ const OBJECT_X = "x", OBJECT_Y = "y", IMAGE_OF_TILESET = "image",
 class MapInstance extends EventEmiter {
 	constructor(
 		mapName,
-		jsonMapObject,
 		tilesetsWorkfiles,
 		tileSize,
 		mapWidth,
@@ -18,9 +17,6 @@ class MapInstance extends EventEmiter {
 			super();
 			//own map name
 			this.mapName = mapName;
-			
-			//the parsed map.json file
-			this.jsonMapObject = jsonMapObject;
 			
 			/*
 				the tilesets array of objects from the map.json plus on each object:
