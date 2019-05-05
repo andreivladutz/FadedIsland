@@ -177,8 +177,6 @@ _p.loadTilesetsWorkfiles = function() {
 				self.startLoadingTilsetImages(imageResources);
 				// remove the tilesets which belong to the custom objects
 				self.removeCustomObjectTilesets();
-				// after removing custom tilesets we start processing animations and collisions
-				self.processCollisionMatrixAnimations();
 				resolve();
 			});
 		})
@@ -238,7 +236,6 @@ _p.processCollisionMatrixAnimations = function() {
                     this.collisionMatrix[i][j] = !walkableTrigger;
                 }
 				
-				
 				/*
 				 * 
 				 * looking for the tile id in all the tilesets to find to which tileset it belongs 
@@ -261,7 +258,9 @@ _p.processCollisionMatrixAnimations = function() {
 					tileMatrix[i][j] = NO_TILE;
 					continue;
 				}
-
+				
+				// going through all objects of tilesets used at the end of the map.json file
+				// looking at the "firstgid" property to understand to which tileset the current tile belongs to
 				for (let tilesetInd = 0; tilesetInd < tilesets.length - 1; tilesetInd++) {
 					let currTileset = tilesets[tilesetInd],
 						nextTileset = tilesets[tilesetInd + 1];
@@ -306,6 +305,10 @@ _p.processCollisionMatrixAnimations = function() {
 					continue;
 				}
 				
+				/* 
+					if not the whole layer is walkable or unwalkable
+					we keep count of the WALKABLE property on each tile of this layer
+				 */
 				if(walkableTrigger === null) {
                     if (PROPERTIES in currTileObj) {
                         let propertiesArr = currTileObj[PROPERTIES];
@@ -332,6 +335,12 @@ _p.processCollisionMatrixAnimations = function() {
 						currAnimationArr
 					);
 
+					/* 
+						add custom properties on each animation array so we know every needed detail:
+						the position in tile coords (in the matrix),
+						the image of the tileset and the parsed .json tileset workfile,
+						the default tile (i.e. the id of the tile that represents the group of animated tiles in the layer matrix)
+					*/
 					Object.defineProperties(currAnimationArr, {
 						"matrixPosition" : {
 							value : {i, j},
@@ -349,6 +358,24 @@ _p.processCollisionMatrixAnimations = function() {
 							value : 0,
 							enumerable : false,
 							writable : true,
+							configurable : false
+						},
+						"tilesetWorkfile" : {
+							value : usedTileset.JSONobject,
+							enumerable : false,
+							writable : false,
+							configurable : false
+						},
+						"defaultTile" : {
+							value : realTileNo,
+							enumerable : false,
+							writable : false,
+							configurable : false
+						},
+						"image" : {
+							value : usedTileset["image"],
+							enumerable : false,
+							writable : false,
 							configurable : false
 						}
 					});
@@ -371,6 +398,10 @@ _p.startLoadingTilsetImages = function(imageResources) {
 				console.log(self.tilesetsWorkfiles);
 				
 				self.resourceLoader.moveResourcesTo(self.globalResLoader);
+				
+				// after loading the tilesets and the images and removing custom tilesets (for the objects)
+				// we start processing animations and collisions -> this way we have everything we need loaded
+				self.processCollisionMatrixAnimations();
 				
 				//we finished loading everything so we can make a mapInstance
 				self.emit(LOADED_TILESETS_EVENT, null);
@@ -408,6 +439,8 @@ _p.loadTilesetImage = function(imgSrc, tileset, imageResources) {
 
 // parsing the layers of the map recursively 
 _p.parseLayers = function(obj) {
+	// LAYER_ARR = "layers". if the current object has this property
+	// then this object is actually a group of layers so we expand it recursively
 	if (LAYER_ARR in obj) {
         var layerArr = obj[LAYER_ARR];
 
@@ -415,11 +448,13 @@ _p.parseLayers = function(obj) {
             this.parseLayers(object);
         }
     }
-
+	
+	// tile layer
     else if (TILE_ARR in obj) {
         this.applyLayer(obj[TILE_ARR], obj["opacity"]);
     }
 
+	// object layer
     else if (OBJECT_ARR in obj) {
         this.objectsArr = this.objectsArr.concat(obj[OBJECT_ARR]);
     }
