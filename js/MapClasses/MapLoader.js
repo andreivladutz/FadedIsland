@@ -69,7 +69,7 @@ _p.load = function() {
 _p.parseMap = function(e, mapName) {
 	var xhttpObj = e.detail;
 	
-	var mapParser = new MapParser(this.globalResLoader, xhttpObj.response, this.loadedResourcesPromises);
+	var mapParser = new MapParser(this.globalResLoader, xhttpObj.response, this.loadedResourcesPromises, mapName);
 
 	mapParser.on(LOADED_TILESETS_EVENT, function() {	
 		MapRenderer.MAP_INSTANCES[mapName] = mapParser.getMapInstance(mapName);

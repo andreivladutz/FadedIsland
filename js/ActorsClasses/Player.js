@@ -84,7 +84,9 @@ class Player extends EventEmiter {
 
 // duration of one frame in ms
 Player.MOVEMENT_DURATION = 80;
-// number of frames for walking animation
+// number of frames for walking animation 
+// ALTHOUGH THE FIRST ONE IS STANDSTILL POSITION 
+// WHICH WE WILL IGNORE WHEN WALKING!!!
 Player.WALK_MAX_COLUMNS = 9;
 
 // launching "fake" keypresses so they are launched as uniformly as possible
@@ -138,7 +140,8 @@ _p.waitOn = function(resourceName, propertyName = getLowerCaseName(resourceName)
 _p.initAnimators = function() {
 	// separate animator for the walking animation (the frame animation)
 	// the total duration of one movement loop
-	this.walkingFrameAnimator = new Animator(Player.MOVEMENT_DURATION * Player.WALK_MAX_COLUMNS);
+	// WALK_COLUMNS - 1 bc we ignore the standstill position
+	this.walkingFrameAnimator = new Animator(Player.MOVEMENT_DURATION * (Player.WALK_MAX_COLUMNS - 1));
 	// infinite animation, we use the start and stop methods on this animator 
 	// to stop and resume the walk animation
 	this.walkingFrameAnimator.setRepeatCount(Animator.INFINITE);
@@ -196,7 +199,7 @@ _p.checkCollision = function(x, y, cY = this.coordY, cX = this.coordX) { // x,y 
 		matrixRows = this.mapRenderer.currentMapInstance.collisionMatrix.length;
 	
 	// make sure tile coords aren't out of bounds
-	if (leftTileCoords.x < 0 || rightTileCoords.x >= matrixCols || rightTileCoords.y >= matrixRows) {
+	if (leftTileCoords.x < 0 || leftTileCoords.y < 0 || rightTileCoords.x >= matrixCols || rightTileCoords.y >= matrixRows) {
 		return true;
 	}
 	
@@ -255,7 +258,7 @@ _p.resetYCoordsToCenter = function() {
     this.coordBodyY = this.coordY - FRAME_HEIGHT / 5;
 }
 
-_p.updateMovementAnimation = function(speed) {
+_p.updateMovementAnimation = function() {
 	// if no movement timer has been created or it has been stopped by keyRelease()
 	// another instance of Timer is created (so lastUpdateTime is reinitialised to now)
 	if (!this.movementTimer && !this.walkAnimationTimer) {
@@ -265,6 +268,7 @@ _p.updateMovementAnimation = function(speed) {
 		this.walkingFrameAnimator.start();
 	}
 	
+	/* GAVE UP SPEED RECOVERING
 	// in a perfect case every movement function would fire at Player.KEYDOWN_INTERVAL_DELAY ms
 	// in reality we lose some movement cycles so we try to get the lost time and account for it
 	let extraTimeLost = 0, deltaTime = this.walkMovementTimer.getDeltaTime(), lostSpeed = 0;
@@ -273,9 +277,11 @@ _p.updateMovementAnimation = function(speed) {
 		extraTimeLost = deltaTime -  Player.KEYDOWN_INTERVAL_DELAY;
 		lostSpeed = Math.round(extraTimeLost / Player.KEYDOWN_INTERVAL_DELAY * this.speed);
 	}
+	*/
 	
 	// pass the timer to get the deltaTime and compute the frame that should be drawn right now
-	this.column = Math.floor(this.walkingFrameAnimator.update(this.walkAnimationTimer) * Player.WALK_MAX_COLUMNS);
+	// We get the number of a frame between 0 and NumberOfFrames - 1 which we offset by 1 so we skip the 0 frame which is STANDSTILL_POSITION
+	this.column = Math.floor(this.walkingFrameAnimator.update(this.walkAnimationTimer) * (Player.WALK_MAX_COLUMNS - 1)) + 1;
 	
 	// MOVED THIS LINE IN THE MOVEMENT MANAGER. REASON: 
 	// If the movement was diagonal we want to account for lost speed on both directions
@@ -285,7 +291,7 @@ _p.updateMovementAnimation = function(speed) {
 	// we updated the frames now
 	this.walkAnimationTimer.lastUpdatedNow();
 	
-	return speed + lostSpeed;
+	//return speed + lostSpeed;
 }
 
 // shouldCheckCollision is a flag used for performance reasons when we are sure there will be no collision
@@ -387,7 +393,7 @@ _p.moveRight = function(speed, shouldCheckCollision = true) {
 
 _p.keyUp = function(e, speed = this.speed) {
 	this.row = FRAME_ROW + Player.UPWARD_DIRECTION;
-	speed = this.updateMovementAnimation(speed);
+	this.updateMovementAnimation();
 	
 	
     this.moveUp(speed);
@@ -395,7 +401,7 @@ _p.keyUp = function(e, speed = this.speed) {
 
 _p.keyDown = function(e, speed = this.speed) {
 	this.row = FRAME_ROW + Player.DOWNWARD_DIRECTION;
-	speed = this.updateMovementAnimation(speed);
+	this.updateMovementAnimation();
 
     this.moveDown(speed);
 }
@@ -403,7 +409,7 @@ _p.keyDown = function(e, speed = this.speed) {
 _p.keyLeft = function(e, speed = this.speed) {
 	// sprite animation
 	this.row = FRAME_ROW + Player.LEFT_DIRECTION;
-	speed = this.updateMovementAnimation(speed);
+	this.updateMovementAnimation();
     	
     this.moveLeft(speed);
 }
@@ -411,7 +417,7 @@ _p.keyLeft = function(e, speed = this.speed) {
 _p.keyRight = function(e, speed = this.speed) {
 	// sprite animation
 	this.row = FRAME_ROW + Player.RIGHT_DIRECTION;
-	speed = this.updateMovementAnimation(speed);
+	this.updateMovementAnimation();
 	
    	this.moveRight(speed);
 }

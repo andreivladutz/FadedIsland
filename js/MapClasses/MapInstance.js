@@ -5,7 +5,6 @@ const OBJECT_X = "x", OBJECT_Y = "y", IMAGE_OF_TILESET = "image",
 class MapInstance extends EventEmiter {
 	constructor(
 		mapName,
-		jsonMapObject,
 		tilesetsWorkfiles,
 		tileSize,
 		mapWidth,
@@ -18,9 +17,6 @@ class MapInstance extends EventEmiter {
 			super();
 			//own map name
 			this.mapName = mapName;
-			
-			//the parsed map.json file
-			this.jsonMapObject = jsonMapObject;
 			
 			/*
 				the tilesets array of objects from the map.json plus on each object:
@@ -70,7 +66,8 @@ class MapInstance extends EventEmiter {
 			*/
 			
 			this.animationsArr = animationsArr;
-			this.processAnimations();
+			// animations are now processed in the mapParser
+			// this.processAnimations();
 			this.processObjects();
 			
 			//the map coordinates
@@ -105,12 +102,20 @@ _p.isAnimated = function(i, j, tileId) {
 	return false;
 }
 
+/*
+* Animations are now processed in the mapParser from the very beginning
 _p.processAnimations = function() {
 	let tilesets = this.tilesetsWorkfiles;
 	
+	// picking all arrays of Animated tiles -> each array has objects
+	// where each object represents a tile in the animation with duration and tileid
 	for (let animationArr of this.animationsArr) {
+		// one array of animated tiles has some coords 
 		let i = animationArr[POSITION_IN_MATRIX].i,
 			j = animationArr[POSITION_IN_MATRIX].j;
+		
+		if (this.mapName === "Dungeon")
+			console.log("ANIMATION ARRAY?", animationArr, ": ");
 		
 		for (let layerMatrix of this.tilesMatrices) {
 			let tileId = layerMatrix[i][j],
@@ -140,6 +145,16 @@ _p.processAnimations = function() {
 			
 			for (let animationObj of animationArr) {
 				if (animationObj.tileid == tileId ) {
+					
+					if (this.mapName === "Dungeon")
+						console.log("FOUND ITS PLAAACE");
+					
+					console.log("default " ,animationArr[DEFAULT_TILE])
+					console.log("found " ,tileId)
+					
+					console.log("default ", animationArr[JSON_TILESET_WORKFILE])
+					console.log("found ", usedTileset.JSONobject)
+					
 					animationArr[DEFAULT_TILE] = tileId;
 					animationArr[JSON_TILESET_WORKFILE] = usedTileset.JSONobject;
 					animationArr[TILESET_IMAGE] = usedTileset["image"];
@@ -149,6 +164,7 @@ _p.processAnimations = function() {
 		
 	}
 }
+*/
 
 _p.processObjects = function() {
 	// bringing properties closer to be accessed easier
