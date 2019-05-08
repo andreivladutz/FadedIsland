@@ -52,9 +52,7 @@ function init() {
             mapRenderer.showCollisions();
             resolve();
         });
-    }
-    
-    
+	}
     
     // push map loading to pseudo-semaphore so we wait on all the maps
     loadedPromisesArr.push(promisify(loadedMap));
@@ -65,8 +63,7 @@ function init() {
     // wait on loadMap and loadPlayer
     waitOnAllPromises(loadedPromisesArr).then(
         function onResolved() {
-            requestAnimationFrame(draw);
-            loadingScreen.removeLoadingScreen();
+			initGameOnLoaded();
         },
         function onRejected(err) {
             console.error(err);
@@ -76,9 +73,16 @@ function init() {
     mapLoader.load();
 }
 
+function initGameOnLoaded() {
+	// begin drawing everything
+	requestAnimationFrame(draw);
+    loadingScreen.removeLoadingScreen();
+}
+
 function draw() {
 	mapRenderer.draw();
 	player.draw();
+	
 	requestAnimationFrame(draw);
 }
 

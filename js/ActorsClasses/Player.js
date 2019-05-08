@@ -55,6 +55,10 @@ class Player extends EventEmiter {
 		this.coordX = canvas.width / 2;
 		this.coordY = canvas.height / 2;
         this.coordBodyY = this.coordY - FRAME_HEIGHT / 5; // y coord for body, collision when going up
+		
+		// the drawing coords are screen coords but we also have to keep count 
+		// of the map coords of the player. they are initialised when setMapRenderer is called
+		this.mapCoordX = this.mapCoordY = 0;
         
         // loading player sprite
         this.resLoader = new ResourceLoader();
@@ -64,21 +68,33 @@ class Player extends EventEmiter {
         // expected order for frames top-down: up/0, left/1, down/2, right/3
         // default for down movement frame
         this.row = FRAME_ROW + Player.DOWNWARD_DIRECTION;
-        this.column = 0;
+        this.column = Player.STANDSTILL_POSITION;
 
 		// we keep the global promises array so we can use it in waitOn utility 
 		this.globalPromisesArr = loadedPromisesArr;
-		
 		
 		this.waitOn("Player", "sprite");
 		this.waitOn("BodyArmour");
 		this.waitOn("FeetArmour");
 		this.waitOn("ArmsArmour");
 		this.waitOn("HeadArmour");
-
         
         this.resLoader.load();
 		this.initAnimators();
+		
+		// flag so we know if the screen resized
+		this.zoomed = false;
+		
+		var self = this;
+		
+		// the event comes with the type of the zoom -> in or out
+		CanvasManagerFactory().addEventListener(CANVAS_RESIZE_EVENT, function() {
+			if (!self.mapRenderer) {
+				return;
+			}
+			
+			self.updateCoordsOnResize();
+		});
 	}
 }
 
@@ -182,6 +198,70 @@ _p.draw = function() {
 
 _p.setMapRenderer = function(mapRenderer) {
     this.mapRenderer = mapRenderer;
+	this.updateMapCoords();
+}
+
+_p.setPlayerMapCoords = function(mapCoordX, mapCoordY) {
+	this.mapCoordX = mapCoordX;
+	this.mapCoordY = mapCoordY;
+}
+
+// when the screen coords are updated this function should be called too
+_p.updateMapCoords = function() {
+	({x: this.mapCoordX, y: this.mapCoordY} = this.mapRenderer.screenCoordsToMapCoords({x: this.coordX, y: this.coordY}));
+}
+
+/*
+	having given some map coordinates we move the map and compute player screen coords 
+	such that the player will be at the given coords on the map
+ */
+_p.movePlayerToMapCoords = function(x, y) {
+	var midX = this.canvas.width / 2, midY = this.canvas.height / 2,
+		mapWidth = this.mapRenderer.getMapWidth(), mapHeight = this.mapRenderer.getMapHeight(),
+		mapMovedX, mapMovedY;
+	
+	// set X COORDS
+	if (x < midX) {
+		mapMovedX = 0;
+		this.coordX = x;
+	}
+	else if (x >= mapWidth - midX) {
+		mapMovedX = mapWidth - this.canvas.width;
+		this.coordX = x - mapMovedX;
+	}
+	else {
+		mapMovedX = x - midX;
+		this.resetXCoordsToCenter();
+	}
+	
+	// set Y COORDS
+	if (y < midY) {
+		mapMovedY = 0;
+		this.coordY = y;
+	}
+	else if (y >= mapHeight - midY) {
+		mapMovedY = mapHeight - this.canvas.height;
+		this.coordY = y - mapMovedY;
+	}
+	else {
+		mapMovedY = y - midY;
+		this.resetYCoordsToCenter();
+	}
+	
+	// don't forget to update body coord
+	this.coordBodyY = this.coordY - FRAME_HEIGHT / 5
+	
+	this.mapRenderer.setMapCoords(- Math.round(mapMovedX), - Math.round(mapMovedY));
+	
+	this.updateMapCoords();
+}
+
+/*
+ * when the map changes or the screen size gets updated the screen coords change but the map coords 
+ * should remain the same -> so we move the "camera" (actually the map). this way the player remains at the same map coords
+ */ 
+_p.updateCoordsOnResize = function(zoomType) {
+	this.movePlayerToMapCoords(this.mapCoordX, this.mapCoordY);
 }
 
 // function to check if future tile to be walking on is obstacle or not
@@ -314,6 +394,7 @@ _p.moveUp = function(speed, shouldCheckCollision = true) {
                 }   
             }
 			
+			this.updateMapCoords();
             return;
         }
     }
@@ -322,7 +403,7 @@ _p.moveUp = function(speed, shouldCheckCollision = true) {
 _p.moveDown = function(speed, shouldCheckCollision = true) {
 	for(var i = speed; i >= 0; i--) {
         if(!shouldCheckCollision || !this.checkCollision(0, i)) { // if no collision
-            // player movement
+			// player movement
             var mapInstance = this.mapRenderer.currentMapInstance;
             var lowerBound = this.canvas.height - mapInstance.mapHeight * mapInstance.tileSize; // pseudo bound
             if(mapInstance.mapY == lowerBound) { // if canvas at pseudo lower bound aka bottom of canvas is at bottom of whole map
@@ -339,7 +420,8 @@ _p.moveDown = function(speed, shouldCheckCollision = true) {
                     this.mapRenderer.moveMap(0, -i); 
                 }    
             }
-
+			
+			this.updateMapCoords();
             return;
         }
     }
@@ -361,6 +443,7 @@ _p.moveLeft = function(speed, shouldCheckCollision = true) {
                 }      
             }
 			
+			this.updateMapCoords();
             return;
 		}
 		
@@ -373,7 +456,7 @@ _p.moveRight = function(speed, shouldCheckCollision = true) {
             // player movement
             var mapInstance = this.mapRenderer.currentMapInstance;
             var rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
-
+			
             if(mapInstance.mapX == rightBound) {// if canvas at pseudo right bound aka right bound of canvas is at right bound of whole map
 				this.coordX = Math.min(this.coordX + i, this.canvas.width - FRAME_WIDTH / 2);// move player until hits right bound
             }
@@ -386,7 +469,8 @@ _p.moveRight = function(speed, shouldCheckCollision = true) {
                 }
             }
 		}
-		
+			
+		this.updateMapCoords();
         return;
     }
 }

@@ -1,4 +1,5 @@
-const CANVAS_RESIZE_EVENT = "canvasResized";
+"use strict";
+const CANVAS_RESIZE_EVENT = "canvasResized", ZOOMED_IN = 0, ZOOMED_OUT = 1;
 
 /*
 	Singleton factory => the first time it is called it instantiates
@@ -40,12 +41,21 @@ var CanvasManagerFactory = (function(canvasElement) {
 		initFullscreenCanvas() {
 			this.resizeCanvas();
 			
-			window.addEventListener("resize", this.resizeCanvas.bind(this));
+			var boundResizeCanvas = this.resizeCanvas.bind(this), self = this;
+			
+			window.addEventListener("resize", function() {
+				let zoomType = boundResizeCanvas();
+
+				self.emit(CANVAS_RESIZE_EVENT, zoomType);
+			});
 		}
 		
 		resizeCanvas() {
 			var width = window.innerWidth,
-				height = window.innerHeight;
+				height = window.innerHeight,
+				zoomType;
+			
+			zoomType = (width <= this.canvas.width && height <= this.canvas.height)? ZOOMED_IN : ZOOMED_OUT;
 			
 			this.canvas.width = width;
 			this.canvas.height = height;
@@ -53,7 +63,7 @@ var CanvasManagerFactory = (function(canvasElement) {
 			this.offScreenBuffer.width = width + this.addPixelsToWidth;
 			this.offScreenBuffer.height = height + this.addPixelsToHeight;
 			
-			this.emit(CANVAS_RESIZE_EVENT, null);
+			return zoomType;
 		}
 		
 		//we have the option of making the offscreenBuffer bigger so it holds
