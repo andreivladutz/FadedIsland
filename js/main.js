@@ -74,6 +74,9 @@ function init() {
     );
 
     mapLoader.load();
+    var dialogue = new DialogueBox();
+    dialogue.setQuestion("ce faci?");
+    dialogue.setOptions("bine", "bine", "foarte bine", "se lipesc banii de mine");
 }
 
 function draw() {
