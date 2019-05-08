@@ -1,3 +1,4 @@
+"use strict";
 const LAYER_ARR = "layers", OBJECT_ARR = "objects", TILE_ARR = "data",
 	  TILE_SIZE = "tilewidth", MAP_HEIGHT = "height", MAP_WIDTH = "width",
 	  TILESETS_ARR = "tilesets", NO_TILE = 0, WORKFILE_SOURCE = "source",
@@ -9,8 +10,11 @@ const LAYER_ARR = "layers", OBJECT_ARR = "objects", TILE_ARR = "data",
 	  CURRENT_FRAME = "currentFrame", LOADED_TILESETS_EVENT = "tilesetLoadFinished";
 
 class MapParser extends EventEmiter {
-	constructor(resLoader, jsonText, loadedResourcesPromisesArr) {
+	constructor(resLoader, jsonText, loadedResourcesPromisesArr, mapName) {
 		super();
+		
+		// save map name for debugging purposes
+		this._mapName = mapName;
 		
 		this.globalResLoader = resLoader;
 		this.resourceLoader = new ResourceLoader();
@@ -31,6 +35,14 @@ class MapParser extends EventEmiter {
 		/*
 			building an array of matrices with mapHeight rows
 			each layer of tiles is transformed in a matrix of tiles
+			
+			LATER ADD:
+			transforming every matrix of tiles to a sparse matrix 
+			(i.e. the array of arrays is now an object of objects)
+			
+			REASON:
+			many tile layers have a lot of empty cells (i.e. they are sparse = have a lot of zeros)
+			so we could get some memory boost from eliminating empty cells and empty rows
 		*/
 		this.tilesMatrices = [];
 		
@@ -172,11 +184,8 @@ _p.loadTilesetsWorkfiles = function() {
 		promisify(function(resolve, reject) {
 			self.resourceLoader.on("finishedLoading" + WORKFILES_NAME, function startLoadingImages() {				
 				self.startLoadingTilsetImages(imageResources);
-				self.processCollisionMatrixAnimations();
-				
 				// remove the tilesets which belong to the custom objects
 				self.removeCustomObjectTilesets();
-				
 				resolve();
 			});
 		})
@@ -190,7 +199,6 @@ function returnAllLayers(layers) {
 	let realLayers = [];
 
     for(let layer of layers) {
-
         if("layers" in layer) {
             realLayers = realLayers.concat(returnAllLayers(layer["layers"]));
         }
@@ -203,7 +211,6 @@ function returnAllLayers(layers) {
 function hasCustomProperty(layer, name) {
 	if ("properties" in layer) {
     	for (let property of layer["properties"]) {
-
     		if (property["name"] === name)
     			return property["value"];
 		}
@@ -213,31 +220,56 @@ function hasCustomProperty(layer, name) {
 }
 
 _p.processCollisionMatrixAnimations = function() {
-
 	let realLayers = returnAllLayers(this.layers);
 	let layersCounter = 0;
 	let walkableTrigger;
+	
+	// getting the last tileset in the array of tilesets workfiles
+	// getting the array of tiles for that last tileset so we know 
+	// the maximum possible value for the id of a tile
+	let tilesets = this.tilesetsWorkfiles, 
+		lastTilesetWorkfile = tilesets[tilesets.length - 1].JSONobject,
+		lastTileObjArr = lastTilesetWorkfile[TILE_ARR_IN_TILESETWORKFILE],
+		maximumIdPossible = tilesets[tilesets.length - 1].firstgid + lastTileObjArr.length - 1;
 
+	// matrix of tile ids
 	for (let tileMatrix of this.tilesMatrices) {
-
 		walkableTrigger = hasCustomProperty(realLayers[layersCounter], "walkable");
 		layersCounter++;
 
-		for (let i = 0; i < tileMatrix.length; i++) {
-			for (let j = 0; j < tileMatrix[i].length; j++) {
-
-                if(walkableTrigger !== null && realLayers[layersCounter - 1]["data"][i * tileMatrix.length + j] !== 0) {
+		for (let i = 0; i < this.mapHeight; i++) {
+			for (let j = 0; j < this.mapWidth; j++) {
+				
+				// whole layer is walkable / non-walkable and the current tile is not 0 (there's no real tile here)
+                if(walkableTrigger !== null && realLayers[layersCounter - 1]["data"][i * this.mapWidth + j] !== 0) {
                     this.collisionMatrix[i][j] = !walkableTrigger;
                 }
-
-				let tileNo = tileMatrix[i][j],
-					tilesets = this.tilesetsWorkfiles,
-					usedTileset;
-
-				if (tileNo == NO_TILE) {
+				
+				// this row of tiles is full of null tiles or this tile is null
+				if (!tileMatrix[i] || !tileMatrix[i][j]) {
 					continue;
 				}
-
+				
+				let tileNo = tileMatrix[i][j].value,
+					usedTileset;
+				
+				/* 
+					the castle map has a weird bug from Tiled: it has tile numbers bigger than existing tile ids
+					so we have to ignore them
+				 */
+				if (tileNo > maximumIdPossible) {
+					// also remove them from the tile layer matrix
+					delete tileMatrix[i][j];
+					continue;
+				}
+				
+				/*
+				 * 
+				 * looking for the tile id in all the tilesets to find which tileset it belongs to
+				 *
+				 */
+				// going through all objects of tilesets used at the end of the map.json file
+				// looking at the "firstgid" property to understand which tileset the current tile belongs to
 				for (let tilesetInd = 0; tilesetInd < tilesets.length - 1; tilesetInd++) {
 					let currTileset = tilesets[tilesetInd],
 						nextTileset = tilesets[tilesetInd + 1];
@@ -253,18 +285,29 @@ _p.processCollisionMatrixAnimations = function() {
 				if (!usedTileset) {
 					usedTileset = tilesets[tilesets.length - 1];
 				}
+				/*
+				 * 
+				 * search for the tileset ends here
+				 *
+				 */
+				
+				tileMatrix[i][j].usedTileset = usedTileset;
 
-				//if the resource isn't found locally than it is stored in the global resLoader
+				//if the resource isn't found locally then it is stored in the global resLoader
 				let tilesetWorkfile = usedTileset.JSONobject;
-
+				
+				// the TILESET has a "tiles" (= TILE_ARR_IN_TILESETWORKFILE) property
+				// which is an array of objects where each object corresponds to a tile
 				let tilesObjectArr = tilesetWorkfile[TILE_ARR_IN_TILESETWORKFILE],
 					realTileNo = tileNo - usedTileset[FIRST_TILE_NUMBER],
 					currTileObj;
-
-				try{
+				
+				// if no property is added on the tiles of a particular tileset
+				// then it will not have a tilesObjectArr i.e. the "tiles" property described above
+				try {
 					currTileObj = tilesObjectArr[realTileNo];
 				}
-				catch(err){
+				catch(err) {
 					continue;
 				}
 
@@ -272,6 +315,10 @@ _p.processCollisionMatrixAnimations = function() {
 					continue;
 				}
 				
+				/* 
+					if not the whole layer is walkable or unwalkable
+					we keep count of the WALKABLE property on each tile of this layer
+				 */
 				if(walkableTrigger === null) {
                     if (PROPERTIES in currTileObj) {
                         let propertiesArr = currTileObj[PROPERTIES];
@@ -298,6 +345,12 @@ _p.processCollisionMatrixAnimations = function() {
 						currAnimationArr
 					);
 
+					/* 
+						add custom properties on each animation array so we know every needed detail:
+						the position in tile coords (in the matrix),
+						the image of the tileset and the parsed .json tileset workfile,
+						the default tile (i.e. the id of the tile that represents the group of animated tiles in the layer matrix)
+					*/
 					Object.defineProperties(currAnimationArr, {
 						"matrixPosition" : {
 							value : {i, j},
@@ -315,6 +368,24 @@ _p.processCollisionMatrixAnimations = function() {
 							value : 0,
 							enumerable : false,
 							writable : true,
+							configurable : false
+						},
+						"tilesetWorkfile" : {
+							value : usedTileset.JSONobject,
+							enumerable : false,
+							writable : false,
+							configurable : false
+						},
+						"defaultTile" : {
+							value : realTileNo,
+							enumerable : false,
+							writable : false,
+							configurable : false
+						},
+						"image" : {
+							value : usedTileset["image"],
+							enumerable : false,
+							writable : false,
 							configurable : false
 						}
 					});
@@ -337,6 +408,10 @@ _p.startLoadingTilsetImages = function(imageResources) {
 				console.log(self.tilesetsWorkfiles);
 				
 				self.resourceLoader.moveResourcesTo(self.globalResLoader);
+				
+				// after loading the tilesets and the images and removing custom tilesets (for the objects)
+				// we start processing animations and collisions -> this way we have everything we need loaded
+				self.processCollisionMatrixAnimations();
 				
 				//we finished loading everything so we can make a mapInstance
 				self.emit(LOADED_TILESETS_EVENT, null);
@@ -374,6 +449,8 @@ _p.loadTilesetImage = function(imgSrc, tileset, imageResources) {
 
 // parsing the layers of the map recursively 
 _p.parseLayers = function(obj) {
+	// LAYER_ARR = "layers". if the current object has this property
+	// then this object is actually a group of layers so we expand it recursively
 	if (LAYER_ARR in obj) {
         var layerArr = obj[LAYER_ARR];
 
@@ -381,11 +458,13 @@ _p.parseLayers = function(obj) {
             this.parseLayers(object);
         }
     }
-
+	
+	// tile layer
     else if (TILE_ARR in obj) {
         this.applyLayer(obj[TILE_ARR], obj["opacity"]);
     }
 
+	// object layer
     else if (OBJECT_ARR in obj) {
         this.objectsArr = this.objectsArr.concat(obj[OBJECT_ARR]);
     }
@@ -403,12 +482,9 @@ _p.parseObjects = function() {
 		// the array of resources to be loaded
 		templateWorkfilesResArr = [];
 	
-	for (obj of this.objectsArr) {
+	for (let obj of this.objectsArr) {
 		// the curr object is a template object so we need to load it's template.json
 		if (TEMPLATE in obj) {
-			if (obj[TEMPLATE] === "../object_workfiles/WaterFountain.json") {
-				console.log(obj);
-			}
 			objTemplatesPaths.add(obj[TEMPLATE]);
 		}
 	}
@@ -477,7 +553,7 @@ _p.parseObjects = function() {
 	After the loading is complete removeCustomObjectTilesets should be called
 */
 _p.addCustomObjectTilesets = function() {
-	for (src in this.objectTemplates) {
+	for (let src in this.objectTemplates) {
 		// obtaining an object tileset reference
 		let tilesetRef = this.objectTemplates[src].jsonTemplateWorkfile["tileset"];
 		// adding a flag so we know which tilesets to remove after the loading
@@ -496,32 +572,39 @@ _p.removeCustomObjectTilesets = function() {
 	}
 }
 
-/*_p.parseLayers = function(json) {
-
-	let allLayers = returnAllLayers(json["layers"]);
-	console.log(allLayers.length);
-	for(let layer of allLayers) {
-		if(layer["type"] === "tilelayer")
-			this.applyLayer(layer["data"]);
-		else if(layer["type"] === "objectgroup")
-            this.objectsArr = this.objectsArr.concat(json[OBJECT_ARR]);
-	}
-};*/
-
+/*
+	every layer of tiles in Tiled is kept as a single array so we have to convert it to a matrix
+	the matrix won't be a normal array of arrays, but a sparse matrix kept internally as an object of objects
+	
+	the outer object is the "sparse array" of lines and each line is an object which represents "a sparse array" of tiles.
+	this way we don't occupy memory with useless zeros = no tile exists there
+*/
 _p.applyLayer = function(tileArray, opacity) {
-	var arrInd = 0, layerMatrix = [];
+	var arrInd = 0, layerMatrix = {};
 	
-	layerMatrix.opacity = opacity;
+	Object.defineProperty(layerMatrix, "opacity", {
+		value : opacity,
+		enumerable : false,
+		writable : true,
+		configurable : true
+	});
 	
-	//creating a matrix with mapHeight rows
+	//creating a matrix with mapHeight rows and mapWidth columns
 	//to represent this layer of tiles
 	for (let i = 0; i < this.mapHeight; i++) {
-		layerMatrix.push([]);
-	}
-	
-	for (let i = 0; i < this.mapHeight; i++) {
 		for (let j = 0; j < this.mapWidth; j++) {
-			layerMatrix[i][j] = tileArray[arrInd++];
+			// if we find a tile id that's non zero we add it in the sparse matrix
+			if (tileArray[arrInd] !== NO_TILE) {
+				// the row hasn't been created
+				if (!layerMatrix[i]) {
+					// create a sparse row in the matrix
+					layerMatrix[i] = {};
+				}
+				// add the tile id in the sparse matrix and continue to the next tile
+				// in the array of tiles which is the current layer we're parsing
+				layerMatrix[i][j] = {value : tileArray[arrInd]};
+			}
+			arrInd++;
 		}
 	}
 	
@@ -531,7 +614,6 @@ _p.applyLayer = function(tileArray, opacity) {
 _p.getMapInstance = function(mapName) {
 	return new MapInstance(
 		mapName,
-		this.jsonMapObject,
 		this.tilesetsWorkfiles,
 		this.tileSize,
 		this.mapWidth,

@@ -1,19 +1,36 @@
-{ "columns":6,
- "image":"..\/tileset_images\/dc-dngn-chests-scaled2x.png",
+{ "columns":7,
+ "image":"..\/tileset_images\/rich_guy.png",
  "imageheight":64,
- "imagewidth":192,
+ "imagewidth":224,
  "margin":0,
- "name":"dc-dngn-chests-scaled2x",
+ "name":"rich_guy",
  "spacing":0,
- "tilecount":12,
+ "tilecount":14,
  "tiledversion":"1.2.3",
  "tileheight":32,
  "tiles":[
         {
+         "animation":[
+                {
+                 "duration":150,
+                 "tileid":0
+                }, 
+                {
+                 "duration":150,
+                 "tileid":1
+                }, 
+                {
+                 "duration":150,
+                 "tileid":2
+                }, 
+                {
+                 "duration":150,
+                 "tileid":4
+                }],
          "id":0,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
@@ -22,7 +39,7 @@
          "id":1,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
@@ -31,7 +48,7 @@
          "id":2,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
@@ -40,7 +57,7 @@
          "id":3,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
@@ -49,7 +66,7 @@
          "id":4,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
@@ -58,7 +75,7 @@
          "id":5,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
@@ -67,16 +84,33 @@
          "id":6,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
         }, 
         {
+         "animation":[
+                {
+                 "duration":150,
+                 "tileid":7
+                }, 
+                {
+                 "duration":150,
+                 "tileid":8
+                }, 
+                {
+                 "duration":150,
+                 "tileid":9
+                }, 
+                {
+                 "duration":150,
+                 "tileid":11
+                }],
          "id":7,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
@@ -85,7 +119,7 @@
          "id":8,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
@@ -94,7 +128,7 @@
          "id":9,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
@@ -103,7 +137,7 @@
          "id":10,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
@@ -112,7 +146,25 @@
          "id":11,
          "properties":[
                 {
-                 "name":"d",
+                 "name":"walkable",
+                 "type":"bool",
+                 "value":false
+                }]
+        }, 
+        {
+         "id":12,
+         "properties":[
+                {
+                 "name":"walkable",
+                 "type":"bool",
+                 "value":false
+                }]
+        }, 
+        {
+         "id":13,
+         "properties":[
+                {
+                 "name":"walkable",
                  "type":"bool",
                  "value":false
                 }]
