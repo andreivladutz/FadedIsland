@@ -1,0 +1,20 @@
+{ "object":
+    {
+     "gid":1,
+     "height":64,
+     "id":413,
+     "name":"",
+     "rotation":0,
+     "type":"",
+     "visible":true,
+     "width":64,
+     "x":5360.67,
+     "y":1184
+    },
+ "tileset":
+    {
+     "firstgid":1,
+     "source":"..\/tileset_workfiles\/soldier.json"
+    },
+ "type":"template"
+}
