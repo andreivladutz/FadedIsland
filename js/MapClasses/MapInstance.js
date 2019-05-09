@@ -258,6 +258,7 @@ _p.moveMap = function(deltaX, deltaY) {
 	var pixelsMapWidth = this.mapWidth * this.tileSize,
 		pixelsMapHeight = this.mapHeight * this.tileSize;
 	
+	this.updateViewportSize();
 	/* 
 		if the map can be displayed entireley on the screen we just center it
 	*/
