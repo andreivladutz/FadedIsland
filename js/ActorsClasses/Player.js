@@ -8,38 +8,42 @@ var interval, counter = 0;
 
 var RESOURCES = [
     {
-        name: "Player",
+        name: "playerBody1",
         itemType: "img",
-        url: "./img/player/sprite.png"
+        url: "./img/player/playerBody1.png"
     },
     {
-        name: "BodyArmour",
+        name: "bodyArmour1",
         itemType: "img",
-        url: "./img/armour/chest_male.png"
+        url: "./img/armour/bodyArmour1.png"
     },
     {
-        name: "FeetArmour",
+        name: "bootsArmour1",
         itemType: "img",
-        url: "./img/armour/golden_boots_male.png"
+        url: "./img/armour/bootsArmour1.png"
     },
     {
-        name: "ArmsArmour",
+        name: "armsArmour1",
         itemType: "img",
-        url: "./img/armour/arms_male.png"
+        url: "./img/armour/armsArmour1.png"
     },
     {
-        name: "HeadArmour",
+        name: "helmArmour1",
         itemType: "img",
-        url: "./img/armour/golden_helm_male.png"
+        url: "./img/armour/helmArmour1.png"
+    },
+    {
+        name: "pantsArmour1",
+        itemType: "img",
+        url: "./img/armour/pantsArmour1.png"
     },
 ];
 
 
-class Player extends EventEmiter {
-    constructor(canvas, loadedPromisesArr) {
-        super();
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+class Player {
+    constructor(loadedPromisesArr, customResources) {
+        this.canvas = CanvasManagerFactory().canvas;
+        this.ctx = CanvasManagerFactory().ctx;
         
         this.speed = 5;
         this.power = 20; // attack power
@@ -47,13 +51,15 @@ class Player extends EventEmiter {
 		/* 
 		 * we keep timers for frame changing and coordinate updating 
 		 * at determined intervals of time.
+		 * 
+		 * UPDATE: we no longer keep timers for coordinate updating
 		 */
 		this.walkAnimationTimer = null;
-		this.walkMovementTimer = null;
+		// this.walkMovementTimer = null;
 
 		// coords corespond to feet area
-		this.coordX = canvas.width / 2;
-		this.coordY = canvas.height / 2;
+		this.coordX = this.canvas.width / 2;
+		this.coordY = this.canvas.height / 2;
         this.coordBodyY = this.coordY - FRAME_HEIGHT / 5; // y coord for body, collision when going up
 		
 		// the drawing coords are screen coords but we also have to keep count 
@@ -73,17 +79,42 @@ class Player extends EventEmiter {
 		// we keep the global promises array so we can use it in waitOn utility 
 		this.globalPromisesArr = loadedPromisesArr;
 		
-		this.waitOn("Player", "sprite");
-		this.waitOn("BodyArmour");
-		this.waitOn("FeetArmour");
-		this.waitOn("ArmsArmour");
-		this.waitOn("HeadArmour");
+		// save the propertiesNames for resources that are non-null
+		// this way we can draw the actor by piece using the propertyName
+		this.propertiesNames = [];
+		
+		/*
+		 *	the constructor for the Actor accepts an object like this :
+		 *
+		 *	{
+		 *		"base" : "resourceName",
+		 *		"hair" : "resourceName",
+		 *		"bootsArmour" : "resourceName",
+		 *		"feetArmour" : "resourceName",
+		 *		"bodyArmour" : "resourceName",
+		 *		"armsArmour" : "resourceName",
+		 *		"headArmour" : "resourceName"
+		 *	}
+		 *
+		 * IF ONE RESOURCE IS MISSING IT SHOULD BE SET TO NULL e.g.
+		 *		"bodyArmour" : null,
+		 */
+		for (let propertyName in customResources) {
+			let resourceName = customResources[propertyName];
+			
+			if (resourceName !== null) {
+				// wait for the resource to load
+				this.waitOn(resourceName, propertyName);
+				
+				this.propertiesNames.push(propertyName);
+			}
+			else {
+				delete customResources[propertyName];
+			}
+		}
         
         this.resLoader.load();
 		this.initAnimators();
-		
-		// flag so we know if the screen resized
-		this.zoomed = false;
 		
 		var self = this;
 		
@@ -172,28 +203,10 @@ _p.drawSpriteFrame = function(image) {
 }
 
 _p.draw = function() {
-    // draw player
-	this.drawSpriteFrame(this.sprite);
-	
-    // draw armour
-	this.drawSpriteFrame(this.bodyArmour);
-	this.drawSpriteFrame(this.feetArmour);
-	this.drawSpriteFrame(this.armsArmour);
-	this.drawSpriteFrame(this.headArmour);
-
-	/*
-		some code that shows the collision area of the player
-	
-	var leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX - ACTUAL_PLAYER_WIDTH / 2,
-																	y: this.coordY}),
-		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX + ACTUAL_PLAYER_WIDTH / 2,
-																	 y: this.coordY});
-	
-	for (let tileX = leftTileCoords.x; tileX <= rightTileCoords.x; tileX++) {
-		var screen = this.mapRenderer.tileCoordsToScreenCoords({x:tileX, y:0});
-		this.ctx.fillRect(screen.x, this.coordY, 32, 32);
+    // draw the pieces of the actor
+	for (let propertyName of this.propertiesNames) {
+		this.drawSpriteFrame(this[propertyName]);
 	}
-	*/
 }
 
 _p.setMapRenderer = function(mapRenderer) {
@@ -201,7 +214,7 @@ _p.setMapRenderer = function(mapRenderer) {
 	this.updateMapCoords();
 }
 
-_p.setPlayerMapCoords = function(mapCoordX, mapCoordY) {
+_p.setMapCoords = function(mapCoordX, mapCoordY) {
 	this.mapCoordX = mapCoordX;
 	this.mapCoordY = mapCoordY;
 }
@@ -342,36 +355,17 @@ _p.updateMovementAnimation = function() {
 	// if no movement timer has been created or it has been stopped by keyRelease()
 	// another instance of Timer is created (so lastUpdateTime is reinitialised to now)
 	if (!this.movementTimer && !this.walkAnimationTimer) {
-		this.walkMovementTimer = new Timer();
 		this.walkAnimationTimer = new Timer();
 		
 		this.walkingFrameAnimator.start();
 	}
 	
-	/* GAVE UP SPEED RECOVERING
-	// in a perfect case every movement function would fire at Player.KEYDOWN_INTERVAL_DELAY ms
-	// in reality we lose some movement cycles so we try to get the lost time and account for it
-	let extraTimeLost = 0, deltaTime = this.walkMovementTimer.getDeltaTime(), lostSpeed = 0;
-	
-	if (deltaTime > Player.KEYDOWN_INTERVAL_DELAY) {
-		extraTimeLost = deltaTime -  Player.KEYDOWN_INTERVAL_DELAY;
-		lostSpeed = Math.round(extraTimeLost / Player.KEYDOWN_INTERVAL_DELAY * this.speed);
-	}
-	*/
-	
 	// pass the timer to get the deltaTime and compute the frame that should be drawn right now
 	// We get the number of a frame between 0 and NumberOfFrames - 1 which we offset by 1 so we skip the 0 frame which is STANDSTILL_POSITION
 	this.column = Math.floor(this.walkingFrameAnimator.update(this.walkAnimationTimer) * (Player.WALK_MAX_COLUMNS - 1)) + 1;
 	
-	// MOVED THIS LINE IN THE MOVEMENT MANAGER. REASON: 
-	// If the movement was diagonal we want to account for lost speed on both directions
-	// this.walkMovementTimer.lastUpdatedNow();
-	
-	
 	// we updated the frames now
 	this.walkAnimationTimer.lastUpdatedNow();
-	
-	//return speed + lostSpeed;
 }
 
 // shouldCheckCollision is a flag used for performance reasons when we are sure there will be no collision
@@ -532,26 +526,10 @@ _p.keyRelease = function() {
 	
 	// stop the animator so it is resetted the next time the player starts moving again
 	this.walkAnimationTimer = null;
-	this.walkMovementTimer = null;
+	// this.walkMovementTimer = null;
 	this.walkingFrameAnimator.stop();
 }
 
-/*
-// this really annoyed me so had to comment it out 
-
-_p.attack = function() {
-    this.row = 13;
-    
-    for(var i = 0; i < 6; i++) {
-        setTimeout(this.animatE, 1000);
-    }
-}
-
-_p.animatE = function() {
-    this.column = (this.column + 1) % 6;
-    this.draw();
-}
-*/
 
 
 
