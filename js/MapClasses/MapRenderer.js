@@ -25,9 +25,14 @@ class MapRenderer {
 		var self = this;
 		this.canvasManager.addEventListener(
 			CANVAS_RESIZE_EVENT,
-			function() {
+			function(e) {
 				self.offDirty = true;
-				self.draw();
+				
+				// in case we zoom out and are at the right end of the map we need to move the map
+				// so the end of the map is at the viewport width, otherwise we would see a white margin
+				if (self.currentMapInstance && e.detail === ZOOMED_OUT) {
+					self.moveMap(0, 0);
+				}
 			}
 		);
 	}
@@ -446,6 +451,28 @@ _p.tileCoordsToScreenCoords = function(coords) {
 // function to move map from mapInstance
 _p.moveMap = function(deltaX, deltaY) {
     this.currentMapInstance.moveMap(deltaX, deltaY);
+}
+
+_p.setMapCoords = function(mapX, mapY) {
+	this.currentMapInstance.mapX = 0;
+	this.currentMapInstance.mapY = 0;
+	
+	this.currentMapInstance.moveMap(mapX, mapY);
+}
+
+_p.getViewportSize = function() {
+	return {
+		width : this.currentMapInstance.viewportWidth,
+		height : this.currentMapInstance.viewportHeight
+	};
+}
+
+_p.getMapWidth = function() {
+	return this.currentMapInstance.mapWidth * this.currentMapInstance.tileSize;
+}
+
+_p.getMapHeight = function() {
+	return this.currentMapInstance.mapHeight * this.currentMapInstance.tileSize;
 }
 
 _p.getLastDrawnObjects = function() {

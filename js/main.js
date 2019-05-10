@@ -81,5 +81,6 @@ function init() {
 function draw() {
     mapRenderer.draw();
     player.draw();
+
     requestAnimationFrame(draw);
 }

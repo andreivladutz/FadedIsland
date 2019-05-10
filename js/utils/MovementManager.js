@@ -24,9 +24,6 @@ class MovementManager {
         this.applyInputs = function () {  //THE MAIN FUNCTION THAT COMPUTES THE INPUTS AND DECIDES WHAT MOVEMENT FUNCTION TO APPLY
             playerObject[MovementManager.keyMap(MovementManager.selfReference.getLSTop()   //WE USE THE SUPPORT FUNCTION "KEYMAP" DEFINED AND EXPLAINED BELOW
                 + MovementManager.selfReference.getTSTop())]();    //WE GIVE IT THE TOP OF EACH STACK AS ARGUMENT
-			
-			// if a timer has been started we moved once so we update the time of lastUpdate
-			playerObject.walkMovementTimer && playerObject.walkMovementTimer.lastUpdatedNow();
 		};                                                         //THE REASONING BEHIND IT IS: KEYMAP RETURNS A FUNCTION NAME BASED ON THE KEYSTRING IT RECEIVES
 																   //SO WE ALWAYS GIVE IT THE LAST "WS" KEY PRESSED AND LAST "AD" KEY PRESSED, OR EMPTY STRING IF ONE OF THEM IS NOT PRESSED
         this.startInterval = function () { //INTERVAL THAT CALLS THE FUNCTION THAT APPLIES MOVEMENT FUNCTIONS BASED ON KEYS PRESSED, EACH X SECONDS, DEFAULT CASE IS 50
