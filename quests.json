@@ -1,0 +1,17 @@
+[
+{
+"npc_id":0,
+"texts":["Rogu-te, omoara si tu 10 caini.",
+"Deci, cum ramane cu ce te-am rugat?",
+"A ajuns sa-mi fie frica sa ies din casa. Sunt om batran, nu ma pot apara!",
+"Ii poti in haita pe campuri, sunt usor de sesizat.",
+"Doamne, esti un adevarat ajutor, flacaule. Sa traiesti!",
+"Oho, cand vii la o supa? Gateste nevasta-mea!"],
+"answers":[[{"text":"Gata bre ma bag.","type":1},{"text":"Nu mersi, mi-e frica de caini.","type":2},{"text":"Dar cu ce te deranjeaza?","type":3}],
+[{"text":"Gata bre ma bag.","type":1},{"text":"Nu mersi, mi-e frica de caini.","type":2},{"text":"Dar cu ce te deranjeaza?","type":3}],
+[{"text":"Am inteles...","type":1}],
+[{"text":"Mai zi-mi o data ce ti-au facut?","type":3}],
+[{"text":"Ai grija de matale.","type":1},{"text":"M-am distrat si eu oricum.","type":1},{"text":"Poate mai trec pe aici candva.","type":1}],
+[{"text":"Mai vedem.","type":1}]
+]
+}]
