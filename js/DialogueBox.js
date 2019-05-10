@@ -1,3 +1,23 @@
+function showSomeBoxes() {
+    var dialogue = new DialogueBox();
+    dialogue.setQuestion("I am king kong, conqueror of my species KKKKKKKKKKKKKKKKKKKKKKKKKKKKK KKKKKKKKKKKKKKKKKKKKKKKKKKKKK KKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
+    dialogue.setOptions([{
+        text: "sunt un prost si ma cac in gura mea. Baga-mi-as gura ta boule",
+        type: 1
+    }, {
+        text: "si eu la fel, bossulik",
+        type: 2
+    }, {
+        text: "caca maca part muie dragnea psd sug coiu tau stang si drept in acelasi timp",
+        type: 3
+    }, {
+        text: "se lipesc banii de mine",
+        type: 4
+    }]);
+    dialogue.waitOnInput();
+}
+
+
 class MonologueBox {
     constructor() {
         this.box = document.createElement("div");

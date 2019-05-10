@@ -56,19 +56,26 @@ function init() {
         });
     }
 
-
-
     // push map loading to pseudo-semaphore so we wait on all the maps
     loadedPromisesArr.push(promisify(loadedMap));
-    player = new Player(canvasManager.canvas, loadedPromisesArr);
+
+    player = new Player(loadedPromisesArr, {
+        "base": "playerBody1",
+        "hair": null,
+        "feetArmour": "pantsArmour1",
+        "bootsArmour": "bootsArmour1",
+        "bodyArmour": "bodyArmour1",
+        "armsArmour": "armsArmour1",
+        "headArmour": "helmArmour1"
+    });
+
     // initialise the movementManager with the player reference
     movementManager = new MovementManager(player);
 
     // wait on loadMap and loadPlayer
     waitOnAllPromises(loadedPromisesArr).then(
         function onResolved() {
-            requestAnimationFrame(draw);
-            loadingScreen.removeLoadingScreen();
+            initGameOnLoaded();
         },
         function onRejected(err) {
             console.error(err);
@@ -76,6 +83,13 @@ function init() {
     );
 
     mapLoader.load();
+    showSomeBoxes();
+}
+
+function initGameOnLoaded() {
+    // begin drawing everything
+    requestAnimationFrame(draw);
+    loadingScreen.removeLoadingScreen();
 }
 
 function draw() {
