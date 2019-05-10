@@ -24,8 +24,13 @@ _m.setQuestion = function (text) {
 }
 
 _m.waitOnInput = function () {
-    window.addEventListener("keyup", function (e) {
+    var waiting = true;
+    window.addEventListener("keydown", function (e) {
+        if (e.repeat) {
+            return;
+        }
         if (e.keyCode === 32 || e.keyCode === 13) {
+            waiting = false;
             return 1;
         }
     });
@@ -46,14 +51,25 @@ class DialogueBox extends MonologueBox {
         this.options.classList.add("four-option-list");
 
         this.box.appendChild(this.options);
-
-        (function nuFacNimic() {
-
-        })();
     }
 }
 
 _d = DialogueBox.prototype;
+
+_d.setQuestion = function (text) {
+    if (text.length > 100) {
+        for (let pos = text.length - 1; pos > 0; pos--) {
+            let separators = ".!?; ",
+                found;
+            if (separators.includes(text[pos], found)) {
+                _m.setQuestion.call(this, text.slice(0, pos));
+                setTimeout(_m.waitOnInput(), 5000);
+                break;
+            }
+        }
+    }
+
+}
 
 _d.getOptions = function (npcId, dialogue) {
     _d.setQuestion(dialogue.text);
@@ -84,13 +100,26 @@ _d.setOptions = function (options) {
         this.options.classList.add("four-option-list");
     }
 
+    function isOverflown(element) {
+        return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
+    }
+
     //adding new options onto screen
     for (let i = 0; i < options.length; i++) {
-        var newOption = document.createElement("li");
+        let newOption = document.createElement("li");
         newOption.classList.add("options");
         newOption.appendChild(document.createTextNode(options[i].text));
         newOption.setAttribute("type", options[i].type);
         this.options.appendChild(newOption);
+
+        let fontSize = parseInt(newOption.style.fontSize);
+        for (let i = fontSize; i >= 0; i--) {
+            let overflow = isOverflown(newOption);
+            if (overflow) {
+                fontSize--;
+                newOption.style.fontSize = fontSize + "px";
+            }
+        }
     }
 }
 

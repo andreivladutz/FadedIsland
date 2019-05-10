@@ -77,9 +77,9 @@ function init() {
 
     mapLoader.load();
     var dialogue = new DialogueBox();
-    dialogue.setQuestion("A ajuns sa-mi fie frica sa ies din casa. Sunt om batran, nu ma pot apara.");
+    dialogue.setQuestion("I am king kong, conqueror of my species KKKKKKKKKKKKKKKKKKKKKKKKKKKKK KKKKKKKKKKKKKKKKKKKKKKKKKKKKK KKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
     dialogue.setOptions([{
-        text: "sunt un prost si ma cac in gura mea",
+        text: "sunt un prost si ma cac in gura mea. Baga-mi-as gura ta boule",
         type: 1
     }, {
         text: "si eu la fel, bossulik",
