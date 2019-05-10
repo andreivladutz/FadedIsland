@@ -76,9 +76,21 @@ function init() {
     );
 
     mapLoader.load();
-    var dialogue = new YesNoBox();
-    dialogue.setQuestion("Ce faci?");
-    dialogue.setOptions("bine", "bine", "foarte bine", "se lipesc banii de mine");
+    var dialogue = new DialogueBox();
+    dialogue.setQuestion("A ajuns sa-mi fie frica sa ies din casa. Sunt om batran, nu ma pot apara.");
+    dialogue.setOptions([{
+        text: "sunt un prost si ma cac in gura mea",
+        type: 1
+    }, {
+        text: "si eu la fel, bossulik",
+        type: 2
+    }, {
+        text: "caca maca part muie dragnea psd sug coiu tau stang si drept in acelasi timp",
+        type: 3
+    }, {
+        text: "se lipesc banii de mine",
+        type: 4
+    }]);
     dialogue.waitOnInput();
 }
 

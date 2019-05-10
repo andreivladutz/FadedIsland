@@ -1,4 +1,4 @@
-@font-face{
+@font-face {
     font-family: "8bitDragon";
     src: url("/css/fonts/eight-bit-dragon.otf");
 }
@@ -20,44 +20,50 @@
     border-style: outset;
 
     display: grid;
-    
+
     font-family: "8bitDragon", Arial, sans-serif;
 }
 
-.no-options{
+.no-options {
     grid-template-rows: 100%;
 }
 
-.four-options{
+.four-options {
     grid-template-rows: 50% 50%;
 }
 
-.two-options{
+.two-options {
     grid-template-rows: 75% 25%;
 }
 
 #question {
     color: white;
     margin: 10px 20px;
-    font-size: 40px;
+    font-size: 22px;
 }
 
 #option-list {
     color: white;
     display: grid;
     grid-template-columns: 50% 50%;
+    list-style-type: none;
 }
 
-.four-option-list{
+.four-option-list {
     grid-template-rows: 50% 50%;
 }
 
-.two-option-list{
+.two-option-list {
     grid-template-rows: 100%;
 }
 
 .options {
+    padding-left: 20px;
     margin: auto;
-    margin-left: 10px;
+    margin-left: 15px;
     display: inline-block;
+}
+
+.active {
+    background: url("/img/menu/arrow-resized.png") no-repeat top left;
 }
