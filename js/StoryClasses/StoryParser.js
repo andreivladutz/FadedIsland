@@ -17,60 +17,85 @@ class Dialogue {
 
 class StoryParser {
     constructor() {
-        if(StoryParser.selfReference !== null)
-            return StoryParser.selfReference;
-        StoryParser.selfReference = this;
-        this.loadQuests = function() {
+
+        this.loadQuests = function(obj) {
             let xobj = new XMLHttpRequest();
             xobj.overrideMimeType("application/json");
             xobj.open('GET', 'quests.json', true);
             xobj.onreadystatechange = function () {
                 if (xobj.readyState === 4 && xobj.status == "200") {
-                    console.log(JSON.parse(xobj.responseText));
-                    return JSON.parse(xobj.responseText);
+                    let textsArray = JSON.parse(xobj.responseText);
+                    let stagesArray = [];
+                    let quests = [];
+
+                    for(let i = 0; i < textsArray.length; i++) {
+                        quests[i] = new Quest(i, textsArray[i].texts, textsArray[i].answers);
+                    }
+
+                    for(let i = 0; i < textsArray.length; i++)
+                        if(localStorage.getItem(`questStages|${i}`) !== null){
+                        stagesArray[i] = JSON.parse(localStorage.getItem(`questStages|${i}`));
+                        quests[i].stage = stagesArray[i].stage;
+                        quests[i].prevStage = stagesArray[i].prevStage;
+                    }
+                    obj.quests = quests;
                 }
+
             };
             xobj.send(null);
         };
 
-        this.quests = this.loadQuests();
+        this.quests = null;
+        this.loadQuests(this);
 
         this.getQuest = function(npc_id) {
 
-            let quest = StoryParser.selfReference.quests[npc_id];
+            let quest = this.quests[npc_id];
             getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
         };
 
         this.getAnswer = function(npc_id, type) {
 
-            let quest = StoryParser.selfReference.quests[npc_id];
-            if(quest.stage === 0 && quest.stage === 1) {
+            let quest = this.quests[npc_id];
+            console.log(quest);
+            if(quest.stage === 0 || quest.stage === 1) {
                 if(type === 1) {
                     quest.prevStage = 3;
                     quest.stage = 3;
+                    localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
                     getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
                 }
                 else if(type === 2) {
+                    console.log("sal");
                     quest.stage = 1;
+                    localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
                 }
                 else {
                     quest.stage = 2;
+                    localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
                     getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
                 }
             }
             else if(quest.stage === 2) {
                 quest.stage = quest.prevStage;
+                localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
                 getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
             }
             else if(quest.stage === 3) {
                 quest.stage = 2;
+                localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
                 getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
             }
             else if(quest.stage === 4) {
                 quest.stage = 5;
+                localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
             }
         }
     }
 }
-StoryParser.selfReference = null;
-new StoryParser().loadQuests();
+let parser = new StoryParser();
+setTimeout(function() {
+    console.log(parser.quests);
+    parser.getAnswer(0,2);
+    console.log(localStorage);
+},1000);
