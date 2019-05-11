@@ -49,6 +49,8 @@ function init() {
         mapLoader.on(MAPS_READY_EVENT, function() {
             mapRenderer = mapLoader.getMapRenderer();
             mapRenderer.showCollisions();
+			// setting the mapRenderer
+			StateSaverManager().setMapRenderer(mapRenderer);
 			
             resolve();
         });

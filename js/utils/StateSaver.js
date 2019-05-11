@@ -70,9 +70,21 @@ var StateSaverManager = (function() {
 			 */
 			let storedValue;
 			
-			(storedValue = localStorage.getItem("currentMap")) && (this.storedValues.currentMap = storedValue);
+			(storedValue = localStorage.getItem("currentMap")) &&
+				(this.storedValues.currentMap = storedValue);
+			
 			// lastMapCoords are saved as JSON string
-			(storedValue = localStorage.getItem("lastMapCoords")) && (this.storedValues.lastMapCoords = JSON.parse(storedValue));
+			(storedValue = localStorage.getItem("lastMapCoords")) &&
+				(this.storedValues.lastMapCoords = JSON.parse(storedValue));
+			
+			// sometimes they get messed up and set to 0
+			if (this.storedValues.lastMapCoords 
+				&& this.storedValues.lastMapCoords.x === 0 
+				&& this.storedValues.lastMapCoords.y === 0) {
+				
+				this.storedValues.lastMapCoords = null;
+				localStorage.removeItem("lastMapCoords");
+			}
 			
 			// update coordinates on disk at a certain interval
 			this.saveStateIntervalId = setInterval(
@@ -82,8 +94,15 @@ var StateSaverManager = (function() {
 			);
 		}
 		
+		setMapRenderer(mapRenderer) {
+			this.mapRenderer = mapRenderer;
+			
+			// when the map changes we want to save the state to disk
+			this.mapRenderer.on(MapRenderer.CHANGED_MAP_EVENT, this.saveState.bind(this));
+		}
+		
 		saveState() {
-			if (!this.storageIsAvailable) {
+			if (!this.storageIsAvailable || !this.mapRenderer) {
 				return;
 			}
 			
@@ -97,20 +116,6 @@ var StateSaverManager = (function() {
 		}
 		
 		updateStoredValues() {
-			// checking if the reference has been instantiated
-			if (!this.mapRenderer) {
-				// trying to get the mapRenderer but if it hasn't been instantiated
-				// the getter throws an exception and we have to exit this method
-				try {
-					this.mapRenderer = this.mapLoader.getMapRenderer();
-					// when the map changes we want to save the state to disk
-					this.mapRenderer.on(MapRenderer.CHANGED_MAP_EVENT, this.saveState.bind(this));
-				}
-				catch(e) {
-					return;
-				}
-			}
-			
 			this.storedValues.currentMap = this.mapRenderer.getCurrentMapName();
 			
 			/* Leaving this for later debugging
@@ -122,7 +127,7 @@ var StateSaverManager = (function() {
 		
 		// the only saving that needs to be made at a certain interval
 		saveCoordinates() {
-			if (!this.storageIsAvailable) {
+			if (!this.storageIsAvailable || !this.mapRenderer) {
 				return;
 			}
 			

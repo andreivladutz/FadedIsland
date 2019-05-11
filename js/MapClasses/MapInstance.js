@@ -43,6 +43,10 @@ class MapInstance extends EventEmiter {
 			// the array of template objects that can be drawn (they have a tileset)
 			this.drawableObjects = [];
 			
+			// relevant points that the player can interact with on the map
+			// they mark NPCS, transition points from map to map
+			this.interactionPoints = [];
+			
 			/*
 				the dictionary(object) of object templates
 				
@@ -89,6 +93,23 @@ class MapInstance extends EventEmiter {
 
 MapInstance.TEMPLATE = "template";
 MapInstance.SPAWN_POINT = "spawnpoint";
+
+/*
+	object with properties like this:
+	
+	{
+		"map1Name": {
+			"map2Name" : {
+				x: coordX,
+				y: coordY
+			}
+		}
+	}
+	
+	where MapInstance.MAP_TRANSITION_POINTS[map1Name][map2Name] is the spawn point
+					when moving from map1Name to map2Name 
+*/
+MapInstance.MAP_TRANSITION_POINTS = {};
 
 _p = MapInstance.prototype;
 
@@ -146,14 +167,29 @@ _p.processObjects = function() {
 			// remove drawable objects from the objectArr
 			this.objectsArr.splice(pos, 1);
 		}
-		
+	
 		if ("type" in obj && obj["type"] === MapInstance.SPAWN_POINT) {
+			obj.x = Math.floor(obj.x);
+			obj.y = Math.floor(obj.y);
+			
 			this.spawnPoint = {
-				x: Math.floor(obj.x),
-				y: Math.floor(obj.y)
+				x: obj.x,
+				y: obj.y
 			}
 			
-			console.log(this.spawnPoint);
+			if (!MapInstance.MAP_TRANSITION_POINTS[obj["name"]]) {
+				MapInstance.MAP_TRANSITION_POINTS[obj["name"]] = {};
+			}
+			
+			MapInstance.MAP_TRANSITION_POINTS[obj["name"]][this.mapName] = this.spawnPoint;
+			
+			// the only time we encounter this case where the name of the spawn point is the same as the name of the map
+			// is on the MainMap. that is the spawn point for that map and it doesn't take the player to any other map
+			
+			// !!the rest of the spawn points are also transition points to other maps
+			if (obj["name"] != this.mapName) {
+				this.interactionPoints.push(obj);
+			}
 		}
 	}
 	

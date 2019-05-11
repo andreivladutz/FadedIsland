@@ -13,7 +13,15 @@ class Player extends Actor {
 		if (DEBUGGING) {
 			this.speed = 30;
 		}
-        
+		
+		// keeping the close interaction points so we can check every time if we are in proximity of any point
+        this.visibleInteractionPoints = [];
+		
+		// a dictionary of registered handlers for accepting the interaction with a close point
+		// the handlers will be registered while the player is in the proximity of a point
+		// and then removed when the player has left the proximity of that point
+		this.interactionHandlers = {};
+		
 		var self = this;
 		
 		// the event comes with the type of the zoom -> in or out
@@ -26,21 +34,44 @@ class Player extends Actor {
 		});
 	}
 	
-	// after setting the mapRenderer we register mapChange event handler
+	// after setting the mapRenderer we register mapChange and redrawnOffscreen event handlers
 	setMapRenderer(mapRenderer) {
 		super.setMapRenderer(mapRenderer);
 		
 		this.mapRenderer.on(MapRenderer.CHANGED_MAP_EVENT, this.movePlayerToSpawnPoint.bind(this));
+		// setting the close interaction points so we can check every time if we are in proximity of any point
+		this.mapRenderer.on(MapRenderer.REDRAWN_OFFSCREEN, this.setVisibleInteractionPoints.bind(this));
+	}
+	
+	setVisibleInteractionPoints(e) {
+		this.visibleInteractionPoints = e.detail;
+		
+		// remove the handlers for the interaction with the old points
+		this.removeInteractionHandlers();
+		
+		//check new proximity
+		this.checkInteractionPointsProximity();
 	}
 }
 
 _p = Player.prototype;
 
+Player.INTERACTION_POINT_PROXIMITY = 100;
+Player.INTERACTION_KEY = "e";
+
 // we want to move the player to the spawn point of that map when the map gets changed
-_p.movePlayerToSpawnPoint = function() {
-	var spawnPoint = this.mapRenderer.currentMapInstance.getSpawnPoint;
+// FOR EXAMPLE: 
+// if we came from dungeon back to mainMap we want to go at the transition point on the mainMap for the dungeon
+//
+// also remove all the old interaction points
+_p.movePlayerToSpawnPoint = function(e) {
+	var changeMapEv = e.detail,
+		spawnPoint = MapInstance.MAP_TRANSITION_POINTS[changeMapEv.oldMap][changeMapEv.newMap];
 	
 	this.movePlayerToMapCoords(spawnPoint.x, spawnPoint.y);
+	
+	// remove the handlers for the interaction with the old points
+	this.removeInteractionHandlers();
 }
 
 /*
@@ -206,35 +237,103 @@ _p.moveRight = function(speed, shouldCheckCollision = true) {
     }
 }
 
+/*
+	TODO: show nice information box to let the user know he can interact with something
+ */
+_p.showInteractionMessage = function() {
+	console.log("PRESS E TO INTERACT");
+}
+
+// if an interactionPointName is passed then only the handler for that interaction will be unsubscribed
+// if no arguments are provided then all handlers are removed
+_p.removeInteractionHandlers = function(interactionPointName) {
+	if (interactionPointName) {
+		window.removeEventListener("keydown", this.interactionHandlers[interactionPointName]);
+		delete this.interactionHandlers[interactionPointName];
+		return;
+	}
+	
+	for (let pointName in this.interactionHandlers) {
+		window.removeEventListener("keydown", this.interactionHandlers[pointName]);
+		delete this.interactionHandlers[pointName];
+	}
+}
+
+_p.checkInteractionPointsProximity = function() {
+	// for every point check if the player is close to it
+	for (let point of this.visibleInteractionPoints) {
+		let euclDist = Math.sqrt(Math.pow(point.x - this.mapCoordX, 2) + Math.pow(point.y - this.mapCoordY, 2));
+		
+		// concatenating point type and name to get a unique key in the handlers dictionary
+		let uniqueKeyName = point.type + point.name;
+
+		// if we are close to the interactionPoint we start listening for keydown
+		if (euclDist <= Player.INTERACTION_POINT_PROXIMITY) {
+			this.showInteractionMessage();
+			
+			// this type of interaction is one that changes the map
+			if (point.type === MapInstance.SPAWN_POINT) {
+				if (this.interactionHandlers[uniqueKeyName]) {
+					// handler already registered
+					continue;
+				}
+				
+				// registering a handler for the current interaction point
+				// concatenating point type and name to get a unique key in the handlers dictionary
+				this.interactionHandlers[uniqueKeyName] = this.interactWithTransitionPoint.bind(this, point.name);
+				window.addEventListener("keydown", this.interactionHandlers[uniqueKeyName]);
+			}
+			else {
+				// unregistering the handler when we get further away from the point
+				this.removeInteractionHandlers(uniqueKeyName);
+			}
+		}
+	}
+}
+
+/*
+	handler for one type of interaction: the interaction with a transition point
+	it receives the mapName it should transition to and changes the map
+ */
+_p.interactWithTransitionPoint = function(mapName, e) {
+	if (e.key.toLowerCase() === Player.INTERACTION_KEY) {
+		this.mapRenderer.changeMap(mapName);
+	}
+}
+
+_p.onMovement = function() {
+	this.updateMovementAnimation();
+	this.checkInteractionPointsProximity();
+}
+
 _p.keyUp = function(e, speed = this.speed) {
 	this.row = FRAME_ROW + Actor.UPWARD_DIRECTION;
-	this.updateMovementAnimation();
-	
 	
     this.moveUp(speed);
+	this.onMovement();
 }
 
 _p.keyDown = function(e, speed = this.speed) {
 	this.row = FRAME_ROW + Actor.DOWNWARD_DIRECTION;
-	this.updateMovementAnimation();
 
     this.moveDown(speed);
+	this.onMovement();
 }
 
 _p.keyLeft = function(e, speed = this.speed) {
 	// sprite animation
 	this.row = FRAME_ROW + Actor.LEFT_DIRECTION;
-	this.updateMovementAnimation();
     	
     this.moveLeft(speed);
+	this.onMovement();
 }
 
 _p.keyRight = function(e, speed = this.speed) {
 	// sprite animation
 	this.row = FRAME_ROW + Actor.RIGHT_DIRECTION;
-	this.updateMovementAnimation();
 	
    	this.moveRight(speed);
+	this.onMovement();
 }
 
 _p.keyUpRight = function(e) {

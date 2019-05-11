@@ -77,6 +77,9 @@ _p.load = function() {
 }
 
 _p.onLoadedMaps = function() {
+	// the MainMap is the only map with more than one spawn point so we have to set it explicitly
+	MapRenderer.MAP_INSTANCES[MAIN_MAP].spawnPoint = MapInstance.MAP_TRANSITION_POINTS[MAIN_MAP][MAIN_MAP];
+	
 	// get the values from the localStorage. If it is the first time the default values will be returned
 	let storedValues = this.stateSaver.storedValues,
 		storedMapName = storedValues.currentMap;

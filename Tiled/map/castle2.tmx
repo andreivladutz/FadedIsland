@@ -8634,7 +8634,7 @@
   <object id="41" template="../object_workfiles/tree_obj.json" x="2784" y="1891.33"/>
  </objectgroup>
  <objectgroup id="64" name="Interactions">
-  <object id="42" type="spawnpoint" x="3142" y="5834">
+  <object id="42" name="MainMap" type="spawnpoint" x="3142" y="5834">
    <point/>
   </object>
  </objectgroup>

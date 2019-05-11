@@ -4987,7 +4987,7 @@
 </data>
  </layer>
  <objectgroup id="33" name="Interactions">
-  <object id="312" type="spawnpoint" x="2768" y="2123.33">
+  <object id="312" name="MainMap" type="spawnpoint" x="2768" y="2123.33">
    <point/>
   </object>
  </objectgroup>

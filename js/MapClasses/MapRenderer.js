@@ -23,6 +23,9 @@ class MapRenderer extends EventEmiter {
 		//flag only for debugging
 		this._showCollisions_ = false;
 		
+		// map instance interaction points that are in proximity to the player
+		this.visibleInteractionPoints = [];
+		
 		var self = this;
 		this.canvasManager.addEventListener(
 			CANVAS_RESIZE_EVENT,
@@ -42,6 +45,7 @@ class MapRenderer extends EventEmiter {
 // dictionary of initialised mapInstances
 MapRenderer.MAP_INSTANCES = {};
 MapRenderer.CHANGED_MAP_EVENT = "changedMap";
+MapRenderer.REDRAWN_OFFSCREEN = "redrawnOffscreen";
 
 _p = MapRenderer.prototype;
 
@@ -50,13 +54,25 @@ _p.showCollisions = function() {
 }
 
 _p.changeMap = function(mapName) {
+	let oldMapName = this.currentMapName;
+	
 	this.currentMapName = mapName;
 	this.currentMapInstance = MapRenderer.MAP_INSTANCES[mapName];
 		
-	//offDirty flag tells if the offscreenBuffer canvas should be redrawn
+	// offDirty flag tells if the offscreenBuffer canvas should be redrawn
 	this.offDirty = true;
 	
-	this.emit(MapRenderer.CHANGED_MAP_EVENT, mapName);
+	// RESET EVERYTHING
+	this.offScreenVisibleTileArea = null;
+	this.visibleTileArea = null;
+	this.visibleInteractionPoints = [];
+	this.lastDrawnObjects = [];
+	
+	
+	this.emit(MapRenderer.CHANGED_MAP_EVENT, {
+		oldMap: oldMapName,
+		newMap: mapName
+	});
 }
 
 _p.checkIfDirty = function() {
@@ -363,6 +379,13 @@ _p.draw = function() {
 	if (this.offDirty || this.checkIfDirty()) {
 		this.computeOffScreenBufferVisibleArea();
 		this.redrawOffscreenBuffer();
+		
+		// compute the interaction points that are close to the player
+		this.setVisibleInteractionPoints();
+		// and if there are any points in proximity inform the player
+		if (this.visibleInteractionPoints.length) {
+			this.emit(MapRenderer.REDRAWN_OFFSCREEN, this.visibleInteractionPoints);
+		}
 	}
 	
 	this.drawOffScreenAnimatedTiles();
@@ -387,6 +410,30 @@ _p.draw = function() {
 				 );
 }
 
+
+/*
+	when we redraw the offscreenBuffer we also compute the interaction points that are in proximity
+ */
+_p.setVisibleInteractionPoints = function() {
+	var mapInst = this.currentMapInstance,
+		tileSize = mapInst.tileSize,
+		stX = this.offScreenVisibleTileArea.startX * tileSize,
+		stY = this.offScreenVisibleTileArea.startY * tileSize,
+		eX = this.offScreenVisibleTileArea.endX * tileSize,
+		eY = this.offScreenVisibleTileArea.endY * tileSize;
+	
+	this.visibleInteractionPoints = [];
+	
+	for (let point of mapInst.interactionPoints) {
+		let x = point.x, y = point.y;
+		
+		if (x < stX || x > eX || y < stY || y > eY) {
+			continue;
+		}
+		
+		this.visibleInteractionPoints.push(point);
+	}
+}
 
 /*
     all the functions that translate coords receive
