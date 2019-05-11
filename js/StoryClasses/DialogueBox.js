@@ -34,7 +34,9 @@ class MonologueBox extends EventEmiter {
 
         this.box.appendChild(this.content);
         this.box.appendChild(this.options);
-        document.body.appendChild(this.box);
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.appendChild(this.box);
+        });
     }
 }
 
@@ -74,7 +76,9 @@ _m.waitOnInput = function () {
 }
 
 _m.remove = function () {
-    document.body.removeChild(this.box);
+    document.addEventListener('DOMContentLoaded', function () {
+        document.body.removeChild(this.box);
+    });
 }
 
 class DialogueBox extends MonologueBox {
