@@ -1,6 +1,6 @@
 function showSomeBoxes() {
-    var dialogue = new DialogueBox();
-    dialogue.setQuestion("I am king kong, conqueror of my species KKKKKKKKKKKKKKKKKKKKKKKKKKKKK KKKKKKKKKKKKKKKKKKKKKKKKKKKKK KKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
+    var dialogue = new MonologueBox();
+    dialogue.setQuestion("I am king kong, conqueror of my species I am king kong, conqueror of my species I am king kong, conqueror of my species ");
     dialogue.setOptions([{
         text: "sunt un prost si ma cac in gura mea. Baga-mi-as gura ta boule",
         type: 1
@@ -8,27 +8,32 @@ function showSomeBoxes() {
         text: "si eu la fel, bossulik",
         type: 2
     }, {
-        text: "caca maca part muie dragnea psd sug coiu tau stang si drept in acelasi timp",
+        text: "caca maca part muie dragnea psd sug coiu tau stang si drept",
         type: 3
     }, {
         text: "se lipesc banii de mine",
         type: 4
     }]);
-    dialogue.waitOnInput();
+   dialogue.waitOnInput();
 }
 
 
-class MonologueBox {
+class MonologueBox extends EventEmiter {
     constructor() {
+        super();
         this.box = document.createElement("div");
         this.box.id = "dialogue-box";
         this.box.classList.add("no-options");
 
-
         this.content = document.createElement("div");
         this.content.id = "question";
+        
+        this.options = document.createElement("ul");
+        this.options.id = "option-list";
+        this.options.classList = "no-option-list";
 
         this.box.appendChild(this.content);
+        this.box.appendChild(this.options);
         document.body.appendChild(this.box);
     }
 }
@@ -43,15 +48,27 @@ _m.setQuestion = function (text) {
     }
 }
 
+_m.setOptions = function () {
+    //removing old options, if there were any
+    if (this.options.hasChildNodes()) {
+        while (this.options.firstChild) {
+            this.options.removeChild(this.options.firstChild);
+        }
+    }
+    
+    let newOption = document.createElement("li");
+    newOption.classList.add("options");
+    newOption.appendChild(document.createTextNode("press ENTER to continue..."));
+    this.options.appendChild(newOption);
+}
+
 _m.waitOnInput = function () {
-    var waiting = true;
     window.addEventListener("keydown", function (e) {
         if (e.repeat) {
             return;
         }
         if (e.keyCode === 32 || e.keyCode === 13) {
-            waiting = false;
-            return 1;
+            this.emit("confirmMonologue", null);
         }
     });
 }
@@ -65,32 +82,44 @@ class DialogueBox extends MonologueBox {
         super();
         this.box.classList.remove("no-options");
         this.box.classList.add("four-options");
-
-        this.options = document.createElement("ul");
-        this.options.id = "option-list";
+        
         this.options.classList.add("four-option-list");
-
-        this.box.appendChild(this.options);
+        this.options.classList.remove("no-option-list");
     }
 }
 
 _d = DialogueBox.prototype;
-
+/* Bugged
 _d.setQuestion = function (text) {
     if (text.length > 100) {
-        for (let pos = text.length - 1; pos > 0; pos--) {
-            let separators = ".!?; ",
-                found;
-            if (separators.includes(text[pos], found)) {
+        for (let pos = text.length - 2; pos > 0; pos--) {
+            let separators = ".!?;, ";
+            if (separators.includes(text[pos])) {
                 _m.setQuestion.call(this, text.slice(0, pos));
-                setTimeout(_m.waitOnInput(), 5000);
+                _m.setOptions.call(this);
+                
+                var self = this;
+                this.on("confirmMonologue", function(e) {
+                    //self.setQuestion(text.slice(pos));
+                    
+                    _d.setOptions(dialogue.answers);
+                    _d.waitOnInput(npcId);
+                });
+                
+                _m.waitOnInput();
                 break;
             }
         }
     }
+    else{
+        _m.setQuestion.call(this);
+        
+    _d.setOptions(dialogue.answers);
+    _d.waitOnInput(npcId);
+    }
 
 }
-
+*/
 _d.getOptions = function (npcId, dialogue) {
     _d.setQuestion(dialogue.text);
     _d.setOptions(dialogue.answers);
@@ -181,7 +210,7 @@ _d.waitOnInput = function (npcId) {
         }
         //confirm
         if (e.keyCode === 32 || e.keyCode === 13) {
-            //new StoryParser().getAnswer(npcId, allOptions[currentPos].type)
+            //new StoryParser().getAnswer(npcId, allOptions[currentPos].type);
         }
     });
 }
