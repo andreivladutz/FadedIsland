@@ -73,5 +73,5 @@
 }
 
 .active {
-    background: url("/img/menu/arrow-resized.png") no-repeat top left;
+    background: url("../img/menu/arrow-resized.png") no-repeat top left;
 }

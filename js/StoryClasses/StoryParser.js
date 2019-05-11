@@ -56,7 +56,6 @@ class StoryParser {
         this.getAnswer = function(npc_id, type) {
 
             let quest = this.quests[npc_id];
-            console.log(quest);
             if(quest.stage === 0 || quest.stage === 1) {
                 if(type === 1) {
                     quest.prevStage = 3;

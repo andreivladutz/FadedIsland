@@ -1,18 +1,15 @@
 function showSomeBoxes() {
-    var dialogue = new MonologueBox();
+    var dialogue = new DialogueBox();
     dialogue.setQuestion("I am king kong, conqueror of my species I am king kong, conqueror of my species I am king kong, conqueror of my species ");
     dialogue.setOptions([{
-        text: "sunt un prost si ma cac in gura mea. Baga-mi-as gura ta boule",
+        text: "sunt un prost si ma cac in gura mea",
         type: 1
     }, {
         text: "si eu la fel, bossulik",
         type: 2
     }, {
-        text: "caca maca part muie dragnea psd sug coiu tau stang si drept",
+        text: "caca maca part muie dragnea psd sug coiu tau",
         type: 3
-    }, {
-        text: "se lipesc banii de mine",
-        type: 4
     }]);
    dialogue.waitOnInput();
 }
@@ -34,8 +31,7 @@ class MonologueBox extends EventEmiter {
 
         this.box.appendChild(this.content);
         this.box.appendChild(this.options);
-
-        while(!window.document){}
+        while(!window.document){};
         document.body.appendChild(this.box);
     }
 }
@@ -43,12 +39,9 @@ class MonologueBox extends EventEmiter {
 _m = MonologueBox.prototype;
 
 _m.setQuestion = function (text) {
-    console.log(text);
     if (this.content.hasChildNodes()) {
-        console.log("yes");
         this.content.replaceChild(document.createTextNode(text), this.content.firstChild);
     } else {
-        console.log("no");
         this.content.appendChild(document.createTextNode(text));
     }
 }
@@ -109,8 +102,8 @@ _d.setQuestion = function (text) {
                 this.on("confirmMonologue", function(e) {
                     //self.setQuestion(text.slice(pos));
                     
-                    _d.setOptions(dialogue.answers);
-                    _d.waitOnInput(npcId);
+                    self.setOptions(dialogue.answers);
+                    self.waitOnInput(npcId);
                 });
                 
                 _m.waitOnInput();
@@ -121,14 +114,13 @@ _d.setQuestion = function (text) {
     else{
         _m.setQuestion.call(this);
         
-    _d.setOptions(dialogue.answers);
-    _d.waitOnInput(npcId);
+    this.setOptions(dialogue.answers);
+    this.waitOnInput(npcId);
     }
 
 }
 */
 _d.getOptions = function (npcId, dialogue) {
-    console.log("sal1");
     this.setQuestion(dialogue.text);
     this.setOptions(dialogue.answers);
     this.waitOnInput(npcId);
@@ -193,36 +185,40 @@ _d.waitOnInput = function (npcId) {
         if (allOptions.length > 1) {
             //left
             if (e.keyCode === 37 && currentPos > 0) {
-                console.log("stanga");
                 allOptions[currentPos].classList.remove("active");
                 currentPos--;
                 allOptions[currentPos].classList.add("active");
             }
             //up
             if (e.keyCode === 38 && currentPos > 1 && allOptions.length > 2) {
-                console.log("sus");
                 allOptions[currentPos].classList.remove("active");
                 currentPos -= 2;
                 allOptions[currentPos].classList.add("active");
             }
             //right
-            if (e.keyCode === 39 && ((currentPos < 3 && allOptions.length > 2) || (allOptions.length <= 2 && currentPos < 1))) {
-                console.log("dreapta");
+            if (e.keyCode === 39 && (currentPos < allOptions.length-1)) {
                 allOptions[currentPos].classList.remove("active");
                 currentPos++;
                 allOptions[currentPos].classList.add("active");
             }
             //down
-            if (e.keyCode === 40 && currentPos < 2 && allOptions.length > 2) {
-                console.log("jos");
+            if (e.keyCode === 40 && currentPos+2 < allOptions.length) {
                 allOptions[currentPos].classList.remove("active");
                 currentPos += 2;
+                allOptions[currentPos].classList.add("active");
+            }
+            if (e.keyCode === 40 && allOptions.length === 3 && currentPos === 1) {
+                allOptions[currentPos].classList.remove("active");
+                currentPos += 1;
                 allOptions[currentPos].classList.add("active");
             }
         }
         //confirm
         if (e.keyCode === 32 || e.keyCode === 13) {
-            //new StoryParser().getAnswer(npcId, allOptions[currentPos].type);
+            let parser = new StoryParser(this);
+            setTimeout(function(){
+                parser.getAnswer(npcId, allOptions[currentPos].type);
+            },100);
         }
     });
 }
