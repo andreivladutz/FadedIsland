@@ -52,6 +52,10 @@ class MapInstance extends EventEmiter {
 			*/
 			this.objectTemplates = objectTemplates;
 			
+			// spawnPoint will be of the form
+			// {x: xCoord, y: yCoord}
+			this.spawnPoint = {};
+			
 			//true => we cannot walk on the tile 
 			//false => no collision with the tile
 			this.collisionMatrix = collisionMatrix;
@@ -83,6 +87,9 @@ class MapInstance extends EventEmiter {
 	}
 }
 
+MapInstance.TEMPLATE = "template";
+MapInstance.SPAWN_POINT = "spawnpoint";
+
 _p = MapInstance.prototype;
 
 //returns true if the coords and tileId match an animated tile 
@@ -102,70 +109,6 @@ _p.isAnimated = function(i, j, tileId) {
 	return false;
 }
 
-/*
-* Animations are now processed in the mapParser from the very beginning
-_p.processAnimations = function() {
-	let tilesets = this.tilesetsWorkfiles;
-	
-	// picking all arrays of Animated tiles -> each array has objects
-	// where each object represents a tile in the animation with duration and tileid
-	for (let animationArr of this.animationsArr) {
-		// one array of animated tiles has some coords 
-		let i = animationArr[POSITION_IN_MATRIX].i,
-			j = animationArr[POSITION_IN_MATRIX].j;
-		
-		if (this.mapName === "Dungeon")
-			console.log("ANIMATION ARRAY?", animationArr, ": ");
-		
-		for (let layerMatrix of this.tilesMatrices) {
-			let tileId = layerMatrix[i][j],
-				usedTileset;
-				
-			if (tileId == NO_TILE) {
-				continue;
-			}
-
-			for (let tilesetInd = 0; tilesetInd < tilesets.length - 1; tilesetInd++) {
-				let currTileset = tilesets[tilesetInd],
-					nextTileset = tilesets[tilesetInd + 1];
-
-				//the tile to be drawn belongs to the currentTileset
-				if (tileId >= currTileset[FIRST_TILE_NUMBER] && tileId < nextTileset[FIRST_TILE_NUMBER]) {
-					usedTileset = currTileset;
-					break;
-				}
-			}
-
-			//the current tile is from the last tileset in the tilesets array
-			if (!usedTileset) {
-				usedTileset = tilesets[tilesets.length - 1];	
-			}
-
-			tileId -= usedTileset[FIRST_TILE_NUMBER];
-			
-			for (let animationObj of animationArr) {
-				if (animationObj.tileid == tileId ) {
-					
-					if (this.mapName === "Dungeon")
-						console.log("FOUND ITS PLAAACE");
-					
-					console.log("default " ,animationArr[DEFAULT_TILE])
-					console.log("found " ,tileId)
-					
-					console.log("default ", animationArr[JSON_TILESET_WORKFILE])
-					console.log("found ", usedTileset.JSONobject)
-					
-					animationArr[DEFAULT_TILE] = tileId;
-					animationArr[JSON_TILESET_WORKFILE] = usedTileset.JSONobject;
-					animationArr[TILESET_IMAGE] = usedTileset["image"];
-				}
-			}
-		}
-		
-	}
-}
-*/
-
 _p.processObjects = function() {
 	// bringing properties closer to be accessed easier
 	for (let src in this.objectTemplates) {
@@ -182,8 +125,10 @@ _p.processObjects = function() {
 	// for each real object we select only the ones that come from a template
 	// (those are drawable) and compute the scrX and srcY coordinates of the 
 	// object image in the whole tileset image
-	for (let obj of this.objectsArr) {
-		if ("template" in obj) {
+	for (let pos = this.objectsArr.length - 1; pos >= 0; pos--) {
+		let obj = this.objectsArr[pos];
+		
+		if (MapInstance.TEMPLATE in obj) {
 			let src = obj["template"],
 				correspondingTemplate = this.objectTemplates[src],
 				tileNo = correspondingTemplate.jsonTemplateWorkfile.object.gid - 
@@ -195,8 +140,18 @@ _p.processObjects = function() {
 			
 			obj.x = Math.floor(obj.x);
 			obj.y = Math.floor(obj.y);
-				
+			
+			// we separate drawable objects from the rest of the objects	
 			this.drawableObjects.push(obj);
+			// remove drawable objects from the objectArr
+			this.objectsArr.splice(pos, 1);
+		}
+		
+		if ("type" in obj && obj["type"] === MapInstance.SPAWN_POINT) {
+			this.spawnPoint.x = Math.floor(obj.x);
+			this.spawnPoint.y = Math.floor(obj.y);
+			
+			console.log(this.spawnPoint);
 		}
 	}
 	
@@ -209,6 +164,8 @@ _p.processObjects = function() {
 		
 		return a.y - b.y;
 	});
+	
+	console.log("non drawable objects: ", this.objectsArr);
 }
  
 _p.updateViewportSize = function() {
