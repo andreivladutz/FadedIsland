@@ -15,6 +15,8 @@ class Dialogue {
     }
 }
 
+let dialogueBox = new DialogueBox();
+
 class StoryParser {
     constructor() {
 
@@ -51,7 +53,7 @@ class StoryParser {
         this.getQuest = function(npc_id) {
 
             let quest = this.quests[npc_id];
-            getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+            dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
         };
 
         this.getAnswer = function(npc_id, type) {
@@ -63,7 +65,7 @@ class StoryParser {
                     quest.prevStage = 3;
                     quest.stage = 3;
                     localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
-                    getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+                    dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
                 }
                 else if(type === 2) {
                     console.log("sal");
@@ -73,18 +75,18 @@ class StoryParser {
                 else {
                     quest.stage = 2;
                     localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
-                    getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+                    dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
                 }
             }
             else if(quest.stage === 2) {
                 quest.stage = quest.prevStage;
                 localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
-                getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+                dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
             }
             else if(quest.stage === 3) {
                 quest.stage = 2;
                 localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
-                getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+                dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
             }
             else if(quest.stage === 4) {
                 quest.stage = 5;
