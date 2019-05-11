@@ -1,6 +1,6 @@
 @font-face {
     font-family: "8bitDragon";
-    src: url("/css/fonts/eight-bit-dragon.otf");
+    src: url("fonts/eight-bit-dragon.otf");
 }
 
 #dialogue-box {

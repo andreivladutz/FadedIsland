@@ -3,8 +3,8 @@ class Quest {
         this.npc_id = npc_id;
         this.texts = texts;
         this.answers = answers;
-        this.stage = 1;
-        this.prevStage = 2;
+        this.stage = 0;
+        this.prevStage = 1;
     }
 }
 

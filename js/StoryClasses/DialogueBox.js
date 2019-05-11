@@ -34,18 +34,21 @@ class MonologueBox extends EventEmiter {
 
         this.box.appendChild(this.content);
         this.box.appendChild(this.options);
-        document.addEventListener('DOMContentLoaded', function () {
-            document.body.appendChild(this.box);
-        });
+
+        while(!window.document){}
+        document.body.appendChild(this.box);
     }
 }
 
 _m = MonologueBox.prototype;
 
 _m.setQuestion = function (text) {
+    console.log(text);
     if (this.content.hasChildNodes()) {
+        console.log("yes");
         this.content.replaceChild(document.createTextNode(text), this.content.firstChild);
     } else {
+        console.log("no");
         this.content.appendChild(document.createTextNode(text));
     }
 }
@@ -125,9 +128,10 @@ _d.setQuestion = function (text) {
 }
 */
 _d.getOptions = function (npcId, dialogue) {
-    _d.setQuestion(dialogue.text);
-    _d.setOptions(dialogue.answers);
-    _d.waitOnInput(npcId);
+    console.log("sal1");
+    this.setQuestion(dialogue.text);
+    this.setOptions(dialogue.answers);
+    this.waitOnInput(npcId);
 }
 
 _d.setOptions = function (options) {
@@ -189,24 +193,28 @@ _d.waitOnInput = function (npcId) {
         if (allOptions.length > 1) {
             //left
             if (e.keyCode === 37 && currentPos > 0) {
+                console.log("stanga");
                 allOptions[currentPos].classList.remove("active");
                 currentPos--;
                 allOptions[currentPos].classList.add("active");
             }
             //up
             if (e.keyCode === 38 && currentPos > 1 && allOptions.length > 2) {
+                console.log("sus");
                 allOptions[currentPos].classList.remove("active");
                 currentPos -= 2;
                 allOptions[currentPos].classList.add("active");
             }
             //right
             if (e.keyCode === 39 && ((currentPos < 3 && allOptions.length > 2) || (allOptions.length <= 2 && currentPos < 1))) {
+                console.log("dreapta");
                 allOptions[currentPos].classList.remove("active");
                 currentPos++;
                 allOptions[currentPos].classList.add("active");
             }
             //down
             if (e.keyCode === 40 && currentPos < 2 && allOptions.length > 2) {
+                console.log("jos");
                 allOptions[currentPos].classList.remove("active");
                 currentPos += 2;
                 allOptions[currentPos].classList.add("active");
