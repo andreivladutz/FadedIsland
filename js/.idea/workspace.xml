@@ -38,9 +38,11 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1168">
-              <caret line="83" column="0" lean-forward="false" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="1214">
+              <caret line="85" column="0" lean-forward="false" selection-start-line="85" selection-start-column="0" selection-end-line="85" selection-end-column="0" />
+              <folding>
+                <marker date="1557571483142" expanded="true" signature="45:47" ph="[...]" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -259,12 +261,12 @@
       <workItem from="1557434691233" duration="599000" />
       <workItem from="1557486841053" duration="8235000" />
       <workItem from="1557563540572" duration="642000" />
-      <workItem from="1557566789199" duration="4028000" />
+      <workItem from="1557566789199" duration="4202000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="38432000" />
+    <option name="totallyTimeSpent" value="38606000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1096" extended-state="1" />
@@ -516,9 +518,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1168">
-          <caret line="83" column="0" lean-forward="false" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="1214">
+          <caret line="85" column="0" lean-forward="false" selection-start-line="85" selection-start-column="0" selection-end-line="85" selection-end-column="0" />
+          <folding>
+            <marker date="1557571483142" expanded="true" signature="45:47" ph="[...]" />
+          </folding>
         </state>
       </provider>
     </entry>
