@@ -1,9 +1,10 @@
 "use strict";
 const LAST_ANIMATION_TIME = "lastAnimationTime", FRAME_DURATION = "duration";
 
-class MapRenderer {
+class MapRenderer extends EventEmiter {
 	//the constructor receives the name of the current rendered map
 	constructor(currentMapName) {
+		super();
 		this.canvasManager = CanvasManagerFactory();
 		
 		this.changeMap(currentMapName);
@@ -38,7 +39,9 @@ class MapRenderer {
 	}
 }
 
+// dictionary of initialised mapInstances
 MapRenderer.MAP_INSTANCES = {};
+MapRenderer.CHANGED_MAP_EVENT = "changedMap";
 
 _p = MapRenderer.prototype;
 
@@ -52,6 +55,8 @@ _p.changeMap = function(mapName) {
 		
 	//offDirty flag tells if the offscreenBuffer canvas should be redrawn
 	this.offDirty = true;
+	
+	this.emit(MapRenderer.CHANGED_MAP_EVENT, mapName);
 }
 
 _p.checkIfDirty = function() {
@@ -481,4 +486,8 @@ _p.getLastDrawnObjects = function() {
 
 _p.getTemplateObjects = function() {
 	return this.currentMapInstance.objectTemplates;
+}
+
+_p.getCurrentMapName = function() {
+	return this.currentMapInstance.mapName;
 }

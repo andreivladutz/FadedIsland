@@ -54,7 +54,7 @@ class MapInstance extends EventEmiter {
 			
 			// spawnPoint will be of the form
 			// {x: xCoord, y: yCoord}
-			this.spawnPoint = {};
+			this.spawnPoint = null;
 			
 			//true => we cannot walk on the tile 
 			//false => no collision with the tile
@@ -148,8 +148,10 @@ _p.processObjects = function() {
 		}
 		
 		if ("type" in obj && obj["type"] === MapInstance.SPAWN_POINT) {
-			this.spawnPoint.x = Math.floor(obj.x);
-			this.spawnPoint.y = Math.floor(obj.y);
+			this.spawnPoint = {
+				x: Math.floor(obj.x),
+				y: Math.floor(obj.y)
+			}
 			
 			console.log(this.spawnPoint);
 		}
@@ -173,43 +175,6 @@ _p.updateViewportSize = function() {
 	this.viewportWidth = CanvasManagerFactory().canvas.width;
 	this.viewportHeight = CanvasManagerFactory().canvas.height;
 }
-
-//_p.moveMap = function(e) {
-//	var movement = e.detail,
-//		pixelsMapWidth = this.mapWidth * this.tileSize,
-//		pixelsMapHeight = this.mapHeight * this.tileSize;
-//	
-//	if (this.viewportWidth >= pixelsMapWidth) {
-//		this.mapX = (this.viewportWidth - pixelsMapWidth) / 2;
-//	}
-//	
-//	else {
-//		this.mapX = Math.min(
-//			this.mapX + movement.deltaX, 0
-//		);
-//		
-//		this.mapX = Math.max(
-//			- pixelsMapWidth + this.viewportWidth, this.mapX
-//		);
-//	}
-//	
-//	if (this.viewportHeight >= pixelsMapHeight) {
-//		this.mapY = (this.viewportHeight - pixelsMapHeight) / 2;
-//	}
-//	
-//	else {
-//		this.mapY = Math.min(
-//			this.mapY + movement.deltaY, 0
-//		);
-//
-//		this.mapY = Math.max(
-//			- pixelsMapHeight + this.viewportHeight, this.mapY
-//		);
-//	}
-//
-//	this.emit("movedMap", null);
-//}
-
 
 _p.moveMap = function(deltaX, deltaY) {
 	var pixelsMapWidth = this.mapWidth * this.tileSize,
@@ -249,4 +214,12 @@ _p.moveMap = function(deltaX, deltaY) {
 			- pixelsMapHeight + this.viewportHeight, this.mapY
 		);
 	}
+}
+
+_p.getSpawnPoint = function() {
+	if (!this.spawnPoint) {
+		throw new Error("You are trying to get a spawnPoint that hasn't been initialised");
+	}
+	
+	return this.spawnPoint;
 }

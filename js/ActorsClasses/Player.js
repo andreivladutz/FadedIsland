@@ -5,6 +5,14 @@
 class Player extends Actor {
     constructor(loadedPromisesArr, customResources) {
         super(loadedPromisesArr, customResources);
+		
+		this.speed = 5;
+		
+		// make the player faster if we debug
+		// don't wanna waste time walking slow
+		if (DEBUGGING) {
+			this.speed = 30;
+		}
         
 		var self = this;
 		
@@ -17,17 +25,28 @@ class Player extends Actor {
 			self.updateCoordsOnResize();
 		});
 	}
+	
+	// after setting the mapRenderer we register mapChange event handler
+	setMapRenderer(mapRenderer) {
+		super.setMapRenderer(mapRenderer);
+		
+		this.mapRenderer.on(MapRenderer.CHANGED_MAP_EVENT, this.movePlayerToSpawnPoint.bind(this));
+	}
 }
 
 _p = Player.prototype;
 
-
+// we want to move the player to the spawn point of that map when the map gets changed
+_p.movePlayerToSpawnPoint = function() {
+	var spawnPoint = this.mapRenderer.currentMapInstance.getSpawnPoint;
+	
+	this.movePlayerToMapCoords(spawnPoint.x, spawnPoint.y);
+}
 
 /*
 	having given some map coordinates we move the map and compute player screen coords 
 	such that the player will be at the given coords on the map
  */
-// ramane
 _p.movePlayerToMapCoords = function(x, y) {
 	var midX = this.canvas.width / 2, midY = this.canvas.height / 2,
 		mapWidth = this.mapRenderer.getMapWidth(), mapHeight = this.mapRenderer.getMapHeight(),

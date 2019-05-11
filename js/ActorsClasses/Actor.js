@@ -1,6 +1,6 @@
 "use strict"
 const FRAME_WIDTH = 64, FRAME_HEIGHT = 64,
-	  ACTUAL_Actor_WIDTH = 32,
+	  ACTUAL_ACTOR_WIDTH = 32,
       FRAME_ROW = 8;
 
 var RESOURCES = [
@@ -42,8 +42,9 @@ class Actor {
         this.canvas = CanvasManagerFactory().canvas;
         this.ctx = CanvasManagerFactory().ctx;
         
-        this.speed = 5;
-        this.power = 20; // attack power
+		// will be overwritten in the Player/Enemy classes
+        this.speed = 0;
+        this.power = 0; // attack power
 		
 		/* 
 		 * we keep timers for frame changing and coordinate updating 
@@ -55,13 +56,14 @@ class Actor {
 		// this.walkMovementTimer = null;
 
 		// coords corespond to feet area
-		this.coordX = this.canvas.width / 2;
-		this.coordY = this.canvas.height / 2;
-        this.coordBodyY = this.coordY - FRAME_HEIGHT / 5; // y coord for body, collision when going up
+		// just to see them in the constructor. they should be initialised accordingly!
+		this.coordX = null;
+		this.coordY = null;
+        this.coordBodyY = null; // y coord for body, collision when going up
 		
 		// the drawing coords are screen coords but we also have to keep count 
-		// of the map coords of the Actor. they are initialised when setMapRenderer is called
-		this.mapCoordX = this.mapCoordY = 0;
+		// of the map coords of the Actor.
+		this.mapCoordX = this.mapCoordY = null;
         
         // loading Actor sprite
         this.resLoader = new ResourceLoader();
@@ -206,12 +208,19 @@ _p.draw = function() {
 
 _p.setMapRenderer = function(mapRenderer) {
     this.mapRenderer = mapRenderer;
-	this.updateMapCoords();
 }
 
 _p.setMapCoords = function(mapCoordX, mapCoordY) {
 	this.mapCoordX = mapCoordX;
 	this.mapCoordY = mapCoordY;
+}
+
+_p.getMapCoords = function() {
+	if (this.mapCoordX !== null && this.mapCoordY !== null) {
+		return {x: this.mapCoordX, y: this.mapCoordY};
+	}
+	
+	return null;
 }
 
 _p.updateScreenCoords = function() {
@@ -231,9 +240,9 @@ _p.checkCollision = function(x, y, cY = this.coordY, cX = this.coordX) { // x,y 
 		to check the collision with all the crossed tiles at that moment
 	*/
     var tileSize = this.mapRenderer.currentMapInstance.tileSize,
-		leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: cX + x - ACTUAL_Actor_WIDTH / 2,
+		leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: cX + x - ACTUAL_ACTOR_WIDTH / 2,
 																	y: cY + y}),
-		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: cX + x + ACTUAL_Actor_WIDTH / 2,
+		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: cX + x + ACTUAL_ACTOR_WIDTH / 2,
 																	 y: cY + y}),
 		matrixCols = this.mapRenderer.currentMapInstance.collisionMatrix[0].length,
 		matrixRows = this.mapRenderer.currentMapInstance.collisionMatrix.length;
@@ -253,7 +262,7 @@ _p.checkCollision = function(x, y, cY = this.coordY, cX = this.coordX) { // x,y 
 	}
 	
 	// checking collision against all objects with the feet segment of the Actor
-	if (this.checkCollisionAgainstObjects(cX + x - ACTUAL_Actor_WIDTH / 2, cX + x + ACTUAL_Actor_WIDTH / 2, cY + y)) {
+	if (this.checkCollisionAgainstObjects(cX + x - ACTUAL_ACTOR_WIDTH / 2, cX + x + ACTUAL_ACTOR_WIDTH / 2, cY + y)) {
 		return true;
 	}
 	

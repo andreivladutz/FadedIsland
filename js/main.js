@@ -48,8 +48,8 @@ function init() {
     function loadedMap(resolve, reject) {
         mapLoader.on(MAPS_READY_EVENT, function() {
             mapRenderer = mapLoader.getMapRenderer();
-            player.setMapRenderer(mapRenderer);
             mapRenderer.showCollisions();
+			
             resolve();
         });
 	}
@@ -66,6 +66,12 @@ function init() {
 		"armsArmour" : "armsArmour1",
 		"headArmour" : "helmArmour1"
 	});
+	
+	
+	// setting the stateSaver in the mapLoader and also initialising it
+	mapLoader.setStateSaver(StateSaverManager());
+	// passing the reference to the player
+	mapLoader.setPlayerReference(player);
 	
 	// initialise the movementManager with the player reference
 	movementManager = new MovementManager(player);
