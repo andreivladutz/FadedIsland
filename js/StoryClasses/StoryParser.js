@@ -15,10 +15,8 @@ class Dialogue {
     }
 }
 
-let dialogueBox = new DialogueBox();
-
 class StoryParser {
-    constructor() {
+    constructor(dialogueBox) {
 
         this.loadQuests = function(obj) {
             let xobj = new XMLHttpRequest();
@@ -51,7 +49,6 @@ class StoryParser {
         this.loadQuests(this);
 
         this.getQuest = function(npc_id) {
-
             let quest = this.quests[npc_id];
             dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
         };
@@ -64,40 +61,41 @@ class StoryParser {
                 if(type === 1) {
                     quest.prevStage = 3;
                     quest.stage = 3;
-                    localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
+                    localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
                     dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
                 }
                 else if(type === 2) {
                     console.log("sal");
                     quest.stage = 1;
-                    localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
+                    localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
                 }
                 else {
                     quest.stage = 2;
-                    localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
+                    localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
                     dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
                 }
             }
             else if(quest.stage === 2) {
                 quest.stage = quest.prevStage;
-                localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
+                localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
                 dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
             }
             else if(quest.stage === 3) {
                 quest.stage = 2;
-                localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
+                localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
                 dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
             }
             else if(quest.stage === 4) {
                 quest.stage = 5;
-                localStorage.setItem(`questStages|${npc_id}`,{stage: quest.stage, prevStage: quest.prevStage});
+                localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
             }
         }
     }
 }
-let parser = new StoryParser();
 setTimeout(function() {
-    console.log(parser.quests);
-    parser.getAnswer(0,2);
-    console.log(localStorage);
+    let box = new DialogueBox();
+    let parser = new StoryParser(box);
+    setTimeout(function () {
+        parser.getQuest(0);
+    }, 1000);
 },1000);
