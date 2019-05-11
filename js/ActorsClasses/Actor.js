@@ -1,7 +1,10 @@
 "use strict"
+
+// sprite consts
 const FRAME_WIDTH = 64, FRAME_HEIGHT = 64,
 	  ACTUAL_ACTOR_WIDTH = 32,
       FRAME_ROW = 8;
+
 
 var RESOURCES = [
     {
@@ -144,6 +147,17 @@ Actor.DOWNWARD_DIRECTION = 2;
 Actor.LEFT_DIRECTION = 1;
 Actor.RIGHT_DIRECTION = 3;
 
+// attack consts, starting row + # of frames
+Actor.DAGGER = 12;
+Actor.NO_FOR_DAGGER = 6;
+
+Actor.BOW = 16;
+Actor.NO_FOR_BOW = 13;
+
+Actor.SPEAR = 4;
+Actor.NO_FOR_SPEAR = 8;
+
+
 _p = Actor.prototype;
 
 // small utility to transform a name like FooName to fooName
@@ -184,7 +198,7 @@ _p.waitOn = function(resourceName, propertyName = getLowerCaseName(resourceName)
 _p.initAnimators = function() {
 	// separate animator for the walking animation (the frame animation)
 	// the total duration of one movement loop
-	// WALK_COLUMNS - 1 bc we ignore the standstill position
+	// WALK_COLUMNS - 1 bcuz we ignore the standstill position
 	this.walkingFrameAnimator = new Animator(Actor.MOVEMENT_DURATION * (Actor.WALK_MAX_COLUMNS - 1));
 	// infinite animation, we use the start and stop methods on this animator 
 	// to stop and resume the walk animation
