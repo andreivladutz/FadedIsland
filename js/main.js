@@ -83,6 +83,7 @@ function init() {
     );
 
     mapLoader.load();
+    showSomeBoxes();
 }
 
 function initGameOnLoaded() {
