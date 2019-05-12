@@ -36,7 +36,6 @@ class Player extends Actor {
 		window.addEventListener("mousemove", this.computeDirection.bind(this));
         
 		// window.addEventListener("mouseup", this.mouseRelease.bind(this));
-
 	}
 	
 	// after setting the mapRenderer we register mapChange and redrawnOffscreen event handlers
@@ -62,6 +61,11 @@ class Player extends Actor {
 	computeDirection(e) {
 		let x = e.clientX, y = e.clientY;
 		super.computeDirection(x, y);
+	}
+	
+	startAttack(e) {
+		this.computeDirection(e);
+		super.startAttack();
 	}
     
 }

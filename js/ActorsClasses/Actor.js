@@ -405,7 +405,7 @@ _p.updateDirection = function() {
 	this.row = Actor.WALK_ROW + this.direction;
 }
 
-_p.startAttack = function(e) {
+_p.startAttack = function() {
 	// just set the flag to true. the update function will take care of the rest
 	this.attacking = true;
 	// we stopped walking. the attack has priority
