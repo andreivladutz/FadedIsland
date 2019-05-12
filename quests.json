@@ -1,17 +1,19 @@
 [
 {
 "npc_id":0,
-"texts":["Rogu-te, omoara si tu 10 caini.",
-"Deci, cum ramane cu ce te-am rugat?",
-"A ajuns sa-mi fie frica sa ies din casa. Sunt om batran, nu ma pot apara!",
-"Ii poti in haita pe campuri, sunt usor de sesizat.",
-"Doamne, esti un adevarat ajutor, flacaule. Sa traiesti!",
-"Oho, cand vii la o supa? Gateste nevasta-mea!"],
-"answers":[[{"text":"Gata bre ma bag.","type":1},{"text":"Nu mersi, mi-e frica de caini.","type":2},{"text":"Dar cu ce te deranjeaza?","type":3}],
-[{"text":"Gata bre ma bag.","type":1},{"text":"Nu mersi, mi-e frica de caini.","type":2},{"text":"Dar cu ce te deranjeaza?","type":3}],
-[{"text":"Am inteles...","type":1}],
-[{"text":"Mai zi-mi o data ce ti-au facut?","type":3}],
-[{"text":"Ai grija de matale.","type":1},{"text":"M-am distrat si eu oricum.","type":1},{"text":"Poate mai trec pe aici candva.","type":1}],
-[{"text":"Mai vedem.","type":1}]
+"texts":["What, someone from the capital came? I thought you forgot abot your damn duties.",
+"Look, I'm sorry for what I've said earlier. Just get this thing over with and you can move on with your life.",
+"Oh, nothing, it's just that we requestsed aid from the capital god knows how long ago.",
+"Our crop fields have been overrun with these weird *things* and no one's brave enough to shoo them away.That's where you come in. Just clear the fields...please.",
+"Thank god. You're a life saver. I know this was just another chore for you, but I really wanted to say I appreciate what you've done for us. Also, here's your reward. Farewell!",
+"Hey, it's you again. How's it going, hero?"],
+"answers":[[{"text":"So what do you want me to do?","stage":3,"close":false},{"text":"How about I came back later when you dropped the attitude?","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
+[{"text":"So what do you want me to do?","stage":3,"close":false},{"text":"Next time, try with 'please' and 'thank you'.","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
+[{"text":"I don't see how that's my fault though.","stage":1,"close":false}],
+[{"text":"Fair enough.","stage":3,"close":true}],
+[{"text":"Eh, I had fun myself.","stage":5,"close":true},{"text":"Glad to see you're relieved.","stage":5,"close":true},{"text":"Whatever.","stage":5,"close":true}],
+[{"text":"I'm good, thanks.","stage":5,"close":true}]
+],
+"max_stage":5
+}
 ]
-}]

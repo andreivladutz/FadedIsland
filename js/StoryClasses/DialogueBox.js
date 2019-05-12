@@ -72,7 +72,6 @@ _m.waitOnInput = function () {
 }
 
 _m.remove = function () {
-    console.log("Sal2");
     StoryParser.getReference(null);
     document.body.removeChild(this.box);
 }
@@ -120,10 +119,11 @@ _d.setQuestion = function (text) {
 
 }
 */
-_d.getOptions = function (npcId, dialogue) {
+_d.getOptions = function (quest) {
+    let dialogue = new Dialogue(quest.texts[quest.stage],quest.answers[quest.stage]);
     this.setQuestion(dialogue.text);
     this.setOptions(dialogue.answers);
-    this.waitOnInput(npcId);
+    this.waitOnInput();
 }
 
 _d.setOptions = function (options) {
@@ -158,7 +158,8 @@ _d.setOptions = function (options) {
         let newOption = document.createElement("li");
         newOption.classList.add("options");
         newOption.appendChild(document.createTextNode(options[i].text));
-        newOption.setAttribute("type", options[i].type);
+        newOption.setAttribute("stage", options[i].stage);
+        newOption.setAttribute("close", options[i].close);
         this.options.appendChild(newOption);
 
         let fontSize = parseInt(newOption.style.fontSize);
@@ -172,7 +173,7 @@ _d.setOptions = function (options) {
     }
 }
 
-_d.waitOnInput = function (npcId) {
+_d.waitOnInput = function () {
     var allOptions = this.options.childNodes;
     var currentPos = 0;
     allOptions[currentPos].classList.add("active");
@@ -218,7 +219,8 @@ _d.waitOnInput = function (npcId) {
             window.removeEventListener("keydown",handler);
             let parser = StoryParser.getReference();
             setTimeout(function(){
-                parser.getAnswer(npcId, allOptions[currentPos].type);
+                parser.getAnswer(allOptions[currentPos].getAttribute("stage"),
+                    allOptions[currentPos].getAttribute("close"));
             },100);
         }
         if (e.keyCode === 27)  {

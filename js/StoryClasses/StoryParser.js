@@ -1,10 +1,12 @@
 class Quest {
-    constructor(npc_id, texts, answers) {
+    constructor(npc_id, texts, answers, maxStage) {
         this.npc_id = npc_id;
         this.texts = texts;
         this.answers = answers;
         this.stage = 0;
         this.prevStage = 1;
+        this.maxStage = maxStage;
+        this.completed = false;
     }
 }
 
@@ -16,6 +18,20 @@ class Dialogue {
 }
 
 class StoryParser {
+
+    static getQuestsProgress() {
+        if(localStorage.getItem("questsProgress") !== null)
+            return parseInt(localStorage.getItem("questProgress"));
+        else return 0;
+    }
+
+    static setQuestsProgress(value) {
+        localStorage.setItem("questsProgress", value);
+    }
+
+    static upQuestsProgress(value) {
+        localStorage.setItem("questsProgress", localStorage.getItem("questsProgress") + value);
+    }
 
     static getReference(box = "default") {
         if(StoryParser.reference === undefined)
@@ -41,15 +57,17 @@ class StoryParser {
                     let quests = [];
 
                     for(let i = 0; i < textsArray.length; i++) {
-                        quests[i] = new Quest(i, textsArray[i].texts, textsArray[i].answers);
+                        quests[i] = new Quest(textsArray[i].npc_id, textsArray[i].texts,
+                            textsArray[i].answers, textsArray[i].maxStage);
                     }
 
                     for(let i = 0; i < textsArray.length; i++)
                         if(localStorage.getItem(`questStages|${i}`) !== null){
-                        stagesArray[i] = JSON.parse(localStorage.getItem(`questStages|${i}`));
-                        quests[i].stage = stagesArray[i].stage;
-                        quests[i].prevStage = stagesArray[i].prevStage;
-                    }
+                            stagesArray[i] = JSON.parse(localStorage.getItem(`questStages|${i}`));
+                            quests[i].stage = stagesArray[i].stage;
+                            quests[i].prevStage = stagesArray[i].prevStage;
+                            quests[i].completed = stagesArray[i].completed;
+                        }
                     obj.quests = quests;
                 }
 
@@ -61,49 +79,30 @@ class StoryParser {
         this.loadQuests(this);
 
         this.getQuest = function(npc_id) {
-            let quest = this.quests[npc_id];
-            StoryParser.reference.dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+            let quest = this.quests[StoryParser.getQuestsProgress()];
+            if(npc_id === quest.npc_id)
+                StoryParser.getReference().dialogueBox.getOptions(quest);
         };
 
-        this.getAnswer = function(npc_id, type) {
+        this.getAnswer = function(stage, close = false, prevStage = null) {
 
-            type = parseInt(type);
+            stage = parseInt(stage);
+            close = close === "true";
 
-            let quest = this.quests[npc_id];
+            let quest = this.quests[StoryParser.getQuestsProgress()];
 
-            if(quest.stage === 0 || quest.stage === 1) {
-                if(type === 1) {
-                    quest.prevStage = 3;
-                    quest.stage = 3;
-                    localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
-                    StoryParser.reference.dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
-                }
-                else if(type === 2) {
-                    quest.stage = 1;
-                    localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
-                    StoryParser.reference.dialogueBox.remove();
-                }
-                else {
-                    quest.stage = 2;
-                    localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
-                    StoryParser.reference.dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
-                }
+            quest.stage = stage;
+            if(prevStage)
+                quest.prevStage += parseInt(prevStage);
+            if(stage === quest.maxStage) {
+                quest.completed = true;
+                StoryParser.upQuestsProgress(1);
             }
-            else if(quest.stage === 2) {
-                quest.stage = quest.prevStage;
-                localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
-                StoryParser.reference.dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
-            }
-            else if(quest.stage === 3) {
-                quest.stage = 2;
-                localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
-                StoryParser.reference.dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
-            }
-            else if(quest.stage === 4) {
-                quest.stage = 5;
-                localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
-                StoryParser.reference.dialogueBox.remove();
-            }
+            if(close)
+                this.dialogueBox.remove();
+            else
+                StoryParser.getReference().dialogueBox.getOptions(quest);
+
         }
     }
 }
