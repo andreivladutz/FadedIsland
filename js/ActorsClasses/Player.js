@@ -371,12 +371,14 @@ _p.keyDownLeft = function(e) {
 
 /* when all keys have been released we have to stop all the moving */
 _p.keyRelease = function() {
-    this.column = Actor.STANDSTILL_POSITION;
-	
-	// stop the animator so it is resetted the next time the player starts moving again
-	this.walkAnimationTimer = null;
-	// this.walkMovementTimer = null;
-	this.walkingFrameAnimator.stop();
+    if (!this.attackFrameAnimator.isRunning()) { // if player is attacking, don't register key releasing
+        this.column = Actor.STANDSTILL_POSITION;
+
+        // stop the animator so it is resetted the next time the player starts moving again
+        this.walkAnimationTimer = null;
+        // this.walkMovementTimer = null;
+        this.walkingFrameAnimator.stop();
+    }
 }
 
 
