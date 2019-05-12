@@ -57,6 +57,8 @@ class Actor {
 		 */
 		this.walkAnimationTimer = null;
 		// this.walkMovementTimer = null;
+        
+        this.attackTimer = null;
 
 		// coords corespond to feet area
 		// just to see them in the constructor. they should be initialised accordingly!
@@ -122,11 +124,14 @@ class Actor {
             this.propertiesNames.splice(hairIndex, 1);
         }
         
+        // set default attack type to dagger
+        this.attackFrames = Actor.NO_FOR_DAGGER;
+        
         this.resLoader.load();
 		this.initAnimators();
     }
-}
 
+}
 
 
 // duration of one frame in ms
@@ -147,15 +152,18 @@ Actor.DOWNWARD_DIRECTION = 2;
 Actor.LEFT_DIRECTION = 1;
 Actor.RIGHT_DIRECTION = 3;
 
+// duration of one attack frame in ms
+Actor.ATTACK_DURATION = 200;
+
 // attack consts, starting row + # of frames
 Actor.DAGGER = 12;
-Actor.NO_FOR_DAGGER = 6;
+Actor.NO_FOR_DAGGER = 5;
 
 Actor.BOW = 16;
-Actor.NO_FOR_BOW = 13;
+Actor.NO_FOR_BOW = 12;
 
 Actor.SPEAR = 4;
-Actor.NO_FOR_SPEAR = 8;
+Actor.NO_FOR_SPEAR = 7;
 
 
 _p = Actor.prototype;
@@ -203,6 +211,10 @@ _p.initAnimators = function() {
 	// infinite animation, we use the start and stop methods on this animator 
 	// to stop and resume the walk animation
 	this.walkingFrameAnimator.setRepeatCount(Animator.INFINITE);
+    
+    // animator for attack
+    this.attackFrameAnimator = new Animator(Actor.ATTACK_DURATION * this.attackFrames);
+    this.attackFrameAnimator.setRepeatCount(Animator.INFINITE);
 }
 
 _p.drawSpriteFrame = function(image) {
@@ -313,25 +325,56 @@ _p.checkCollisionAgainstObjects = function(lftPlyrX, rghtPlyrX, y) {
 }
 
 _p.updateMovementAnimation = function() {
-	// if no movement timer has been created or it has been stopped by keyRelease()
-	// another instance of Timer is created (so lastUpdateTime is reinitialised to now)
-	if (!this.movementTimer && !this.walkAnimationTimer) {
-		this.walkAnimationTimer = new Timer();
-		
-		this.walkingFrameAnimator.start();
-	}
-	
-	// pass the timer to get the deltaTime and compute the frame that should be drawn right now
-	// We get the number of a frame between 0 and NumberOfFrames - 1 which we offset by 1 so we skip the 0 frame which is STANDSTILL_POSITION
-	this.column = Math.floor(this.walkingFrameAnimator.update(this.walkAnimationTimer) * (Actor.WALK_MAX_COLUMNS - 1)) + 1;
-	
-	// we updated the frames now
-	this.walkAnimationTimer.lastUpdatedNow();
+    if (!this.attackFrameAnimator._running) {
+        // if no movement timer has been created or it has been stopped by keyRelease()
+        // another instance of Timer is created (so lastUpdateTime is reinitialised to now)
+        if (!this.movementTimer && !this.walkAnimationTimer) {
+            this.walkAnimationTimer = new Timer();
+
+            this.walkingFrameAnimator.start();
+        }
+
+        // pass the timer to get the deltaTime and compute the frame that should be drawn right now
+        // We get the number of a frame between 0 and NumberOfFrames - 1 which we offset by 1 so we skip the 0 frame which is STANDSTILL_POSITION
+        this.column = Math.floor(this.walkingFrameAnimator.update(this.walkAnimationTimer) * (Actor.WALK_MAX_COLUMNS - 1)) + 1;
+
+        // we updated the frames now
+        this.walkAnimationTimer.lastUpdatedNow();
+    }
 }
 
+_p.updateAttackAnimation = function() {
+    // if no attack timer has been created or it has been stopped by mouseRelease()
+    if (!this.attackTimer) {
+        this.attackTimer = new Timer();
+        this.attackFrameAnimator.start();
+    }
+    this.row = Actor.DAGGER + 3;
+    this.column = Math.floor(this.attackFrameAnimator.update(this.attackTimer) * this.attackFrames) + 1;
+    
+    // draw specific frame from attack frames
+    this.draw();
+    
+    // we update the frames now
+    this.attackTimer.lastUpdatedNow();
+    this.animReq = requestAnimationFrame(this.updateAttackAnimation.bind(this));
+    
+    // repeat until we make one loop aka complete animation
+    if(this.attackFrameAnimator._loopsDone == 1) {
+        cancelAnimationFrame(this.animReq);
+        this.attackTimer = null;
+        this.attackFrameAnimator.stop();
+        return;
+    }
+}
 
-
-
+_p.mouseRelease = function() {
+    this.column = Actor.STANDSTILL_POSITION;
+    
+    // stop animator so it is resetted the next time the player attacks
+    this.attackTimer = null;
+    this.attackFrameAnimator.stop();
+}
 
 
 
