@@ -72,9 +72,9 @@ _m.waitOnInput = function () {
 }
 
 _m.remove = function () {
-    document.addEventListener('DOMContentLoaded', function () {
-        document.body.removeChild(this.box);
-    });
+    console.log("Sal2");
+    StoryParser.getReference(null);
+    document.body.removeChild(this.box);
 }
 
 class DialogueBox extends MonologueBox {
@@ -176,7 +176,7 @@ _d.waitOnInput = function (npcId) {
     var allOptions = this.options.childNodes;
     var currentPos = 0;
     allOptions[currentPos].classList.add("active");
-    window.addEventListener("keydown", function (e) {
+    window.addEventListener("keydown", function handler(e) {
         //handles cases when user keeps pressing down
         if (e.repeat) {
             return;
@@ -215,10 +215,15 @@ _d.waitOnInput = function (npcId) {
         }
         //confirm
         if (e.keyCode === 32 || e.keyCode === 13) {
-            let parser = new StoryParser(this);
+            window.removeEventListener("keydown",handler);
+            let parser = StoryParser.getReference();
             setTimeout(function(){
                 parser.getAnswer(npcId, allOptions[currentPos].type);
             },100);
+        }
+        if (e.keyCode === 27)  {
+            window.removeEventListener("keydown",handler);
+            StoryParser.getReference().dialogueBox.remove();
         }
     });
 }

@@ -16,7 +16,19 @@ class Dialogue {
 }
 
 class StoryParser {
+
+    static getReference(box = "default") {
+        if(StoryParser.reference === undefined)
+            StoryParser.reference = new StoryParser(box);
+        else
+            if(box !== "default")
+                StoryParser.reference.dialogueBox = box;
+        return StoryParser.reference;
+    };
+
     constructor(dialogueBox) {
+
+        this.dialogueBox = dialogueBox;
 
         this.loadQuests = function(obj) {
             let xobj = new XMLHttpRequest();
@@ -50,51 +62,59 @@ class StoryParser {
 
         this.getQuest = function(npc_id) {
             let quest = this.quests[npc_id];
-            dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+            StoryParser.reference.dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
         };
 
         this.getAnswer = function(npc_id, type) {
 
+            type = parseInt(type);
+
             let quest = this.quests[npc_id];
+
             if(quest.stage === 0 || quest.stage === 1) {
                 if(type === 1) {
                     quest.prevStage = 3;
                     quest.stage = 3;
                     localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
-                    dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+                    StoryParser.reference.dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
                 }
                 else if(type === 2) {
-                    console.log("sal");
                     quest.stage = 1;
                     localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
+                    StoryParser.reference.dialogueBox.remove();
                 }
                 else {
                     quest.stage = 2;
                     localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
-                    dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+                    StoryParser.reference.dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
                 }
             }
             else if(quest.stage === 2) {
                 quest.stage = quest.prevStage;
                 localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
-                dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+                StoryParser.reference.dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
             }
             else if(quest.stage === 3) {
                 quest.stage = 2;
                 localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
-                dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
+                StoryParser.reference.dialogueBox.getOptions(npc_id, new Dialogue(quest.texts[quest.stage], quest.answers[quest.stage]));
             }
             else if(quest.stage === 4) {
                 quest.stage = 5;
                 localStorage.setItem(`questStages|${npc_id}`,JSON.stringify({stage: quest.stage, prevStage: quest.prevStage}));
+                StoryParser.reference.dialogueBox.remove();
             }
         }
     }
 }
-setTimeout(function() {
-    let box = new DialogueBox();
-    let parser = new StoryParser(box);
-    setTimeout(function () {
-        parser.getQuest(0);
-    }, 1000);
-},1000);
+StoryParser.getReference(null);
+localStorage.clear();
+setTimeout(function(){
+    window.addEventListener("keydown",function(e) {
+        if(e.key.toLowerCase() === "e") {
+            if (StoryParser.getReference().dialogueBox === null) {
+                StoryParser.getReference(new DialogueBox()).getQuest(0);
+            }
+        }
+    })
+},200);
