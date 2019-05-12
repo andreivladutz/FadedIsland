@@ -107,7 +107,7 @@ class StoryParser {
             if(close)
                 this.dialogueBox.remove();
             else
-                StoryParser.getReference().dialogueBox.getOptions(quest);
+                StoryParser.getReference().dialogueBox.getOptions(quest, which);
 
         }
     }
