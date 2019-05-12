@@ -21,7 +21,7 @@ class StoryParser {
 
     static getQuestsProgress() {
         if(localStorage.getItem("questsProgress") !== null)
-            return parseInt(localStorage.getItem("questProgress"));
+            return parseInt(localStorage.getItem("questsProgress"));
         else return 0;
     }
 
@@ -79,17 +79,23 @@ class StoryParser {
         this.loadQuests(this);
 
         this.getQuest = function(npc_id) {
-            let quest = this.quests[StoryParser.getQuestsProgress()];
-            if(npc_id === quest.npc_id)
-                StoryParser.getReference().dialogueBox.getOptions(quest);
+
+            let i = StoryParser.getQuestsProgress();
+            while(this.quests[i].npc_id !== npc_id && i >= 0)
+                i--;
+            if(i >= 0)
+                this.dialogueBox.getOptions(this.quests[i], i);
+            else
+                this.dialogueBox.remove();
+
         };
 
-        this.getAnswer = function(stage, close = false, prevStage = null) {
+        this.getAnswer = function(which, stage, close = false, prevStage = null) {
 
             stage = parseInt(stage);
             close = close === "true";
 
-            let quest = this.quests[StoryParser.getQuestsProgress()];
+            let quest = this.quests[which];
 
             quest.stage = stage;
             if(prevStage)
@@ -106,9 +112,10 @@ class StoryParser {
         }
     }
 }
-StoryParser.getReference(null);
 localStorage.clear();
+StoryParser.getReference(null);
 setTimeout(function(){
+    StoryParser.upQuestsProgress(1);
     window.addEventListener("keydown",function(e) {
         if(e.key.toLowerCase() === "e") {
             if (StoryParser.getReference().dialogueBox === null) {

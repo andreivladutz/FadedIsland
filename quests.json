@@ -15,5 +15,19 @@
 [{"text":"I'm good, thanks.","stage":5,"close":true}]
 ],
 "max_stage":5
+},
+{
+"npc_id":1,
+"texts":["Hey, can you come over here for a second?",
+"Please, someone very special to me might be in grave danger. I'm begging you.",
+"I will be straight to you kid, I'm very sick. To the point it hurts when I breathe. My last wish is to be next to the only family I got left when my time will come.",
+"It's about my daughter. She was supposed to be home by now. She went picnicking with her friend yesterday. I am really, really concerned. Please, look out for her."
+],
+"answers":[[{"text":"Sure, what will it be?","stage":3,"close":false},{"text":"I'm sorry pops, I'm busy. Royal army stuff.","stage":1,"close":true},{"text":"Why are you speaking so softly? I could barely hear you!","stage":2,"close":false}],
+[{"text":"I guess I could help then","stage":3,"close":false},{"text":"I'm sure she's just enjoying the wilderness.What can go wrong in a little picnic?","stage":1,"close":true},{"text":"What happened to your voice again?","stage":2,"close":false}],
+[{"text":"Oh...","stage":1,"close":false}],
+[{"text":"I'll keep an eye out, go rest for a bit.","stage":3,"close":true}]
+],
+"max_stage":3
 }
 ]

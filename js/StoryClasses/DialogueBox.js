@@ -119,11 +119,11 @@ _d.setQuestion = function (text) {
 
 }
 */
-_d.getOptions = function (quest) {
+_d.getOptions = function (quest, which) {
     let dialogue = new Dialogue(quest.texts[quest.stage],quest.answers[quest.stage]);
     this.setQuestion(dialogue.text);
     this.setOptions(dialogue.answers);
-    this.waitOnInput();
+    this.waitOnInput(which);
 }
 
 _d.setOptions = function (options) {
@@ -173,7 +173,7 @@ _d.setOptions = function (options) {
     }
 }
 
-_d.waitOnInput = function () {
+_d.waitOnInput = function (which) {
     var allOptions = this.options.childNodes;
     var currentPos = 0;
     allOptions[currentPos].classList.add("active");
@@ -219,7 +219,7 @@ _d.waitOnInput = function () {
             window.removeEventListener("keydown",handler);
             let parser = StoryParser.getReference();
             setTimeout(function(){
-                parser.getAnswer(allOptions[currentPos].getAttribute("stage"),
+                parser.getAnswer(which, allOptions[currentPos].getAttribute("stage"),
                     allOptions[currentPos].getAttribute("close"));
             },100);
         }
