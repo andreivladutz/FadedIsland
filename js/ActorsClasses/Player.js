@@ -32,9 +32,10 @@ class Player extends Actor {
 			self.updateCoordsOnResize();
 		});
         
-        window.addEventListener("mousedown", this.updateAttackAnimation.bind(this));
+        window.addEventListener("mousedown", this.startAttack.bind(this));
+		window.addEventListener("mousemove", this.computeDirection.bind(this));
         
-//        window.addEventListener("mouseup", this.mouseRelease.bind(this));
+		// window.addEventListener("mouseup", this.mouseRelease.bind(this));
 
 	}
 	
@@ -55,6 +56,12 @@ class Player extends Actor {
 		
 		//check new proximity
 		this.checkInteractionPointsProximity();
+	}
+	
+	// the computeDirection just uses the computeDirection from the Actor class
+	computeDirection(e) {
+		let x = e.clientX, y = e.clientY;
+		super.computeDirection(x, y);
 	}
     
 }
@@ -307,13 +314,16 @@ _p.interactWithTransitionPoint = function(mapName, e) {
 }
 
 _p.onMovement = function() {
+	this.walking = true;
+	this.row = Actor.WALK_ROW + this.direction;
+	
 	this.updateMovementAnimation();
 	this.checkInteractionPointsProximity();
 }
 
 _p.keyUp = function(e, speed = this.speed) {
-    if (!this.attackFrameAnimator.isRunning()) { // if player is attacking, can't move
-        this.row = FRAME_ROW + Actor.UPWARD_DIRECTION;
+	if (!this.attacking) { // if player is attacking, can't move
+		this.direction = Actor.UPWARD_DIRECTION;
 
         this.moveUp(speed);
         this.onMovement();
@@ -321,8 +331,8 @@ _p.keyUp = function(e, speed = this.speed) {
 }
 
 _p.keyDown = function(e, speed = this.speed) {
-    if (!this.attackFrameAnimator.isRunning()) {
-        this.row = FRAME_ROW + Actor.DOWNWARD_DIRECTION;
+    if (!this.attacking) {
+		this.direction = Actor.DOWNWARD_DIRECTION;
 
         this.moveDown(speed);
         this.onMovement();
@@ -330,9 +340,8 @@ _p.keyDown = function(e, speed = this.speed) {
 }
 
 _p.keyLeft = function(e, speed = this.speed) {
-    if (!this.attackFrameAnimator.isRunning()) {
-        // sprite animation
-        this.row = FRAME_ROW + Actor.LEFT_DIRECTION;
+    if (!this.attacking) {
+		this.direction = Actor.LEFT_DIRECTION;
 
         this.moveLeft(speed);
         this.onMovement();
@@ -340,9 +349,8 @@ _p.keyLeft = function(e, speed = this.speed) {
 }
 
 _p.keyRight = function(e, speed = this.speed) {
-    if (!this.attackFrameAnimator.isRunning()) {
-        // sprite animation
-        this.row = FRAME_ROW + Actor.RIGHT_DIRECTION;
+	if (!this.attacking) {
+		this.direction = Actor.RIGHT_DIRECTION;
 
         this.moveRight(speed);
         this.onMovement();
@@ -371,14 +379,7 @@ _p.keyDownLeft = function(e) {
 
 /* when all keys have been released we have to stop all the moving */
 _p.keyRelease = function() {
-    if (!this.attackFrameAnimator.isRunning()) { // if player is attacking, don't register key releasing
-        this.column = Actor.STANDSTILL_POSITION;
-
-        // stop the animator so it is resetted the next time the player starts moving again
-        this.walkAnimationTimer = null;
-        // this.walkMovementTimer = null;
-        this.walkingFrameAnimator.stop();
-    }
+	this.stopWalking();
 }
 
 

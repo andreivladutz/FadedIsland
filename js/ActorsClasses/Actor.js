@@ -2,8 +2,7 @@
 
 // sprite consts
 const FRAME_WIDTH = 64, FRAME_HEIGHT = 64,
-	  ACTUAL_ACTOR_WIDTH = 32,
-      FRAME_ROW = 8;
+	  ACTUAL_ACTOR_WIDTH = 32;
 
 
 var RESOURCES = [
@@ -59,6 +58,11 @@ class Actor {
 		// this.walkMovementTimer = null;
         
         this.attackTimer = null;
+		
+		// flag to know if one attack has already been started
+		this.attacking = false;
+		// flag to know if the player is currently moving
+		this.walking = false;
 
 		// coords corespond to feet area
 		// just to see them in the constructor. they should be initialised accordingly!
@@ -70,6 +74,13 @@ class Actor {
 		// of the map coords of the Actor.
 		this.mapCoordX = this.mapCoordY = null;
         
+		// Player updates his angle by the position of the mouse cursor
+		// Enemies update their angle by the player position
+		// # TODO: if the player will be out of range they should have a neutral angle
+		this.angle = null;
+		// direction is updated depending on the angle
+		this.direction = null;
+		
         // loading Actor sprite
         this.resLoader = new ResourceLoader();
         this.resLoader.add(RESOURCES);
@@ -77,7 +88,7 @@ class Actor {
         // column, row for specific frame in sprite
         // expected order for frames top-down: up/0, left/1, down/2, right/3
         // default for down movement frame
-        this.row = FRAME_ROW + Actor.DOWNWARD_DIRECTION;
+        this.row = Actor.WALK_ROW + Actor.DOWNWARD_DIRECTION;
         this.column = Actor.STANDSTILL_POSITION;
 
 		// we keep the global promises array so we can use it in waitOn utility 
@@ -140,6 +151,8 @@ Actor.MOVEMENT_DURATION = 80;
 // ALTHOUGH THE FIRST ONE IS STANDSTILL POSITION 
 // WHICH WE WILL IGNORE WHEN WALKING!!!
 Actor.WALK_MAX_COLUMNS = 9;
+// position of walking in the spritesheet
+Actor.WALK_ROW = 8;
 
 // launching "fake" keypresses so they are launched as uniformly as possible
 Actor.KEYDOWN_INTERVAL_DELAY = 16;
@@ -153,7 +166,7 @@ Actor.LEFT_DIRECTION = 1;
 Actor.RIGHT_DIRECTION = 3;
 
 // duration of one attack frame in ms
-Actor.ATTACK_DURATION = 200;
+Actor.ATTACK_DURATION = 50;
 
 // attack consts, starting row + # of frames
 Actor.DAGGER = 12;
@@ -341,13 +354,76 @@ _p.updateMovementAnimation = function() {
         this.walkAnimationTimer.lastUpdatedNow();
 }
 
+// this stops the walking for all Actors (moved the code from the player KeyRelease)
+_p.stopWalking = function() {
+	this.column = Actor.STANDSTILL_POSITION;
+	this.walking = false;
+
+	// stop the animator so it is resetted the next time the player starts moving again
+	this.walkAnimationTimer = null;
+	// this.walkMovementTimer = null;
+	this.walkingFrameAnimator.stop();
+}
+
+// this function will update the angle of the actor and the direction
+_p.computeDirection = function(x, y) {
+	// atan2 computes the angle relative to point 0, 0
+	// so we have to translate the coords to a coord system where 
+	// the origin is the player feet position
+	x -= this.coordX;
+	y -= this.coordY;
+	
+	// Left this for the curious ones that want to see the angles update
+	// console.log(this.angle * 180 / Math.PI);
+	
+	this.angle = Math.atan2(y, x);
+	
+	// if the angle is between PI / 4 and 3 * PI / 4 the actor is looking down
+	if (this.angle >= Math.PI / 4 && this.angle <= 3 * Math.PI / 4) {
+		this.direction = Actor.DOWNWARD_DIRECTION;
+	}
+	// if the angle is between - PI / 4 and PI / 4 the actor is looking right
+	if (this.angle >= - Math.PI / 4 && this.angle <= Math.PI / 4) {
+		this.direction = Actor.RIGHT_DIRECTION;
+	}
+	// if the angle is between 3 * PI / 4 and PI or - 3 * PI / 4 and - PI the actor is looking left
+	if (Math.abs(this.angle) >= 3 * Math.PI / 4 && Math.abs(this.angle) <= Math.PI) {
+		this.direction = Actor.LEFT_DIRECTION;
+	}
+	// if the angle is between - 3 * PI / 4 and - PI / 4 the actor is looking up
+	if (this.angle <= - Math.PI / 4 && this.angle >= - 3 * Math.PI / 4) {
+		this.direction = Actor.UPWARD_DIRECTION;
+	}
+}
+
+// function to update the drawn direction of the actor IF THE ACTOR IS NOT MOVING OR ATTACKING!!!
+_p.updateDirection = function() {
+	if (this.attacking || this.walking) {
+		return;
+	}
+	
+	this.row = Actor.WALK_ROW + this.direction;
+}
+
+_p.startAttack = function(e) {
+	// just set the flag to true. the update function will take care of the rest
+	this.attacking = true;
+	// we stopped walking. the attack has priority
+	this.stopWalking();
+}
+
 _p.updateAttackAnimation = function() {
+	// no attack has been started so no need to update
+	if (!this.attacking) {
+		return;
+	}
+	
     // if no attack timer has been created or it has been stopped by mouseRelease()
     if (!this.attackTimer) {
         this.attackTimer = new Timer();
         this.attackFrameAnimator.start();
     }
-    this.row = Actor.DAGGER + 3;
+    this.row = Actor.DAGGER + this.direction;
     this.column = Math.floor(this.attackFrameAnimator.update(this.attackTimer) * this.attackFrames) + 1;
     
     // draw specific frame from attack frames
@@ -355,15 +431,29 @@ _p.updateAttackAnimation = function() {
     
     // we update the frames now
     this.attackTimer.lastUpdatedNow();
-    this.animReq = requestAnimationFrame(this.updateAttackAnimation.bind(this));
     
     // repeat until we make one loop aka complete animation
     if(this.attackFrameAnimator._loopsDone == 1) {
-        cancelAnimationFrame(this.animReq);
+		// attacking stopped
+        this.attacking = false;
+		this.column = Actor.STANDSTILL_POSITION;
+		
         this.attackTimer = null;
         this.attackFrameAnimator.stop();
         return;
     }
+}
+
+
+/*
+	GENERAL UPDATE FUNCTION (should be called right before drawing the actors -> for now in main):
+	- updates the attack frames
+	- will update movement on enemies
+	- to be added...
+ */
+_p.update = function() {
+	this.updateAttackAnimation();
+	this.updateDirection();
 }
 
 

@@ -98,6 +98,8 @@ function initGameOnLoaded() {
 }
 
 function draw() {
+	player.update();
+	
 	mapRenderer.draw();
 	player.draw();
 	
