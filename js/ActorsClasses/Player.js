@@ -312,33 +312,41 @@ _p.onMovement = function() {
 }
 
 _p.keyUp = function(e, speed = this.speed) {
-	this.row = FRAME_ROW + Actor.UPWARD_DIRECTION;
-	
-    this.moveUp(speed);
-	this.onMovement();
+    if (!this.attackFrameAnimator.isRunning()) { // if player is attacking, can't move
+        this.row = FRAME_ROW + Actor.UPWARD_DIRECTION;
+
+        this.moveUp(speed);
+        this.onMovement();
+    }
 }
 
 _p.keyDown = function(e, speed = this.speed) {
-	this.row = FRAME_ROW + Actor.DOWNWARD_DIRECTION;
+    if (!this.attackFrameAnimator.isRunning()) {
+        this.row = FRAME_ROW + Actor.DOWNWARD_DIRECTION;
 
-    this.moveDown(speed);
-	this.onMovement();
+        this.moveDown(speed);
+        this.onMovement();
+    }
 }
 
 _p.keyLeft = function(e, speed = this.speed) {
-	// sprite animation
-	this.row = FRAME_ROW + Actor.LEFT_DIRECTION;
-    	
-    this.moveLeft(speed);
-	this.onMovement();
+    if (!this.attackFrameAnimator.isRunning()) {
+        // sprite animation
+        this.row = FRAME_ROW + Actor.LEFT_DIRECTION;
+
+        this.moveLeft(speed);
+        this.onMovement();
+    }
 }
 
 _p.keyRight = function(e, speed = this.speed) {
-	// sprite animation
-	this.row = FRAME_ROW + Actor.RIGHT_DIRECTION;
-	
-   	this.moveRight(speed);
-	this.onMovement();
+    if (!this.attackFrameAnimator.isRunning()) {
+        // sprite animation
+        this.row = FRAME_ROW + Actor.RIGHT_DIRECTION;
+
+        this.moveRight(speed);
+        this.onMovement();
+    }
 }
 
 _p.keyUpRight = function(e) {

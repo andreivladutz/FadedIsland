@@ -325,7 +325,6 @@ _p.checkCollisionAgainstObjects = function(lftPlyrX, rghtPlyrX, y) {
 }
 
 _p.updateMovementAnimation = function() {
-    if (!this.attackFrameAnimator._running) {
         // if no movement timer has been created or it has been stopped by keyRelease()
         // another instance of Timer is created (so lastUpdateTime is reinitialised to now)
         if (!this.movementTimer && !this.walkAnimationTimer) {
@@ -340,7 +339,6 @@ _p.updateMovementAnimation = function() {
 
         // we updated the frames now
         this.walkAnimationTimer.lastUpdatedNow();
-    }
 }
 
 _p.updateAttackAnimation = function() {
@@ -367,15 +365,6 @@ _p.updateAttackAnimation = function() {
         return;
     }
 }
-
-_p.mouseRelease = function() {
-    this.column = Actor.STANDSTILL_POSITION;
-    
-    // stop animator so it is resetted the next time the player attacks
-    this.attackTimer = null;
-    this.attackFrameAnimator.stop();
-}
-
 
 
 
