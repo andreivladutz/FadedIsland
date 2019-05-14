@@ -20,7 +20,7 @@ class Player extends Actor {
 		// and then removed when the player has left the proximity of that point
 		this.interactionHandlers = {};
 		
-		var self = this;
+		let self = this;
 		
 		// the event comes with the type of the zoom -> in or out
 		CanvasManagerFactory().addEventListener(CANVAS_RESIZE_EVENT, function() {
@@ -66,12 +66,11 @@ class Player extends Actor {
 		this.computeDirection(e);
 		super.startAttack();
 	}
-    
 }
 
 _p = Player.prototype;
 
-Player.INTERACTION_BOX_TIME = 5000;
+Player.INTERACTION_BOX_TIME = 2000;
 
 Player.INTERACTION_POINT_PROXIMITY = 100;
 Player.INTERACTION_KEY = "e";
@@ -134,6 +133,7 @@ _p.movePlayerToMapCoords = function(x, y) {
 	this.mapRenderer.setMapCoords(- Math.round(mapMovedX), - Math.round(mapMovedY));
 	
 	this.updateMapCoords();
+	this.checkInteractionPointsProximity();
 };
 
 /*
@@ -335,34 +335,59 @@ _p.checkInteractionPointsProximity = function() {
 		// if we are close to the interactionPoint we start listening for keydown
 		if (euclDist <= Player.INTERACTION_POINT_PROXIMITY) {
 			this.showInteractionMessage("PRESS E TO INTERACT");
-			
+
+			if (this.interactionHandlers[uniqueKeyName]) {
+				// handler already registered
+				continue;
+			}
+
+			// we have different handlers depending on the type of the point
+			let boundHandler;
+
 			// this type of interaction is one that changes the map
 			if (point.type === MapInstance.SPAWN_POINT) {
-				if (this.interactionHandlers[uniqueKeyName]) {
-					// handler already registered
-					continue;
-				}
-				
-				// registering a handler for the current interaction point
-				// concatenating point type and name to get a unique key in the handlers dictionary
-				this.interactionHandlers[uniqueKeyName] = this.interactWithTransitionPoint.bind(this, point.name);
-				window.addEventListener("keydown", this.interactionHandlers[uniqueKeyName]);
+				boundHandler = this.interactWithMapTransitionPoint.bind(this, point.name);
 			}
-			else {
-				// unregistering the handler when we get further away from the point
-				this.removeInteractionHandlers(uniqueKeyName);
+			else if (point.type === MapInstance.CHANGE_ROOM_POINT) {
+				boundHandler = this.interactWithRoomTransitionPoint.bind(this, point);
 			}
+
+			// registering a handler for the current interaction point
+			// concatenating point type and name to get a unique key in the handlers dictionary
+			this.interactionHandlers[uniqueKeyName] = boundHandler;
+			window.addEventListener("keydown", this.interactionHandlers[uniqueKeyName]);
+		}
+		else {
+			// unregistering the handler when we get further away from the point
+			this.removeInteractionHandlers(uniqueKeyName);
 		}
 	}
 };
 
 /*
-	handler for one type of interaction: the interaction with a transition point
+	handler for one type of interaction: the interaction with a map transition point
 	it receives the mapName it should transition to and changes the map
  */
-_p.interactWithTransitionPoint = function(mapName, e) {
+_p.interactWithMapTransitionPoint = function(mapName, e) {
 	if (e.key.toLowerCase() === Player.INTERACTION_KEY) {
 		this.mapRenderer.changeMap(mapName);
+	}
+};
+
+_p.interactWithRoomTransitionPoint = function(point, e) {
+	if (e.key.toLowerCase() !== Player.INTERACTION_KEY) {
+		return;
+	}
+
+	// get all the other changeRoom points
+	let allChangePoints = this.mapRenderer.getRoomChangingPoints();
+
+	for (let otherPoint of allChangePoints) {
+		// found the point that this point teleports the player to
+		if (otherPoint.from === point.to) {
+			this.movePlayerToMapCoords(otherPoint.x, otherPoint.y);
+			return;
+		}
 	}
 };
 

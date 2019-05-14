@@ -538,3 +538,7 @@ _p.getTemplateObjects = function() {
 _p.getCurrentMapName = function() {
 	return this.currentMapInstance.mapName;
 }
+
+_p.getRoomChangingPoints = function() {
+	return this.currentMapInstance.roomChangePoints;
+}

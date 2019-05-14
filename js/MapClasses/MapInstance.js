@@ -46,6 +46,9 @@ class MapInstance extends EventEmiter {
 			// relevant points that the player can interact with on the map
 			// they mark NPCS, transition points from map to map
 			this.interactionPoints = [];
+
+			// we keep all the changeRoom points in interactionPoints and here separately
+			this.roomChangePoints = [];
 			
 			/*
 				the dictionary(object) of object templates
@@ -93,6 +96,7 @@ class MapInstance extends EventEmiter {
 
 MapInstance.TEMPLATE = "template";
 MapInstance.SPAWN_POINT = "spawnpoint";
+MapInstance.CHANGE_ROOM_POINT = "changeroom";
 
 /*
 	object with properties like this:
@@ -167,31 +171,63 @@ _p.processObjects = function() {
 			// remove drawable objects from the objectArr
 			this.objectsArr.splice(pos, 1);
 		}
-	
-		if ("type" in obj && obj["type"] === MapInstance.SPAWN_POINT) {
+
+		/*
+			handle points
+		 */
+		if ("point" in obj) {
 			obj.x = Math.floor(obj.x);
 			obj.y = Math.floor(obj.y);
-			
-			this.spawnPoint = {
-				x: obj.x,
-				y: obj.y
+
+			// handle SPAWN POINTS
+			if ("type" in obj && obj["type"] === MapInstance.SPAWN_POINT) {
+				this.spawnPoint = {
+					x: obj.x,
+					y: obj.y
+				}
+
+				if (!MapInstance.MAP_TRANSITION_POINTS[obj["name"]]) {
+					MapInstance.MAP_TRANSITION_POINTS[obj["name"]] = {};
+				}
+
+				MapInstance.MAP_TRANSITION_POINTS[obj["name"]][this.mapName] = this.spawnPoint;
+
+				// the only time we encounter this case where the name of the spawn point is the same as the name of the map
+				// is on the MainMap. that is the spawn point for that map and it doesn't take the player to any other map
+
+				// !!the rest of the spawn points are also transition points to other maps
+				if (obj["name"] !== this.mapName) {
+					this.interactionPoints.push(obj);
+				}
 			}
-			
-			if (!MapInstance.MAP_TRANSITION_POINTS[obj["name"]]) {
-				MapInstance.MAP_TRANSITION_POINTS[obj["name"]] = {};
-			}
-			
-			MapInstance.MAP_TRANSITION_POINTS[obj["name"]][this.mapName] = this.spawnPoint;
-			
-			// the only time we encounter this case where the name of the spawn point is the same as the name of the map
-			// is on the MainMap. that is the spawn point for that map and it doesn't take the player to any other map
-			
-			// !!the rest of the spawn points are also transition points to other maps
-			if (obj["name"] != this.mapName) {
+			// handle change room points
+			if ("type" in obj && obj["type"] === MapInstance.CHANGE_ROOM_POINT) {
+				// the identification number for this point
+				obj.from = parseInt(obj["name"]);
+
+				// searching what point this point takes the player to
+				for (let prop of obj["properties"]) {
+					if (prop["name"] === "to") {
+						obj.to = prop["value"];
+					}
+				}
+
 				this.interactionPoints.push(obj);
+				this.roomChangePoints.push(obj);
 			}
+
+			// deleting useless properties
+			delete obj["properties"];
+			delete obj["point"];
+			delete obj["id"];
+			delete obj["rotation"];
+			delete obj["visible"];
+			delete obj["width"];
+			delete obj["height"];
 		}
 	}
+
+	console.log("interaction points:", this.interactionPoints);
 	
 	// sorting the drawable objects by y and x so they are drawn in the correct order
 	
