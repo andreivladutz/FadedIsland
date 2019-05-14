@@ -1,6 +1,5 @@
 @font-face {
-    font-family: "8bitDragon";
-    src: url("fonts/eight-bit-dragon.otf");
+    /*src: url("fonts/eight-bit-dragon.otf");*/
 }
 
 #dialogue-box {
@@ -20,8 +19,8 @@
     border-style: outset;
 
     display: grid;
-    
-    font-family: "8bitDragon", Arial, sans-serif;
+
+    font-family: Cabin;
 }
 
 .no-options {
@@ -39,7 +38,7 @@
 #question {
     color: white;
     margin: 10px 20px;
-    font-size: 22px;
+    font-size: 24px;
 }
 
 #option-list {
@@ -70,6 +69,7 @@
     margin: auto;
     margin-left: 15px;
     display: inline-block;
+    font-size: 16px;
 }
 
 .active {

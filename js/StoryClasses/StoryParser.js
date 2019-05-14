@@ -100,7 +100,7 @@ class StoryParser {
             quest.stage = stage;
             if(prevStage)
                 quest.prevStage += parseInt(prevStage);
-            if(stage === quest.maxStage) {
+            if(stage === quest.maxStage && quest.completed !== true) {
                 quest.completed = true;
                 StoryParser.upQuestsProgress(1);
             }
@@ -115,11 +115,11 @@ class StoryParser {
 localStorage.clear();
 StoryParser.getReference(null);
 setTimeout(function(){
-    StoryParser.upQuestsProgress(1);
+    StoryParser.upQuestsProgress(4);
     window.addEventListener("keydown",function(e) {
         if(e.key.toLowerCase() === "e") {
             if (StoryParser.getReference().dialogueBox === null) {
-                StoryParser.getReference(new DialogueBox()).getQuest(0);
+                StoryParser.getReference(new DialogueBox()).getQuest(3);
             }
         }
     })

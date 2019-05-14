@@ -88,21 +88,17 @@ class DialogueBox extends MonologueBox {
 }
 
 _d = DialogueBox.prototype;
-/* Bugged
+/*
 _d.setQuestion = function (text) {
-    if (text.length > 100) {
-        for (let pos = text.length - 2; pos > 0; pos--) {
-            let separators = ".!?;, ";
-            if (separators.includes(text[pos])) {
+    if (text.length > 90) {
+        for (let pos = 100; pos > 0; pos--) {
+            if (text[pos] === " ") {
                 _m.setQuestion.call(this, text.slice(0, pos));
                 _m.setOptions.call(this);
-                
-                var self = this;
+
                 this.on("confirmMonologue", function(e) {
-                    //self.setQuestion(text.slice(pos));
-                    
-                    self.setOptions(dialogue.answers);
-                    self.waitOnInput(npcId);
+                    self.setQuestion(text.slice(pos));
+
                 });
                 
                 _m.waitOnInput();
@@ -112,9 +108,6 @@ _d.setQuestion = function (text) {
     }
     else{
         _m.setQuestion.call(this);
-        
-    this.setOptions(dialogue.answers);
-    this.waitOnInput(npcId);
     }
 
 }
