@@ -71,6 +71,8 @@ class Player extends Actor {
 
 _p = Player.prototype;
 
+Player.INTERACTION_BOX_TIME = 5000;
+
 Player.INTERACTION_POINT_PROXIMITY = 100;
 Player.INTERACTION_KEY = "e";
 
@@ -153,10 +155,10 @@ _p.resetYCoordsToCenter = function() {
 
 // shouldCheckCollision is a flag used for performance reasons when we are sure there will be no collision
 _p.moveUp = function(speed, shouldCheckCollision = true) {
-	for(var i = speed; i >= 0; i--) {
+	for(let i = speed; i >= 0; i--) {
         if (!shouldCheckCollision || !this.checkCollision(0, -i, this.coordBodyY, this.coordX)) { // if no collision
             // player movement
-            if (this.mapRenderer.currentMapInstance.mapY == 0) { // canvas is at the top of the whole map
+            if (this.mapRenderer.currentMapInstance.mapY === 0) { // canvas is at the top of the whole map
 				this.coordBodyY = Math.max(this.coordBodyY - i, 4 * FRAME_HEIGHT / 5); // move only the player until it hits upper bound
 				this.coordY = Math.max(this.coordY - i, FRAME_HEIGHT);
             }
@@ -178,12 +180,12 @@ _p.moveUp = function(speed, shouldCheckCollision = true) {
 };
 
 _p.moveDown = function(speed, shouldCheckCollision = true) {
-	for(var i = speed; i >= 0; i--) {
+	for(let i = speed; i >= 0; i--) {
         if(!shouldCheckCollision || !this.checkCollision(0, i)) { // if no collision
 			// player movement
-            var mapInstance = this.mapRenderer.currentMapInstance;
-            var lowerBound = this.canvas.height - mapInstance.mapHeight * mapInstance.tileSize; // pseudo bound
-            if(mapInstance.mapY == lowerBound) { // if canvas at pseudo lower bound aka bottom of canvas is at bottom of whole map
+            let mapInstance = this.mapRenderer.currentMapInstance;
+	        let lowerBound = this.canvas.height - mapInstance.mapHeight * mapInstance.tileSize; // pseudo bound
+            if(mapInstance.mapY === lowerBound) { // if canvas at pseudo lower bound aka bottom of canvas is at bottom of whole map
 				this.coordY = Math.min(this.coordY + i, this.canvas.height);// move player until it hits lower bound
 				this.coordBodyY = Math.min(this.coordBodyY + i, this.canvas.height - FRAME_HEIGHT / 5);
             }
@@ -205,10 +207,10 @@ _p.moveDown = function(speed, shouldCheckCollision = true) {
 };
 
 _p.moveLeft = function(speed, shouldCheckCollision = true) {
-	for(var i = speed; i >= 0; i--) {
+	for(let i = speed; i >= 0; i--) {
         if(!shouldCheckCollision || !this.checkCollision(-i, 0, this.coordY, this.coordX)) { // if no collision
             // player movement
-            if(this.mapRenderer.currentMapInstance.mapX == 0) { // canvas is at the left of the whole map
+            if(this.mapRenderer.currentMapInstance.mapX === 0) { // canvas is at the left of the whole map
                 this.coordX = Math.max(this.coordX - i, FRAME_WIDTH / 2); // move only player until hits left bound
             }
             else {
@@ -228,13 +230,13 @@ _p.moveLeft = function(speed, shouldCheckCollision = true) {
 };
 
 _p.moveRight = function(speed, shouldCheckCollision = true) {
-	for(var i = speed; i >= 0; i--) {
+	for(let i = speed; i >= 0; i--) {
         if (!shouldCheckCollision || !this.checkCollision(i, 0, this.coordY, this.coordX)) { // if no collision
             // player movement
             var mapInstance = this.mapRenderer.currentMapInstance;
             var rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
 			
-            if(mapInstance.mapX == rightBound) {// if canvas at pseudo right bound aka right bound of canvas is at right bound of whole map
+            if(mapInstance.mapX === rightBound) {// if canvas at pseudo right bound aka right bound of canvas is at right bound of whole map
 				this.coordX = Math.min(this.coordX + i, this.canvas.width - FRAME_WIDTH / 2);// move player until hits right bound
             }
             else {
@@ -253,10 +255,58 @@ _p.moveRight = function(speed, shouldCheckCollision = true) {
 };
 
 /*
-	TODO: show nice information box to let the user know he can interact with something
+	Just showing a DOM div a.k.a. a box with a text so the player knows to press "E" to interact
  */
-_p.showInteractionMessage = function() {
-	console.log("PRESS E TO INTERACT");
+_p.showInteractionMessage = function(text) {
+	if (!this.interactionBox) {
+		this.interactionBox = document.createElement("DIV");
+		this.interactionBox.id = "interaction-box";
+	}
+	let timeFromLastShown = 0;
+
+	if (this.interactionBoxShownTimer === undefined) {
+		this.interactionBoxShownTimer = new Timer();
+		timeFromLastShown = Player.INTERACTION_BOX_TIME;
+	}
+	else {
+		timeFromLastShown = this.interactionBoxShownTimer.getDeltaTime();
+		this.interactionBoxShownTimer.resetTimeNow();
+	}
+
+	if (timeFromLastShown < Player.INTERACTION_BOX_TIME ) {
+		return;
+	}
+
+	this.interactionBoxShownTimer.lastUpdatedNow();
+
+	if (!this.interactionInterval || text !== this.interactionBox.getElementsByTagName("P")[0].innerText) {
+		let p = document.createElement("P");
+		p.innerText = text;
+
+		this.interactionBox.innerHTML = "";
+		this.interactionBox.appendChild(p);
+		this.interactionBox.style.opacity = "1";
+
+		document.body.appendChild(this.interactionBox);
+
+		this.interactionInterval = setInterval(function(self) {
+			let currOpacity = String(parseFloat(self.interactionBox.style.opacity) - 0.1);
+
+			//console.log(currOpacity)
+			if (currOpacity > 0) {
+				self.interactionBox.style.opacity = currOpacity;
+			}
+			else {
+				clearInterval(self.interactionInterval);
+				self.interactionInterval = null;
+
+				document.body.removeChild(self.interactionBox);
+			}
+		}, 200, this);
+	}
+	else {
+		this.interactionBox.opacity = 1;
+	}
 };
 
 // if an interactionPointName is passed then only the handler for that interaction will be unsubscribed
@@ -284,7 +334,7 @@ _p.checkInteractionPointsProximity = function() {
 
 		// if we are close to the interactionPoint we start listening for keydown
 		if (euclDist <= Player.INTERACTION_POINT_PROXIMITY) {
-			this.showInteractionMessage();
+			this.showInteractionMessage("PRESS E TO INTERACT");
 			
 			// this type of interaction is one that changes the map
 			if (point.type === MapInstance.SPAWN_POINT) {

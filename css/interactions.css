@@ -1,0 +1,24 @@
+#interaction-box {
+    width: 18rem;
+    background-color: rgba(21, 34, 72, 0.9);
+    position: absolute;
+    z-index: 10;
+    top: 5%;
+
+    text-align: center;
+    color: #C0C0C0;
+
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    border: 3px outset #252561;
+    border-radius: 15px;
+
+    font-family: "8bitDragon", Arial, sans-serif;
+}
+
+#interaction-box>p {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
