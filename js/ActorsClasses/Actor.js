@@ -36,11 +36,32 @@ var RESOURCES = [
         itemType: "img",
         url: "./img/armour/pantsArmour1.png"
     },
+	// WEAPONS
+    {
+        name: "bow",
+        itemType: "img",
+        url: "./img/weapons/recurvebow.png"
+    },
+    {
+        name: "arrow",
+        itemType: "img",
+        url: "./img/weapons/arrow.png"
+    },
+    {
+        name: "spear",
+        itemType: "img",
+        url: "./img/weapons/spear.png"
+    },
+    {
+        name: "dagger",
+        itemType: "img",
+        url: "./img/weapons/dagger_male.png"
+    },
 ];
 
 
 class Actor {
-    constructor(loadedPromisesArr, customResources) {
+    constructor(loadedPromisesArr, customResources, attackType) {
         this.canvas = CanvasManagerFactory().canvas;
         this.ctx = CanvasManagerFactory().ctx;
         
@@ -119,7 +140,7 @@ class Actor {
 			
 			if (resourceName !== null) {
 				// wait for the resource to load
-				this.waitOn(resourceName, propertyName);
+				Actor.waitOn(this, this.globalPromisesArr, resourceName, propertyName);
 				
 				this.propertiesNames.push(propertyName);
 			}
@@ -135,9 +156,25 @@ class Actor {
             this.propertiesNames.splice(hairIndex, 1);
         }
         
-        // set default attack type to dagger
-        this.attackFrames = Actor.NO_FOR_DAGGER;
-        
+        // set attack type
+	    this.attackType = attackType;
+        switch(attackType) {
+	        case Actor.DAGGER:
+		        this.attackFrames = Actor.NO_FOR_DAGGER;
+		        this.attackDuration = Actor.DAGGER_ATTACK_DURATION;
+		        break;
+	        case Actor.BOW:
+		        this.attackFrames = Actor.NO_FOR_BOW;
+		        this.attackDuration = Actor.BOW_ATTACK_DURATION;
+		        break;
+	        case Actor.SPEAR:
+		        this.attackFrames = Actor.NO_FOR_SPEAR;
+		        this.attackDuration = Actor.SPEAR_ATTACK_DURATION;
+		        break;
+        }
+		// flag for ranged type attack
+	    this.spawnedProjectile = false;
+
         this.resLoader.load();
 		this.initAnimators();
     }
@@ -166,18 +203,24 @@ Actor.LEFT_DIRECTION = 1;
 Actor.RIGHT_DIRECTION = 3;
 
 // duration of one attack frame in ms
-Actor.ATTACK_DURATION = 50;
+Actor.DAGGER_ATTACK_DURATION = 50;
+Actor.SPEAR_ATTACK_DURATION = 80;
+Actor.BOW_ATTACK_DURATION = 70;
 
 // attack consts, starting row + # of frames
 Actor.DAGGER = 12;
-Actor.NO_FOR_DAGGER = 5;
+Actor.NO_FOR_DAGGER = 6;
 
 Actor.BOW = 16;
 Actor.NO_FOR_BOW = 12;
+// the number of the frame when a projectile should also be spawned
+Actor.PROJECTILE_SPAWN_FRAME = 10;
 
 Actor.SPEAR = 4;
-Actor.NO_FOR_SPEAR = 7;
+Actor.NO_FOR_SPEAR = 8;
 
+// static dictionary of loaded resources(images) of all the weapons
+Actor.WEAPONS = {};
 
 _p = Actor.prototype;
 
@@ -187,32 +230,34 @@ function getLowerCaseName(name) {
 }
 
 /*
+	MADE THE FUNCTION STATIC SO IT CAN LOAD IMAGES ON ANY OBJECT WITH A resLoader 
+
 	this utility promisifies a listener for a resource with resourceName,
 	pushes it to the global waiting array of promises and resolves when loading
 	has finished, adding the image object on this object under the name of propertyName
 	
 	by default the resourceName passed should be PascalCase and the property will be
 	the camelCase version of the resourceName. you can also specify a different propertyName
-*/
-_p.waitOn = function(resourceName, propertyName = getLowerCaseName(resourceName)) {
-	var self = this;
 	
+	@param obj = the object to place the property with the resource on
+*/
+Actor.waitOn = function(obj, globalPromisesArr, resourceName, propertyName = getLowerCaseName(resourceName)) {
 	function loadedResource(resolveFunc, rejectFunc) {
-		self.resLoader.on("loaded" + resourceName, function(e) {
+		obj.resLoader.on("loaded" + resourceName, function(e) {
 			// the image is also passed as an event so we don't 
 			// need to call the get method on resLoader 
-			self[propertyName] = e.detail;
+			obj[propertyName] = e.detail;
 			
 			resolveFunc();
 		});
 		
 		// the global promises array will reject with this error
-		self.resLoader.on("error" + resourceName, function(err) {
+		obj.resLoader.on("error" + resourceName, function(err) {
 			rejectFunc(err);
 		});
 	}
 	
-	this.globalPromisesArr.push(promisify(loadedResource));
+	globalPromisesArr.push(promisify(loadedResource));
 }
 
 // initialise all animators
@@ -226,33 +271,56 @@ _p.initAnimators = function() {
 	this.walkingFrameAnimator.setRepeatCount(Animator.INFINITE);
     
     // animator for attack
-    this.attackFrameAnimator = new Animator(Actor.ATTACK_DURATION * this.attackFrames);
-    this.attackFrameAnimator.setRepeatCount(Animator.INFINITE);
+    this.attackFrameAnimator = new Animator(this.attackDuration * this.attackFrames);
+    // overriding hook function
+    this.attackFrameAnimator._onAnimationEnd = (function() {
+	    // attacking stopped
+	    this.attacking = false;
+
+	    this.attackTimer = null;
+	    this.attackFrameAnimator.stop();
+    }).bind(this);
 }
 
 _p.drawSpriteFrame = function(image) {
-	var drawCoordX = Math.floor(this.coordX - FRAME_WIDTH / 2),
+	let drawCoordX = Math.floor(this.coordX - FRAME_WIDTH / 2),
 		drawCoordY = Math.floor(this.coordY - FRAME_HEIGHT);
 	
 	this.ctx.drawImage(image, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
                        drawCoordX, drawCoordY, FRAME_WIDTH, FRAME_HEIGHT);
-}
+};
 
 _p.draw = function() {
     // draw the pieces of the actor
 	for (let propertyName of this.propertiesNames) {
 		this.drawSpriteFrame(this[propertyName]);
 	}
-}
+
+	if (this.attacking) {
+		// depending on the type of attack we want to draw the actor's weapon
+		switch (this.attackType) {
+			case Actor.DAGGER:
+				this.drawSpriteFrame(Actor.WEAPONS["dagger"]);
+				break;
+			case Actor.BOW:
+				this.drawSpriteFrame(Actor.WEAPONS["bow"]);
+				this.drawSpriteFrame(Actor.WEAPONS["arrow"]);
+				break;
+			case Actor.SPEAR:
+				this.drawSpriteFrame(Actor.WEAPONS["spear"]);
+				break;
+		}
+	}
+};
 
 _p.setMapRenderer = function(mapRenderer) {
     this.mapRenderer = mapRenderer;
-}
+};
 
 _p.setMapCoords = function(mapCoordX, mapCoordY) {
 	this.mapCoordX = mapCoordX;
 	this.mapCoordY = mapCoordY;
-}
+};
 
 _p.getMapCoords = function() {
 	if (this.mapCoordX !== null && this.mapCoordY !== null) {
@@ -260,16 +328,16 @@ _p.getMapCoords = function() {
 	}
 	
 	return null;
-}
+};
 
 _p.updateScreenCoords = function() {
 	({x: this.coordX, y: this.coordY} = this.mapRenderer.mapCoordsToScreenCoords({x: this.mapCoordX, y: this.mapCoordY}));
-}
+};
 
 // when the screen coords are updated this function should be called too
 _p.updateMapCoords = function() {
 	({x: this.mapCoordX, y: this.mapCoordY} = this.mapRenderer.screenCoordsToMapCoords({x: this.coordX, y: this.coordY}));
-}
+};
 
 
 // function to check if future tile to be walking on is obstacle or not
@@ -278,8 +346,7 @@ _p.checkCollision = function(x, y, cY = this.coordY, cX = this.coordX) { // x,y 
 		Actor's feet make a segment and that segment can cross multiple tiles at once so we have
 		to check the collision with all the crossed tiles at that moment
 	*/
-    var tileSize = this.mapRenderer.currentMapInstance.tileSize,
-		leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: cX + x - ACTUAL_ACTOR_WIDTH / 2,
+    let leftTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: cX + x - ACTUAL_ACTOR_WIDTH / 2,
 																	y: cY + y}),
 		rightTileCoords = this.mapRenderer.screenCoordsToTileCoords({x: cX + x + ACTUAL_ACTOR_WIDTH / 2,
 																	 y: cY + y}),
@@ -307,7 +374,7 @@ _p.checkCollision = function(x, y, cY = this.coordY, cX = this.coordX) { // x,y 
 	
 	// no collision with any tile was found
 	return false;
-}
+};
 
 // this functions checks the collision between the Actor and visible game objects
 _p.checkCollisionAgainstObjects = function(lftPlyrX, rghtPlyrX, y) {
@@ -335,12 +402,12 @@ _p.checkCollisionAgainstObjects = function(lftPlyrX, rghtPlyrX, y) {
 	}
 	
 	return false;
-}
+};
 
 _p.updateMovementAnimation = function() {
         // if no movement timer has been created or it has been stopped by keyRelease()
         // another instance of Timer is created (so lastUpdateTime is reinitialised to now)
-        if (!this.movementTimer && !this.walkAnimationTimer) {
+        if (!this.walkAnimationTimer) {
             this.walkAnimationTimer = new Timer();
 
             this.walkingFrameAnimator.start();
@@ -352,7 +419,7 @@ _p.updateMovementAnimation = function() {
 
         // we updated the frames now
         this.walkAnimationTimer.lastUpdatedNow();
-}
+};
 
 // this stops the walking for all Actors (moved the code from the player KeyRelease)
 _p.stopWalking = function() {
@@ -363,7 +430,7 @@ _p.stopWalking = function() {
 	this.walkAnimationTimer = null;
 	// this.walkMovementTimer = null;
 	this.walkingFrameAnimator.stop();
-}
+};
 
 // this function will update the angle of the actor and the direction
 _p.computeDirection = function(x, y) {
@@ -383,18 +450,18 @@ _p.computeDirection = function(x, y) {
 		this.direction = Actor.DOWNWARD_DIRECTION;
 	}
 	// if the angle is between - PI / 4 and PI / 4 the actor is looking right
-	if (this.angle >= - Math.PI / 4 && this.angle <= Math.PI / 4) {
+	else if (this.angle >= - Math.PI / 4 && this.angle <= Math.PI / 4) {
 		this.direction = Actor.RIGHT_DIRECTION;
 	}
 	// if the angle is between 3 * PI / 4 and PI or - 3 * PI / 4 and - PI the actor is looking left
-	if (Math.abs(this.angle) >= 3 * Math.PI / 4 && Math.abs(this.angle) <= Math.PI) {
+	else if (Math.abs(this.angle) >= 3 * Math.PI / 4 && Math.abs(this.angle) <= Math.PI) {
 		this.direction = Actor.LEFT_DIRECTION;
 	}
 	// if the angle is between - 3 * PI / 4 and - PI / 4 the actor is looking up
-	if (this.angle <= - Math.PI / 4 && this.angle >= - 3 * Math.PI / 4) {
+	else if (this.angle <= - Math.PI / 4 && this.angle >= - 3 * Math.PI / 4) {
 		this.direction = Actor.UPWARD_DIRECTION;
 	}
-}
+};
 
 // function to update the drawn direction of the actor IF THE ACTOR IS NOT MOVING OR ATTACKING!!!
 _p.updateDirection = function() {
@@ -403,14 +470,19 @@ _p.updateDirection = function() {
 	}
 	
 	this.row = Actor.WALK_ROW + this.direction;
-}
+};
 
 _p.startAttack = function() {
 	// just set the flag to true. the update function will take care of the rest
 	this.attacking = true;
 	// we stopped walking. the attack has priority
 	this.stopWalking();
-}
+};
+
+// special case for bow attack because it also spawns an arrow Projectile
+_p.handleBowAttack = function() {
+	new Projectile(this.coordX, this.coordY - FRAME_HEIGHT / 2, this.angle);
+};
 
 _p.updateAttackAnimation = function() {
 	// no attack has been started so no need to update
@@ -423,26 +495,26 @@ _p.updateAttackAnimation = function() {
         this.attackTimer = new Timer();
         this.attackFrameAnimator.start();
     }
-    this.row = Actor.DAGGER + this.direction;
-    this.column = Math.floor(this.attackFrameAnimator.update(this.attackTimer) * this.attackFrames) + 1;
-    
-    // draw specific frame from attack frames
-    this.draw();
-    
-    // we update the frames now
-    this.attackTimer.lastUpdatedNow();
-    
-    // repeat until we make one loop aka complete animation
-    if(this.attackFrameAnimator._loopsDone == 1) {
-		// attacking stopped
-        this.attacking = false;
-		this.column = Actor.STANDSTILL_POSITION;
-		
-        this.attackTimer = null;
-        this.attackFrameAnimator.stop();
-        return;
+    this.row = this.attackType + this.direction;
+    this.column = Math.floor(this.attackFrameAnimator.update(this.attackTimer) * this.attackFrames);
+
+	// if the attackType is the ranged one we should launch a projectile right before ending the attack animation
+	if (this.attackType === Actor.BOW && this.column === Actor.PROJECTILE_SPAWN_FRAME && !this.spawnedProjectile) {
+		this.spawnedProjectile = true;
+		this.handleBowAttack();
+	}
+
+    // the animation might have finished in the last update above
+    if (this.attacking) {
+	    // we update the frames now
+	    this.attackTimer.lastUpdatedNow();
     }
-}
+    else {
+    	// stopped the attack so if ranged reset flag
+	    this.spawnedProjectile = false;
+    	this.column = Actor.STANDSTILL_POSITION;
+    }
+};
 
 
 /*
@@ -454,7 +526,7 @@ _p.updateAttackAnimation = function() {
 _p.update = function() {
 	this.updateAttackAnimation();
 	this.updateDirection();
-}
+};
 
 
 

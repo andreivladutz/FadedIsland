@@ -2,9 +2,8 @@
 
 
 class Player extends Actor {
-    constructor(loadedPromisesArr, customResources) {
-        super(loadedPromisesArr, customResources);
-		
+    constructor(loadedPromisesArr, customResources, attackType) {
+        super(loadedPromisesArr, customResources, attackType);
 		this.speed = 5;
 		
 		// make the player faster if we debug
@@ -81,14 +80,14 @@ Player.INTERACTION_KEY = "e";
 //
 // also remove all the old interaction points
 _p.movePlayerToSpawnPoint = function(e) {
-	var changeMapEv = e.detail,
+	let changeMapEv = e.detail,
 		spawnPoint = MapInstance.MAP_TRANSITION_POINTS[changeMapEv.oldMap][changeMapEv.newMap];
 	
 	this.movePlayerToMapCoords(spawnPoint.x, spawnPoint.y);
 	
 	// remove the handlers for the interaction with the old points
 	this.removeInteractionHandlers();
-}
+};
 
 /*
 	having given some map coordinates we move the map and compute player screen coords 
@@ -128,12 +127,12 @@ _p.movePlayerToMapCoords = function(x, y) {
 	}
 	
 	// don't forget to update body coord
-	this.coordBodyY = this.coordY - FRAME_HEIGHT / 5
+	this.coordBodyY = this.coordY - FRAME_HEIGHT / 5;
 	
 	this.mapRenderer.setMapCoords(- Math.round(mapMovedX), - Math.round(mapMovedY));
 	
 	this.updateMapCoords();
-}
+};
 
 /*
  * when the map changes or the screen size gets updated the screen coords change but the map coords 
@@ -141,16 +140,16 @@ _p.movePlayerToMapCoords = function(x, y) {
  */ 
 _p.updateCoordsOnResize = function(zoomType) {
 	this.movePlayerToMapCoords(this.mapCoordX, this.mapCoordY);
-}
+};
 
 _p.resetXCoordsToCenter = function() {
     this.coordX = Math.floor(this.canvas.width / 2);
-}
+};
 
 _p.resetYCoordsToCenter = function() {
     this.coordY = Math.floor(this.canvas.height / 2);
     this.coordBodyY = this.coordY - FRAME_HEIGHT / 5;
-}
+};
 
 // shouldCheckCollision is a flag used for performance reasons when we are sure there will be no collision
 _p.moveUp = function(speed, shouldCheckCollision = true) {
@@ -176,7 +175,7 @@ _p.moveUp = function(speed, shouldCheckCollision = true) {
             return;
         }
     }
-}
+};
 
 _p.moveDown = function(speed, shouldCheckCollision = true) {
 	for(var i = speed; i >= 0; i--) {
@@ -203,7 +202,7 @@ _p.moveDown = function(speed, shouldCheckCollision = true) {
             return;
         }
     }
-}
+};
 
 _p.moveLeft = function(speed, shouldCheckCollision = true) {
 	for(var i = speed; i >= 0; i--) {
@@ -226,7 +225,7 @@ _p.moveLeft = function(speed, shouldCheckCollision = true) {
 		}
 		
     }
-}
+};
 
 _p.moveRight = function(speed, shouldCheckCollision = true) {
 	for(var i = speed; i >= 0; i--) {
@@ -251,14 +250,14 @@ _p.moveRight = function(speed, shouldCheckCollision = true) {
 		this.updateMapCoords();
         return;
     }
-}
+};
 
 /*
 	TODO: show nice information box to let the user know he can interact with something
  */
 _p.showInteractionMessage = function() {
 	console.log("PRESS E TO INTERACT");
-}
+};
 
 // if an interactionPointName is passed then only the handler for that interaction will be unsubscribed
 // if no arguments are provided then all handlers are removed
@@ -273,7 +272,7 @@ _p.removeInteractionHandlers = function(interactionPointName) {
 		window.removeEventListener("keydown", this.interactionHandlers[pointName]);
 		delete this.interactionHandlers[pointName];
 	}
-}
+};
 
 _p.checkInteractionPointsProximity = function() {
 	// for every point check if the player is close to it
@@ -305,7 +304,7 @@ _p.checkInteractionPointsProximity = function() {
 			}
 		}
 	}
-}
+};
 
 /*
 	handler for one type of interaction: the interaction with a transition point
@@ -315,7 +314,7 @@ _p.interactWithTransitionPoint = function(mapName, e) {
 	if (e.key.toLowerCase() === Player.INTERACTION_KEY) {
 		this.mapRenderer.changeMap(mapName);
 	}
-}
+};
 
 _p.onMovement = function() {
 	this.walking = true;
@@ -323,7 +322,7 @@ _p.onMovement = function() {
 	
 	this.updateMovementAnimation();
 	this.checkInteractionPointsProximity();
-}
+};
 
 _p.keyUp = function(e, speed = this.speed) {
 	if (!this.attacking) { // if player is attacking, can't move
@@ -332,7 +331,7 @@ _p.keyUp = function(e, speed = this.speed) {
         this.moveUp(speed);
         this.onMovement();
     }
-}
+};
 
 _p.keyDown = function(e, speed = this.speed) {
     if (!this.attacking) {
@@ -341,7 +340,7 @@ _p.keyDown = function(e, speed = this.speed) {
         this.moveDown(speed);
         this.onMovement();
     }
-}
+};
 
 _p.keyLeft = function(e, speed = this.speed) {
     if (!this.attacking) {
@@ -350,7 +349,7 @@ _p.keyLeft = function(e, speed = this.speed) {
         this.moveLeft(speed);
         this.onMovement();
     }
-}
+};
 
 _p.keyRight = function(e, speed = this.speed) {
 	if (!this.attacking) {
@@ -359,32 +358,32 @@ _p.keyRight = function(e, speed = this.speed) {
         this.moveRight(speed);
         this.onMovement();
     }
-}
+};
 
 _p.keyUpRight = function(e) {
     this.keyUp(e, Math.round(this.speed * 0.7));
     this.keyRight(e, Math.round(this.speed * 0.7));
-}
+};
 
 _p.keyUpLeft = function(e) {
     this.keyUp(e, Math.round(this.speed * 0.7));
     this.keyLeft(e, Math.round(this.speed * 0.7));
-}
+};
 
 _p.keyDownRight = function(e) {
     this.keyDown(e, Math.round(this.speed * 0.7));
     this.keyRight(e, Math.round(this.speed * 0.7));
-}
+};
 
 _p.keyDownLeft = function(e) {
     this.keyDown(e, Math.round(this.speed * 0.7));
     this.keyLeft(e, Math.round(this.speed * 0.7));
-}
+};
 
 /* when all keys have been released we have to stop all the moving */
 _p.keyRelease = function() {
 	this.stopWalking();
-}
+};
 
 
 
