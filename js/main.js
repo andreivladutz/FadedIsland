@@ -1,25 +1,27 @@
 let DEBUGGING = true;
 
 MapLoader.RESOURCES = [
-	{
-		name : "MainMap",
-		itemType : "JSON",
-		url : "Tiled/map/map1.json"
-	},
-	{
-		name : "CastleMap",
-		itemType : "JSON",
-		url : "Tiled/map/castle2.json"
+    {
+        name: "MainMap",
+        itemType: "JSON",
+        url: "Tiled/map/map1.json"
 	},
     {
-        name : "Dungeon",
-        itemType : "JSON",
-        url : "Tiled/map/dungeon.json"
+        name: "CastleMap",
+        itemType: "JSON",
+        url: "Tiled/map/castle2.json"
+	},
+    {
+        name: "Dungeon",
+        itemType: "JSON",
+        url: "Tiled/map/dungeon.json"
     },
 ];
 
 // in case the name of the map resources changes
-const MAIN_MAP = "MainMap", CASTLE_MAP = "CastleMap", DUNGEON = "Dungeon";
+const MAIN_MAP = "MainMap",
+    CASTLE_MAP = "CastleMap",
+    DUNGEON = "Dungeon";
 
 /*
     when this event fires on the mapLoader instance 
@@ -38,6 +40,7 @@ let DRAWABLE_ENTITIES = [];
 
 function init() {
     loadingScreen = new LoadingScreen();
+	
 	if (DEBUGGING) {
 		let stats = new xStats();
 		document.body.appendChild(stats.element);
@@ -47,9 +50,9 @@ function init() {
 	canvasManager = CanvasManagerFactory(document.getElementById("gameCanvas"));
 	
 	mapLoader = new MapLoader(resourceLoader);
-    
+	
     function loadedMap(resolve, reject) {
-        mapLoader.on(MAPS_READY_EVENT, function() {
+        mapLoader.on(MAPS_READY_EVENT, function () {
             mapRenderer = mapLoader.getMapRenderer();
             mapRenderer.showCollisions();
 			// setting the mapRenderer
@@ -83,11 +86,17 @@ function init() {
 	
 	// initialise the movementManager with the player reference
 	movementManager = new MovementManager(player);
-    
+
+    // push map loading to pseudo-semaphore so we wait on all the maps
+    loadedPromisesArr.push(promisify(loadedMap));
+
+    // initialise the movementManager with the player reference
+    movementManager = new MovementManager(player);
+
     // wait on loadMap and loadPlayer
     waitOnAllPromises(loadedPromisesArr).then(
         function onResolved() {
-			initGameOnLoaded();
+            initGameOnLoaded();
         },
         function onRejected(err) {
             console.error(err);
@@ -149,8 +158,8 @@ function loadProjectileResources() {
 }
 
 function initGameOnLoaded() {
-	// begin drawing everything
-	requestAnimationFrame(draw);
+    // begin drawing everything
+    requestAnimationFrame(draw);
     loadingScreen.removeLoadingScreen();
 }
 
@@ -176,4 +185,3 @@ function draw() {
 	
 	requestAnimationFrame(draw);
 }
-

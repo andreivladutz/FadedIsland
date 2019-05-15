@@ -1,0 +1,81 @@
+@font-face {
+    /*src: url("fonts/eight-bit-dragon.otf");*/
+}
+
+#dialogue-box {
+    width: 80%;
+    height: 200px;
+    max-width: 1200px;
+    /*background-image: radial-gradient(#2A3472, #252561);*/
+    background: url("../img/menu/textBoxBg.jpg") center;
+    background-size: cover;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 10%;
+    bottom: 20px;
+    
+    /*border: 3px solid black;*/
+    border-radius: 5px;
+
+    display: grid;
+
+    font-family: Pacifico;
+    color: #151a6d;
+    text-shadow:
+            -1px -1px 0 white,
+            1px -1px 0 white,
+            -1px 1px 0 white,
+            1px 1px 0 white;
+}
+
+.no-options {
+    grid-template-rows: 75% 25%;
+}
+
+.four-options {
+    grid-template-rows: 50% 50%;
+}
+
+.two-options {
+    grid-template-rows: 75% 25%;
+}
+
+#question {
+    margin: 10px 20px;
+    font-size: 24px;
+}
+
+#option-list {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    list-style-type: none;
+}
+
+.no-option-list {
+    grid-template-rows: 100%;
+}
+
+.no-option-list li{
+    color: gray;
+}
+
+.four-option-list {
+    grid-template-rows: 50% 50%;
+}
+
+.two-option-list {
+    grid-template-rows: 100%;
+}
+
+.options {
+    padding-left: 20px;
+    margin: auto;
+    margin-left: 15px;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.active {
+    background: url("../img/menu/arrow-resized-ink.png") no-repeat top left;
+}
