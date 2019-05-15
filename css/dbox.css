@@ -5,22 +5,28 @@
 #dialogue-box {
     width: 80%;
     height: 200px;
-    max-width: 600px;
+    max-width: 1200px;
     /*background-image: radial-gradient(#2A3472, #252561);*/
-    background-color: rgba(21, 34, 72, 0.9);
+    background: url("../img/menu/textBoxBg.jpg") center;
+    background-size: cover;
     position: absolute;
     margin-left: auto;
     margin-right: auto;
     left: 10%;
     bottom: 20px;
     
-    border: 3px solid #252561;
-    border-radius: 15px;
-    border-style: outset;
+    /*border: 3px solid black;*/
+    border-radius: 5px;
 
     display: grid;
 
-    font-family: Cabin;
+    font-family: Pacifico;
+    color: #151a6d;
+    text-shadow:
+            -1px -1px 0 white,
+            1px -1px 0 white,
+            -1px 1px 0 white,
+            1px 1px 0 white;
 }
 
 .no-options {
@@ -36,13 +42,11 @@
 }
 
 #question {
-    color: white;
     margin: 10px 20px;
     font-size: 24px;
 }
 
 #option-list {
-    color: white;
     display: grid;
     grid-template-columns: 50% 50%;
     list-style-type: none;
@@ -73,5 +77,5 @@
 }
 
 .active {
-    background: url("../img/menu/arrow-resized.png") no-repeat top left;
+    background: url("../img/menu/arrow-resized-ink.png") no-repeat top left;
 }

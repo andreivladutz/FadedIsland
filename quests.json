@@ -85,9 +85,9 @@
 [{"text":"He told me to tell you that 'the dove broke its wings'. I have no idea what this means but he said you'll get it.","stage":5,"close":false}],
 [{"text":"I'm sorry, I'm what now? Is everyone on this island a lunatic?","stage":6,"close":false},{"text":"Prophecy of who?","stage":6,"close":false}],
 [{"text":"It seems to me both these things suit you, but I guess I'm a bit intrigued.","stage":7,"close":false},{"text":"I don't really care about your stories, give me a minute to think about your offer.","stage":6,"close":true}],
-[{"text":"Sounds fair enough... Wait, what do you I am not affected? Why is that?","stage":8,"close":false}],
+[{"text":"Sounds fair enough... Wait, what do you mean I am not affected? Why is that?","stage":8,"close":false}],
 [{"text":"......I guess......","stage":9,"close":true}],
-[{"text":"Very helpful","stage":9,"close":true}],
+[{"text":"Very helpful.","stage":9,"close":true}],
 [{"text":"Do you always speak in code?","stage":10,"close":false}]
 ],
 "max_stage":10
