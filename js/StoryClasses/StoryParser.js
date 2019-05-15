@@ -115,11 +115,11 @@ class StoryParser {
 localStorage.clear();
 StoryParser.getReference(null);
 setTimeout(function(){
-    StoryParser.upQuestsProgress(4);
+    StoryParser.getReference().quests[7].stage = 8;
     window.addEventListener("keydown",function(e) {
         if(e.key.toLowerCase() === "e") {
             if (StoryParser.getReference().dialogueBox === null) {
-                StoryParser.getReference(new DialogueBox()).getQuest(3);
+                StoryParser.getReference(new DialogueBox()).getQuest(4);
             }
         }
     })

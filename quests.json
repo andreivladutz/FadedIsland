@@ -91,5 +91,104 @@
 [{"text":"Do you always speak in code?","stage":10,"close":false}]
 ],
 "max_stage":10
+},
+{
+"npc_id":3,
+"texts":["So? How did it go?",
+"Lovely, lovely. Well, I guess I'm due some explanations then. What should I start off with? Hmm...",
+"Mogdrogen. Prophecy of Modgrogen. He is the Witch God, and I so happen to be his oracle. He is known to read the future of his followers to them, and he has not been wrong yet.",
+"Yes, I am a witch, obviously. It wasn't a trick. Can we move on, now?",
+"Well I, as his oracle, am bound to know the future of me and my tribe and so, I am responsible for the wellbeing of my tribe. His last prophecy is as far from good as possible. And let's just say it all depends on you.",
+"The prophecy reads: 'When Manahan, the God of Envy decides he can't cope with the hate he has for his sister, Morrighan, Goddess of Purity, he will infect Khali, Morrighan's Holy Ground, with Dullahan's own God-Sealer to corner Morrighan and render her powerless, hidden among the townsfolk, and then will use his power to destroy the island, and inherently, the witch tribe living on it.",
+"What Manahan cannot predict is that a warrior risen from 'the World of Those Greedy and Selfish' will make the supreme sacrifice to protect the Goddess and all she stands for by defeating the God of Envy and reclaiming the Holy Ground in the name of Morrighan.",
+"Are you daft? YOU are the warrior from 'the World of Those Greedy and Selfish'! The human world! Morrighan has guided you to me because she knew you were the one.",
+"Morrighan, through the soul of the people residing in the village, has guided you to me. You know what? Go to the village. Ask Largo, or 'that old man' as you call him, about Morrighan and Manahan if you wanna know more. He's the town wise, I'm just a witch, he's bound to know more than me.",
+"Well, first things first. This island is inhabited and protected by a God named Morrighan. She was gifted this island by her father, Dullahan, and her brother, Manahan, was so envious on her, that he started to hate her.",
+" Well recently, he stole a weapon from his father's arsenal, the God-Sealer, to release a poisonous gas that will prevent Morrighan from travelling across the island.",
+"Look, I'm trying my best and you keep using your little soldier brain to make fun of what I say. How about you go talk to Largo, the old man that sent you here? He is the town wise and also I'm done with your attitude for the time being.",
+"Look, just go and ask Largo about this, the old man that sent you here. He is the town wise and knows a lot more about these local affairs."
+],
+"answers":[[{"text":"They're dead. Deader, I guess. They're definitely not walking around anymore.","stage":1,"close":false}],
+[{"text":"How about the 'prophecy of WhatsHisName'?","stage":2,"close":false},{"text":"Start with the Mist. And the reason everyone is crying about it.","stage":9,"close":false}],
+[{"text":"Witch God, and you're his oracle. So that makes you a witch, right? That's why you could move the ground around me, right?","stage":3,"close":false},{"text":"...","stage":4,"close":false}],
+[{"text":"My bad. Go on.","stage":4,"close":false}],
+[{"text":"What was the prophecy?","stage":5,"close":false}],
+[{"text":"...","stage":6,"close":false}],
+[{"text":"Ok, so where do I come in?","stage":7,"close":false},{"text":"Oh...","stage":8,"close":false}],
+[{"text":"Oh...","stage":8,"close":false}],
+[{"text":"I guess I'll do just that.","stage":8,"close":true}],
+[{"text":"...","stage":10,"close":false}],
+[{"text":"That sounds pretty far fetched. You got any other, you know, LOGICAL explanation?","stage":11,"close":false},{"text":"Sounds kind of hard to believe, sorry.","stage":12,"close":false}],
+[{"text":"Whatever.","stage":12,"close":true}],
+[{"text":"I'll go ask Largo then.","stage":12,"close":true}]
+],
+"max_stage":12
+},
+{
+"npc_id":1,
+"texts":["You're back. I assume Fraya got the message?",
+"Did she really? Well, I'd love to chat with you, but your superiors sent a sentry after you. And since they couldn't find you where you were supposed to be, they asked me to give you this message.",
+"'Every unit must be at the rendez-vous at Khali beach A.S.A.P. This is a direct order from General Eisenhower.' Captain C. Marshall.",
+"So are you in trouble or not?"
+],
+"answers":[[{"text":"She got the message. She also left you in charge of many, many unanswered questions.","stage":1,"close":false}],
+[{"text":"Oh god, am I in trouble? You're the one who sent me to that witch...","stage":2,"close":false}],
+[{"text":"Seems like I'll ask the questions later. I gotta go.","stage":3,"close":false}],
+[{"text":"I'll find out soon.","stage":3,"close":true}]
+],
+"max_stage":3
+},
+{
+"npc_id":4,
+"texts":["Soldier! Where have you been? I've been informed you were not at your supposed location.",
+"Have you...drunk sake soldier? You smell an awful lot like sake.",
+"It matters not right now. Go in formation. We'll talk about this incident later. I'll make sure we do.",
+"Warriors. We have been dispatched here by the General himself. He knows the duties he has towards the islands under the king's jurisdiction and you better damn know them as well.",
+"There is a plague around this island that affects the animals and people alike. We do not know the reason it appeared, nor what it is exactly. All we know is the village is safe and the fields are not. Our job is to make sure the fields are safe as well.",
+"On my signal, we charge the beasts infecting the park to the west. Anyone has any questions?",
+"THEN GET OUT THERE. TIME TO TEACH THESE MONSTROSITIES A LESSON.",
+"What are you waiting for, soldier? The orders are clear. Eliminate the threat at the park to the west of the beach. Dismissed.",
+"Good job soldiers. You made short work of those creatures. Today we leave here victorious. Everyone, dismissed.",
+"You. The one from earlier. Care to explain to me once again why you were chasing 'witches' at the cemetery while smelling of sake? I'll make sure the quartermaster hears about this. Meanwhile, why don't you go back to the 'town wise' and run chores for him a bit more? Maybe it'll wake you up. Dismissed.",
+"No more talking back. You misbehaved enough. Now go before I send you back to the bootcamp."
+],
+"answers":[[{"text":"I was helping the townsfolk as asked, sir. The town wise asked me to deliver a message to some witch at the cemetery.","stage":1,"close":false}],
+[{"text":"I smell like what sir? I assure you, I haven't touched any beverage way before deployment sir.","stage":2,"close":false}],
+[{"text":"Sir...sir yes sir.","stage":3,"close":false}],
+[{"text":"'SIR YES SIR'","stage":4,"close":false}],
+[{"text":"'SIR YES SIR'","stage":5,"close":false}],
+[{"text":"'SIR NO SIR'","stage":6,"close":false}],
+[{"text":"'SIR YES SIR!!'","stage":7,"close":true}],
+[{"text":"Sir yes sir.","stage":7,"close":true}],
+[{"text":"*Loud cheers by the whole platoon*","stage":9,"close":false}],
+[{"text":"Sir......","stage":10,"close":false}],
+[{"text":"Sir yes sir...","stage":10,"close":true}]
+],
+"max_stage":10
+},
+{
+"npc_id":1,
+"texts":["Ha ha, I knew you would be back. You can't avoid destiny, my soldier friend.",
+"Hm? You mean the quarrel with the captain? I guess he just wanted to make sure our village is safe, ha ha.",
+"Oh, you're right, you didn't, I just uhh... I guessed? Well, truth is, the Goddess herself used her powers to make sure you fulfill your destiny.",
+"That is correct, yes. I am glad we are on the same page.",
+"No, please, don't get this wrong. The goddess depends on your heroism and selflessness to overcome her evil brother. It is still your choice afterall.",
+"Well, I guess I do owe you some answers. Afterall, you are the one that must fulfill the prophecy. What do I start with?",
+"Where do I start...Many epochs ago, Dullahan, God of the Defenders, gave 'birth' or whatever you wanna call it, to two children, Manahan was the elder one, God of Envy, and Morrighan was the younger one, Goddess of Purity.",
+"Since their childhood, Manahan had the duty to protect his younger sister, even though it sometimes meant he had to sarcrifice his well-being for her sake. But that is what elder brothers are supposed to do, it was his destiny. As they grew older, Manahan started to feel grow tired of his duty and envious of the way everyone treated Morrighan, but he kept going on as her rightful guardian.",
+"*Largo sheds a tear* Sometimes, she really regrets she didn't thank Manahan for what he's done, and I think she really loves him. If only envy wouldn't get in the way...",
+"No, I wasn't crying!! And well, legends have got to have some truth in them, don't they?"
+],
+"answers":[[{"text":"Do I smell like sake?","stage":1,"close":false}],
+[{"text":"I didn't say anything about the captain though.","stage":2,"close":false}],
+[{"text":"So if I was let back to mainland, that would mean I'd never come back here and help her.","stage":3,"close":false},{"text":"Well here I am, so let's get this over with. I got many questions that you'll have to answer.","stage":5,"close":false}],
+[{"text":"Well that doesn't sound like destiny at all if a god had to intervene...","stage":4,"close":true}],
+[{"text":"And now getting to the main point. How about you explain to me all this gods stuff? Like the brothers and the Mist and whatever else?","stage":5,"close":true}],
+[{"text":"The gods.","stage":6,"close":false},{"text":"The Mist.","stage":xxx,"close":false}],
+[{"text":"...","stage":7,"close":false}],
+[{"text":"...","stage":8,"close":false}],
+[{"text":"Are you crying? Is everything ok? You seem a little bit too invested in this story. I'm sure they're just legends.","stage":9,"close":false}]
+],
+"max_stage":3
 }
 ]
