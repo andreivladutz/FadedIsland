@@ -3,17 +3,23 @@ const LAST_ANIMATION_TIME = "lastAnimationTime", FRAME_DURATION = "duration";
 
 class MapRenderer extends EventEmiter {
 	//the constructor receives the name of the current rendered map
-	constructor(currentMapName) {
+	constructor(currentMapName, playerReference) {
 		super();
 		this.canvasManager = CanvasManagerFactory();
-		
+
+		// special canvas for drawing objects on it
+		this.objectCanvas = document.createElement("CANVAS");
+		this.objectCtx = this.objectCanvas.getContext("2d");
+
 		this.changeMap(currentMapName);
-		
+
+		this.playerReference = playerReference;
+
 		//the offscreen buffer has extra 10 tiles in every direction
 		//so it is bigger than the visible canvas
 		this.extraBufferTiles = 10;
 		
-		var tileSize = this.currentMapInstance.tileSize;
+		let tileSize = this.currentMapInstance.tileSize;
 		
 		this.canvasManager.makeOffscreenBufferBigger(
 			(this.extraBufferTiles * 2) * tileSize,
@@ -26,7 +32,7 @@ class MapRenderer extends EventEmiter {
 		// map instance interaction points that are in proximity to the player
 		this.visibleInteractionPoints = [];
 		
-		var self = this;
+		let self = this;
 		this.canvasManager.addEventListener(
 			CANVAS_RESIZE_EVENT,
 			function(e) {
@@ -47,11 +53,18 @@ MapRenderer.MAP_INSTANCES = {};
 MapRenderer.CHANGED_MAP_EVENT = "changedMap";
 MapRenderer.REDRAWN_OFFSCREEN = "redrawnOffscreen";
 
+MapRenderer.ROOM_OVERLAY_OPACITY = 0.95;
+
 _p = MapRenderer.prototype;
+
+// the player will inform the mapRenderer that it changed the old room
+_p.changedRoom = function() {
+	this.offDirty = true;
+};
 
 _p.showCollisions = function() {
 	this._showCollisions_ = true;
-}
+};
 
 _p.changeMap = function(mapName) {
 	let oldMapName = this.currentMapName;
@@ -73,25 +86,25 @@ _p.changeMap = function(mapName) {
 		oldMap: oldMapName,
 		newMap: mapName
 	});
-}
+};
 
 _p.checkIfDirty = function() {
-	var visArea = this.visibleTileArea,
+	let visArea = this.visibleTileArea,
 		offVisArea = this.offScreenVisibleTileArea,
 		mapInst = this.currentMapInstance;
 	
 	if (visArea.startX < offVisArea.startX || visArea.startY < offVisArea.startY 
-		|| (visArea.endX >= offVisArea.endX && offVisArea.endX != mapInst.mapWidth)
-		|| (visArea.endY >= offVisArea.endY && offVisArea.endY != mapInst.mapHeight)) {
+		|| (visArea.endX >= offVisArea.endX && offVisArea.endX !== mapInst.mapWidth)
+		|| (visArea.endY >= offVisArea.endY && offVisArea.endY !== mapInst.mapHeight)) {
 		
 		this.offDirty = true;
 	}
 	
 	return this.offDirty;
-}
+};
 
 _p.computeOffScreenBufferVisibleArea = function() {
-	var mI = this.currentMapInstance,
+	let mI = this.currentMapInstance,
 		tileSize = mI.tileSize;
 	
 	this.offScreenVisibleTileArea = {
@@ -108,10 +121,10 @@ _p.computeOffScreenBufferVisibleArea = function() {
 			this.visibleTileArea.endY + this.extraBufferTiles, mI.mapHeight
 		),
 	};
-}
+};
 
 _p.computeVisibleTileArea = function() {
-	var mI = this.currentMapInstance,
+	let mI = this.currentMapInstance,
 		viewportWidth = mI.viewportWidth,
 		viewportHeight = mI.viewportHeight,
 		tileSize = mI.tileSize;
@@ -143,10 +156,10 @@ _p.computeVisibleTileArea = function() {
 		this.visibleTileArea.startY = 0;
 		this.visibleTileArea.endY = mI.mapHeight;
 	}
-}
+};
 
 _p.drawOffScreenAnimatedTiles = function() {
-	var mapInst = this.currentMapInstance,
+	let mapInst = this.currentMapInstance,
 		stX = this.offScreenVisibleTileArea.startX,
 		stY = this.offScreenVisibleTileArea.startY,
 		eX = this.offScreenVisibleTileArea.endX,
@@ -184,12 +197,12 @@ _p.drawOffScreenAnimatedTiles = function() {
 		 *	a parameter to each animator, updating the internal lastUpdateTime only after
 		 *	all the animated tiles have been drawn (so they keep the same rythm and are all synchronized)
 		 */
-		var newFrame = Math.floor(
+		let newFrame = Math.floor(
 			animationArr._ANIMATOR.update(this.animationTimer) * frameCount
 		);
 		
 		// if the frame changed we have to draw the new frame
-		if (newFrame != currFrame) {
+		if (newFrame !== currFrame) {
 			currFrame = newFrame;
 			animationArr[CURRENT_FRAME] = currFrame;
 			animationArr[CURRENT_ID] = animationArr[currFrame].tileid;
@@ -215,6 +228,23 @@ _p.drawOffScreenAnimatedTiles = function() {
 				srcX, srcY, tileSize, tileSize,
 				destX, destY, tileSize, tileSize
 			);
+
+			// hide rooms
+			let currRoom = this.playerReference.currentRoom,
+				tileRooms = this.currentMapInstance.tileToRooms;
+
+			// if there aren't rooms then return
+			if (!this.mapHasRooms() || tileRooms[i][j] === currRoom) {
+				continue;
+			}
+
+			offCtx.save();
+			offCtx.globalAlpha = MapRenderer.ROOM_OVERLAY_OPACITY;
+
+			offCtx.fillStyle = "black";
+			offCtx.fillRect(destX, destY, tileSize, tileSize);
+
+			offCtx.restore();
 			
 		}
 	}
@@ -222,23 +252,19 @@ _p.drawOffScreenAnimatedTiles = function() {
 	// when the *for loop* which updates all animated tiles ended it's time to update the global timer ->
 	// we have just updated all the tiles so the lastUpdate time is right now
 	this.animationTimer.lastUpdatedNow();
-}
+};
 
 //draws all of the layers of a tile without animated ones
 _p.drawOffScreenTile = function(i, j, animatedId) {
-	var offCtx = this.canvasManager.offScreenCtx,
-		canvas = this.canvasManager.offScreenBuffer,
+	let offCtx = this.canvasManager.offScreenCtx,
 		mapInstance = this.currentMapInstance,
 		tilesMatrices = mapInstance.tilesMatrices,
-		mapX = mapInstance.mapX,
-		mapY = mapInstance.mapY,
-		tilesets = mapInstance.tilesetsWorkfiles,
 		tileSize = mapInstance.tileSize;
 	
-	var stX = this.offScreenVisibleTileArea.startX,
+	let stX = this.offScreenVisibleTileArea.startX,
 		stY = this.offScreenVisibleTileArea.startY,
-		eX = this.offScreenVisibleTileArea.endX,
-		eY = this.offScreenVisibleTileArea.endY;
+		destX = (j - stX) * tileSize,
+		destY = (i - stY) * tileSize;
 	
 	// for every layer of tiles
 	for (let tilesMatrix of tilesMatrices) {
@@ -275,9 +301,7 @@ _p.drawOffScreenTile = function(i, j, animatedId) {
 		// doing some quick maths to know which tile to draw and where
 		let tilesPerRow = usedTileset.JSONobject[TILES_PER_ROW],
 			srcX = (tileNo % tilesPerRow) * tileSize,
-			srcY = Math.floor(tileNo / tilesPerRow) * tileSize,
-			destX = (j - stX) * tileSize,
-			destY = (i - stY) * tileSize;
+			srcY = Math.floor(tileNo / tilesPerRow) * tileSize;
 		
 		if ("opacity" in tilesMatrix && tilesMatrix["opacity"] != 1) {
 			offCtx.save();
@@ -302,22 +326,32 @@ _p.drawOffScreenTile = function(i, j, animatedId) {
 			offCtx.fillRect(destX, destY, tileSize, tileSize);
 		}
 	}
-}
+
+	// after drawing all layers for this tile we check the logic needed for hiding rooms
+	let currRoom = this.playerReference.currentRoom,
+		tileRooms = this.currentMapInstance.tileToRooms;
+
+	// if there aren't rooms then return
+	if (!this.mapHasRooms() || tileRooms[i][j] === currRoom) {
+		return;
+	}
+
+	offCtx.save();
+	offCtx.globalAlpha = MapRenderer.ROOM_OVERLAY_OPACITY;
+
+	offCtx.fillStyle = "black";
+	offCtx.fillRect(destX, destY, tileSize, tileSize);
+
+	offCtx.restore();
+};
 
 _p.redrawOffscreenBuffer = function() {
-	var offCtx = this.canvasManager.offScreenCtx,
-		canvas = this.canvasManager.offScreenBuffer,
-		mapName = this.currentMapName,
-		mapInstance = this.currentMapInstance,
-		tilesMatrices = mapInstance.tilesMatrices,
-		mapX = mapInstance.mapX,
-		mapY = mapInstance.mapY,
-		tilesets = mapInstance.tilesetsWorkfiles,
-		tileSize = mapInstance.tileSize;
+	let offCtx = this.canvasManager.offScreenCtx,
+		canvas = this.canvasManager.offScreenBuffer;
 	
 	offCtx.clearRect(0, 0, canvas.width, canvas.height);
 	
-	var stX = Math.floor(this.offScreenVisibleTileArea.startX),
+	let stX = Math.floor(this.offScreenVisibleTileArea.startX),
 		stY = Math.floor(this.offScreenVisibleTileArea.startY),
 		eX = Math.ceil(this.offScreenVisibleTileArea.endX),
 		eY = Math.ceil(this.offScreenVisibleTileArea.endY);
@@ -333,11 +367,11 @@ _p.redrawOffscreenBuffer = function() {
 	
 	// redrew evth so the offScreenCanvas is not dirty anymore
 	this.offDirty = false;
-}
+};
 
 // the function that draws all drawableObjects in mapInstance if they are in sight
 _p.drawOffScreenObjects = function() {
-	var mapInst = this.currentMapInstance,
+	let mapInst = this.currentMapInstance,
 		tileSize = mapInst.tileSize,
 		stX = this.offScreenVisibleTileArea.startX * tileSize,
 		stY = this.offScreenVisibleTileArea.startY * tileSize,
@@ -362,9 +396,41 @@ _p.drawOffScreenObjects = function() {
 		}
 		
 		this.lastDrawnObjects.push(obj);
-		
+
+		// creating a unique id so we always know the lastDrawnObject
+		let currObjIdentifier = obj["template"] + obj.srcX + obj.srcY;
+
+		// if this object is not in the same room as the player hide it
+		if (this.mapHasRooms() && obj.roomNumber !== this.playerReference.currentRoom) {
+			currObjIdentifier += "hidden";
+		}
+
+		// if we have already drawn this object don't redraw it
+		if (this.lastDrawnObject !== currObjIdentifier) {
+			this.lastDrawnObject = currObjIdentifier;
+			// we're first drawing the object on another hidden canvas because if it's in a hidden room
+			// we want to hide the image of the object (note that the image of the object has transparent margins)
+			// without hiding the whole rectangle of the object (just the visible part, without transparent margins)
+			this.objectCanvas.width = objwidth, this.objectCanvas.height = objheight;
+			this.objectCtx.drawImage(templateObj.image, obj.srcX, obj.srcY, objwidth, objheight,
+				0, 0, objwidth, objheight);
+
+			this.objectCtx.save();
+			this.objectCtx.globalCompositeOperation = "source-atop";
+
+			// if this object is not in the same room as the player hide it
+			if (this.mapHasRooms() && obj.roomNumber !== this.playerReference.currentRoom) {
+				this.objectCtx.globalAlpha = MapRenderer.ROOM_OVERLAY_OPACITY;
+
+				this.objectCtx.fillStyle = "black";
+				this.objectCtx.fillRect(0, 0, objwidth, objheight);
+			}
+
+			this.objectCtx.restore();
+		}
+
 		// for some reason the x, y coords given by Tiled are the coords of the bottom left corner of the object
-		offCtx.drawImage(templateObj.image, obj.srcX, obj.srcY, objwidth, objheight,
+		offCtx.drawImage(this.objectCanvas, 0, 0, objwidth, objheight,
 						obj.x - stX, obj.y - stY - objheight, objwidth, objheight);
 	}
 }
@@ -390,12 +456,12 @@ _p.draw = function() {
 	
 	this.drawOffScreenAnimatedTiles();
 	
-	var offStX = this.offScreenVisibleTileArea.startX,
+	let offStX = this.offScreenVisibleTileArea.startX,
 		offStY = this.offScreenVisibleTileArea.startY,
 		stX = this.visibleTileArea.startX,
 		stY = this.visibleTileArea.startY;
 	
-	var ctx = this.canvasManager.ctx,
+	let ctx = this.canvasManager.ctx,
 		canvas = this.canvasManager.canvas,
 		offScreenCanvas = this.canvasManager.offScreenBuffer,
 		tileSize = this.currentMapInstance.tileSize,
@@ -408,14 +474,14 @@ _p.draw = function() {
 				  srcX, srcY, canvas.width, canvas.height,
 				  0, 0, canvas.width, canvas.height
 				 );
-}
+};
 
 
 /*
 	when we redraw the offscreenBuffer we also compute the interaction points that are in proximity
  */
 _p.setVisibleInteractionPoints = function() {
-	var mapInst = this.currentMapInstance,
+	let mapInst = this.currentMapInstance,
 		tileSize = mapInst.tileSize,
 		stX = this.offScreenVisibleTileArea.startX * tileSize,
 		stY = this.offScreenVisibleTileArea.startY * tileSize,
@@ -433,7 +499,7 @@ _p.setVisibleInteractionPoints = function() {
 		
 		this.visibleInteractionPoints.push(point);
 	}
-}
+};
 
 /*
     all the functions that translate coords receive
@@ -441,14 +507,14 @@ _p.setVisibleInteractionPoints = function() {
     and return an object of the same form
 */
 _p.screenCoordsToMapCoords = function(coords) {
-    var mapInstance = this.currentMapInstance,
+    let mapInstance = this.currentMapInstance,
         mapX = mapInstance.mapX,
         mapY = mapInstance.mapY,
         
         new_coords = {
             x : coords.x + Math.abs(mapX),
             y : coords.y + Math.abs(mapY)
-        }
+        };
     
     return new_coords;
 }
@@ -461,7 +527,7 @@ _p.mapCoordsToScreenCoords = function(coords) {
         new_coords = {
             x : coords.x - Math.abs(mapX),
             y : coords.y - Math.abs(mapY)
-        }
+        };
     
     return new_coords;
 }
@@ -478,67 +544,77 @@ _p.mapCoordsToTileCoords = function(coords) {
 }
 
 _p.tileCoordsToMapCoords = function(coords) {
-    var mapInstance = this.currentMapInstance,
+    let mapInstance = this.currentMapInstance,
         new_coords = {
             x : coords.x * mapInstance.tileSize,
             y : coords.y * mapInstance.tileSize
-        }
+        };
     
     return new_coords;
-}
+};
 
 _p.screenCoordsToTileCoords = function(coords) {
     return this.mapCoordsToTileCoords(this.screenCoordsToMapCoords(coords));
-}
+};
 
 _p.tileCoordsToScreenCoords = function(coords) {
-    var new_coords = this.mapCoordsToScreenCoords(this.tileCoordsToMapCoords(coords));
+    let new_coords = this.mapCoordsToScreenCoords(this.tileCoordsToMapCoords(coords));
     
     new_coords.x = Math.max(new_coords.x, 0);
     new_coords.y = Math.max(new_coords.y, 0);
     
     return new_coords;
-}
+};
 
 // function to move map from mapInstance
 _p.moveMap = function(deltaX, deltaY) {
     this.currentMapInstance.moveMap(deltaX, deltaY);
-}
+};
 
 _p.setMapCoords = function(mapX, mapY) {
 	this.currentMapInstance.mapX = 0;
 	this.currentMapInstance.mapY = 0;
 	
 	this.currentMapInstance.moveMap(mapX, mapY);
-}
+};
 
 _p.getViewportSize = function() {
 	return {
 		width : this.currentMapInstance.viewportWidth,
 		height : this.currentMapInstance.viewportHeight
 	};
-}
+};
 
 _p.getMapWidth = function() {
 	return this.currentMapInstance.mapWidth * this.currentMapInstance.tileSize;
-}
+};
 
 _p.getMapHeight = function() {
 	return this.currentMapInstance.mapHeight * this.currentMapInstance.tileSize;
-}
+};
 
 _p.getLastDrawnObjects = function() {
 	return this.lastDrawnObjects;
-}
+};
 
 _p.getTemplateObjects = function() {
 	return this.currentMapInstance.objectTemplates;
-}
+};
 
 _p.getCurrentMapName = function() {
 	return this.currentMapInstance.mapName;
-}
+};
 
 _p.getRoomChangingPoints = function() {
 	return this.currentMapInstance.roomChangePoints;
-}
+};
+
+_p.mapHasRooms = function() {
+	// if we found room rectangles then this map has rooms
+	return this.currentMapInstance.roomRectangles.length > 0;
+};
+
+// get the matrix of tiles mapped to each room
+_p.getTilesToRooms = function() {
+	return this.currentMapInstance.tileToRooms;
+};

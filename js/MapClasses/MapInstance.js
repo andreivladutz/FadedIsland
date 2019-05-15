@@ -29,7 +29,7 @@ class MapInstance extends EventEmiter {
 			this.tileSize = tileSize;
 			
 			//map size in number of tiles
-			this.mapWidth = mapWidth
+			this.mapWidth = mapWidth;
 			this.mapHeight = mapHeight;
 			
 			//the array of matrices of tile numbers
@@ -37,7 +37,7 @@ class MapInstance extends EventEmiter {
 			this.tilesMatrices = tilesMatrices;
 			
 			// the array of objects from the map.json file
-			// the objects can be of more than one type -> spawn points, template
+			// the objects can be of more than one type -> spawn points, template, ...
 			this.objectsArr = objectsArr;
 			
 			// the array of template objects that can be drawn (they have a tileset)
@@ -49,6 +49,9 @@ class MapInstance extends EventEmiter {
 
 			// we keep all the changeRoom points in interactionPoints and here separately
 			this.roomChangePoints = [];
+
+			// dungeon map and castle map have rooms. these rooms are delimited by special rectangle objects
+			this.roomRectangles = [];
 			
 			/*
 				the dictionary(object) of object templates
@@ -77,9 +80,21 @@ class MapInstance extends EventEmiter {
 			*/
 			
 			this.animationsArr = animationsArr;
-			// animations are now processed in the mapParser
-			// this.processAnimations();
+
 			this.processObjects();
+
+			// if we found room rectangles then this map has rooms
+			if (this.roomRectangles.length) {
+				// a matrix of mapWidth * mapHeight that tells us for each tile
+				// what room it belongs to
+				this.tileToRooms = [];
+
+				for (let i = 0; i < this.mapHeight; i++) {
+					this.tileToRooms[i] = [];
+				}
+
+				this.checkTilesInRooms();
+			}
 			
 			//the map coordinates
 			this.mapX = 0;
@@ -97,6 +112,7 @@ class MapInstance extends EventEmiter {
 MapInstance.TEMPLATE = "template";
 MapInstance.SPAWN_POINT = "spawnpoint";
 MapInstance.CHANGE_ROOM_POINT = "changeroom";
+MapInstance.ROOM_RECTANGLE = "room";
 
 /*
 	object with properties like this:
@@ -184,7 +200,7 @@ _p.processObjects = function() {
 				this.spawnPoint = {
 					x: obj.x,
 					y: obj.y
-				}
+				};
 
 				if (!MapInstance.MAP_TRANSITION_POINTS[obj["name"]]) {
 					MapInstance.MAP_TRANSITION_POINTS[obj["name"]] = {};
@@ -224,10 +240,27 @@ _p.processObjects = function() {
 			delete obj["visible"];
 			delete obj["width"];
 			delete obj["height"];
+
+			// remove points objects from the objectArr
+			this.objectsArr.splice(pos, 1);
+		}
+
+		// handle the rectangles that define rooms boundaries
+		if ("type" in obj && obj["type"] === MapInstance.ROOM_RECTANGLE) {
+			// the object name is the number of the room it delimits
+			obj.name = parseInt(obj.name);
+
+			// remove useless properties
+			delete obj["rotation"];
+			delete obj["visible"];
+			delete obj["id"];
+
+			this.roomRectangles.push(obj);
+
+			// remove rectangle objects from the objectArr
+			this.objectsArr.splice(pos, 1);
 		}
 	}
-
-	console.log("interaction points:", this.interactionPoints);
 	
 	// sorting the drawable objects by y and x so they are drawn in the correct order
 	
@@ -241,12 +274,112 @@ _p.processObjects = function() {
 	
 	console.log("non drawable objects: ", this.objectsArr);
 }
+
+// find each tile what room it belongs to
+_p.checkTilesInRooms = function() {
+	// check intersection between two rectangles -> top-left corner coords, right-bottom corner coords
+	function rectIntersection(rectA, rectB) {
+		// condition:
+		if (rectA.left <= rectB.right && rectA.right >= rectB.left &&
+			rectA.top <= rectB.bottom && rectA.bottom >= rectB.top ) {
+
+			return rectIntArea(rectA, rectB);
+		}
+		return 0;
+	}
+
+	function rectIntArea(rectA, rectB) {
+		let lx = Math.max(rectA.left, rectB.left), ty = Math.max(rectA.top, rectB.top),
+			rx = Math.min(rectA.right, rectB.right), by = Math.min(rectA.bottom, rectB.bottom),
+			width = rx - lx, height = by - ty;
+
+		return width * height;
+	}
+
+	let tileSz = this.tileSize;
+
+	// take each tile and check it against all room rectangles until we find what room each tile belongs to
+	for (let tileY = 0; tileY < this.mapHeight; tileY++) {
+		for (let tileX = 0; tileX < this.mapWidth; tileX++) {
+			// for one tile we might have intersection with more rooms so we take all the rooms
+			// and the winning one is the one with the greatest intersection area with our tile
+			let foundRooms = [];
+
+			for (let roomRect of this.roomRectangles) {
+				let rectA = {
+						top: tileY * tileSz,
+						left: tileX * tileSz,
+						right: (tileX + 1) * tileSz,
+						bottom: (tileY + 1) * tileSz
+					},
+					rectB = {
+						top: roomRect.y,
+						left: roomRect.x,
+						right: roomRect.x + roomRect.width,
+						bottom: roomRect.y + roomRect.height
+					},
+					hasIntersection = rectIntersection(rectA, rectB);
+
+				// if not 0 then the return value is the intersection area
+				if (hasIntersection) {
+					// push room number and intersection area
+					foundRooms.push({no: roomRect.name, intersectionArea: hasIntersection});
+				}
+			}
+
+			if (foundRooms.length) {
+				// if more rooms are found get the one with the biggest intersection area
+				let maxIdx = 0;
+				for (let idx = 1; idx < foundRooms.length; idx++) {
+					if (foundRooms[idx].intersectionArea > foundRooms[maxIdx].intersectionArea) {
+						maxIdx = idx;
+					}
+				}
+
+				this.tileToRooms[tileY][tileX] = foundRooms[maxIdx].no;
+			}
+			else {
+				// doesn't belong to any room
+				this.tileToRooms[tileY][tileX] = -1;
+			}
+		}
+	}
+
+	// same logic applies to drawable objects
+	for (let obj of this.drawableObjects) {
+		// for every drawable object find the room it belongs to
+		for (let roomRect of this.roomRectangles) {
+			// the x, y coords on the obj are the coords for the bottom-left corner
+			let src = obj["template"],
+				templateObj = this.objectTemplates[src],
+				objWidth = templateObj.width, objHeight = templateObj.height,
+				rectA = {
+					top: obj.y - objHeight,
+					left: obj.x,
+					right: obj.x + objWidth,
+					bottom: obj.y,
+				},
+				rectB = {
+					top: roomRect.y,
+					left: roomRect.x,
+					right: roomRect.x + roomRect.width,
+					bottom: roomRect.y + roomRect.height
+				};
+
+			if (rectIntersection(rectA, rectB)) {
+				obj.roomNumber = roomRect.name;
+				// found room number break out of inner loop
+				break;
+			}
+		}
+	}
+};
  
 _p.updateViewportSize = function() {
 	//the size of the viewport in pixels
 	this.viewportWidth = CanvasManagerFactory().canvas.width;
 	this.viewportHeight = CanvasManagerFactory().canvas.height;
-}
+};
 
 _p.moveMap = function(deltaX, deltaY) {
 	var pixelsMapWidth = this.mapWidth * this.tileSize,
@@ -254,7 +387,7 @@ _p.moveMap = function(deltaX, deltaY) {
 	
 	this.updateViewportSize();
 	/* 
-		if the map can be displayed entireley on the screen we just center it
+		if the map can be displayed entirely on the screen we just center it
 	*/
 	if (this.viewportWidth >= pixelsMapWidth) {
 		this.mapX = Math.floor((this.viewportWidth - pixelsMapWidth) / 2);
@@ -271,7 +404,7 @@ _p.moveMap = function(deltaX, deltaY) {
 	}
 	
 	/* 
-		if the map can be displayed entireley on the screen we just center it
+		if the map can be displayed entirely on the screen we just center it
 	*/
 	if (this.viewportHeight >= pixelsMapHeight) {
 		this.mapY = Math.floor((this.viewportHeight - pixelsMapHeight) / 2);
@@ -286,7 +419,7 @@ _p.moveMap = function(deltaX, deltaY) {
 			- pixelsMapHeight + this.viewportHeight, this.mapY
 		);
 	}
-}
+};
 
 _p.getSpawnPoint = function() {
 	if (!this.spawnPoint) {
@@ -294,4 +427,4 @@ _p.getSpawnPoint = function() {
 	}
 	
 	return this.spawnPoint;
-}
+};

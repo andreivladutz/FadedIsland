@@ -54,7 +54,7 @@ function init() {
     function loadedMap(resolve, reject) {
         mapLoader.on(MAPS_READY_EVENT, function () {
             mapRenderer = mapLoader.getMapRenderer();
-            mapRenderer.showCollisions();
+            //mapRenderer.showCollisions();
 			// setting the mapRenderer
 			StateSaverManager().setMapRenderer(mapRenderer);
 			

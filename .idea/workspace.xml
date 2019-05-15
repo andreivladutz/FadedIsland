@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="44d72bdf-22b7-42e9-8c3d-681accc85269" name="Default" comment="" />
+    <list default="true" id="44d72bdf-22b7-42e9-8c3d-681accc85269" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tiled/map/castle2.json" beforeDir="false" afterPath="$PROJECT_DIR$/Tiled/map/castle2.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tiled/map/castle2.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/Tiled/map/castle2.tmx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tiled/object_workfiles/narrow_cherry_tree2.json" beforeDir="false" afterPath="$PROJECT_DIR$/Tiled/object_workfiles/narrow_cherry_tree2.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/css/interactions.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/interactions.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/ActorsClasses/Player.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/ActorsClasses/Player.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/MapClasses/MapInstance.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/MapClasses/MapInstance.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/MapClasses/MapLoader.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/MapClasses/MapLoader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/MapClasses/MapRenderer.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/MapClasses/MapRenderer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/StoryClasses/StoryParser.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/StoryClasses/StoryParser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/main.js" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/.tmp/" />
+    <ignored path="$PROJECT_DIR$/temp/" />
+    <ignored path="$PROJECT_DIR$/tmp/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="945">
-              <caret line="72" column="38" selection-start-line="72" selection-start-column="38" selection-end-line="72" selection-end-column="38" />
+            <state relative-caret-position="115">
+              <caret line="56" column="14" selection-start-line="56" selection-start-column="14" selection-end-line="56" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -21,8 +37,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/MapClasses/MapInstance.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1380">
-              <caret line="226" selection-start-line="226" selection-end-line="226" />
+            <state relative-caret-position="146">
+              <caret line="274" column="10" selection-start-line="274" selection-start-column="4" selection-end-line="274" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -30,25 +46,96 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/MapClasses/MapRenderer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret line="543" column="1" selection-start-line="543" selection-start-column="1" selection-end-line="543" selection-end-column="1" />
+            <state relative-caret-position="-997">
+              <caret line="175" column="52" lean-forward="true" selection-start-line="175" selection-start-column="52" selection-end-line="175" selection-end-column="52" />
             </state>
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/general.css">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/dbox.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-153" />
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/css/interactions.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="187">
+              <caret line="17" column="17" selection-start-line="17" selection-start-column="17" selection-end-line="17" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Player.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="2" selection-start-line="2" selection-end-line="2" />
+            <state relative-caret-position="149">
+              <caret line="100" column="39" selection-start-line="100" selection-start-column="39" selection-end-line="100" selection-end-column="39" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Actor.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="146">
+              <caret line="352" column="67" selection-start-line="352" selection-start-column="67" selection-end-line="352" selection-end-column="67" />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
-    <option name="x" value="182" />
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>checkTilesInRooms</find>
+      <find>mapRenderer</find>
+      <find>new Map</find>
+      <find>draw</find>
+      <find>opacity</find>
+      <find>move</find>
+      <find>get</find>
+      <find>onmovement</find>
+      <find>hideRoo</find>
+      <find>showColl</find>
+      <find>hideRoomContents</find>
+      <find>hide</find>
+      <find>objects</find>
+      <find>delete</find>
+      <find>showCo</find>
+      <find>drawOff</find>
+      <find>console.lo</find>
+      <find>consol</find>
+      <find>console.log</find>
+      <find>drawoffscreenAnim</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/js/MapClasses/MapLoader.js" />
+        <option value="$PROJECT_DIR$/js/ActorsClasses/Actor.js" />
+        <option value="$PROJECT_DIR$/js/main.js" />
+        <option value="$PROJECT_DIR$/js/MapClasses/MapInstance.js" />
+        <option value="$PROJECT_DIR$/js/ActorsClasses/Player.js" />
+        <option value="$PROJECT_DIR$/js/MapClasses/MapRenderer.js" />
+        <option value="$PROJECT_DIR$/css/interactions.css" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="237" />
+    <option name="y" value="202" />
     <option name="width" value="1750" />
     <option name="height" value="980" />
   </component>
@@ -58,10 +145,52 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane" />
       <pane id="Scope" />
-      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="FadedIsland" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FadedIsland" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FadedIsland" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FadedIsland" type="462c0819:PsiDirectoryNode" />
+              <item name="css" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FadedIsland" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FadedIsland" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FadedIsland" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FadedIsland" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+              <item name="ActorsClasses" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FadedIsland" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FadedIsland" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+              <item name="MapClasses" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FadedIsland" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FadedIsland" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+              <item name="StoryClasses" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
     </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/index.html" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -75,29 +204,46 @@
       </list>
     </option>
   </component>
+  <component name="RunManager">
+    <configuration name="FadedIsland" type="JavascriptDebugType" uri="http://localhost:63342/FadedIsland/index.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <created>1557932193740</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1557932193740</updated>
+      <workItem from="1557932197044" duration="5744000" />
+      <workItem from="1557944092057" duration="16352000" />
+    </task>
     <servers />
   </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="22096000" />
+  </component>
   <component name="ToolWindowManager">
-    <frame x="146" y="0" width="1400" height="784" extended-state="1" />
+    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13866471" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12491738" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.398773" />
+      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.398017" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Docker" order="10" show_stripe_button="false" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -120,5 +266,82 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/js/MapClasses/MapLoader.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1479">
+          <caret line="87" column="74" selection-start-line="87" selection-start-column="74" selection-end-line="87" selection-end-column="74" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/StoryClasses/StoryParser.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1034" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="56" column="14" selection-start-line="56" selection-start-column="14" selection-end-line="56" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/MapClasses/MapParser.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="261" column="26" selection-start-line="261" selection-start-column="20" selection-end-line="261" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Actor.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="146">
+          <caret line="352" column="67" selection-start-line="352" selection-start-column="67" selection-end-line="352" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Player.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="100" column="39" selection-start-line="100" selection-start-column="39" selection-end-line="100" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/MapClasses/MapInstance.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="146">
+          <caret line="274" column="10" selection-start-line="274" selection-start-column="4" selection-end-line="274" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/MapClasses/MapRenderer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-997">
+          <caret line="175" column="52" lean-forward="true" selection-start-line="175" selection-start-column="52" selection-end-line="175" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/general.css">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/dbox.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-153" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/interactions.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="17" column="17" selection-start-line="17" selection-start-column="17" selection-end-line="17" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>

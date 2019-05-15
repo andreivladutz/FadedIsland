@@ -85,7 +85,7 @@ _p.onLoadedMaps = function() {
 		storedMapName = storedValues.currentMap;
 	
 	// init mapRenderer and setting the current map
-	this.mapRenderer = new MapRenderer(storedMapName);
+	this.mapRenderer = new MapRenderer(storedMapName, this.playerReference);
 	// setting the reference to the mapRenderer on the player before trying to set the spawn point
 	// otherwise an error will be thrown
 	this.playerReference.setMapRenderer(this.mapRenderer);

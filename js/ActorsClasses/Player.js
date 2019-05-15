@@ -19,6 +19,10 @@ class Player extends Actor {
 		// the handlers will be registered while the player is in the proximity of a point
 		// and then removed when the player has left the proximity of that point
 		this.interactionHandlers = {};
+
+		// the player keeps count in which room it is now
+	    // and informs the mapRenderer with the room
+		this.currentRoom = -1;
 		
 		let self = this;
 		
@@ -74,6 +78,29 @@ Player.INTERACTION_BOX_TIME = 2000;
 
 Player.INTERACTION_POINT_PROXIMITY = 100;
 Player.INTERACTION_KEY = "e";
+
+
+/*
+	every time we move we need to check if we left the old room
+ */
+_p.checkCurrentRoom = function() {
+	if (!this.mapRenderer.mapHasRooms()) {
+		if (this.currentRoom !== -1) {
+			this.currentRoom = -1;
+		}
+
+		return;
+	}
+
+	let tileCoords = this.mapRenderer.screenCoordsToTileCoords({x: this.coordX, y: this.coordY}),
+		newRoom = this.mapRenderer.getTilesToRooms()[tileCoords.y][tileCoords.x];
+
+	// the room was changed
+	if (this.currentRoom !== newRoom) {
+		this.currentRoom = newRoom;
+		this.mapRenderer.changedRoom();
+	}
+};
 
 // we want to move the player to the spawn point of that map when the map gets changed
 // FOR EXAMPLE: 
@@ -134,13 +161,14 @@ _p.movePlayerToMapCoords = function(x, y) {
 	
 	this.updateMapCoords();
 	this.checkInteractionPointsProximity();
+	this.checkCurrentRoom();
 };
 
 /*
  * when the map changes or the screen size gets updated the screen coords change but the map coords 
  * should remain the same -> so we move the "camera" (actually the map). this way the player remains at the same map coords
  */ 
-_p.updateCoordsOnResize = function(zoomType) {
+_p.updateCoordsOnResize = function() {
 	this.movePlayerToMapCoords(this.mapCoordX, this.mapCoordY);
 };
 
@@ -233,8 +261,8 @@ _p.moveRight = function(speed, shouldCheckCollision = true) {
 	for(let i = speed; i >= 0; i--) {
         if (!shouldCheckCollision || !this.checkCollision(i, 0, this.coordY, this.coordX)) { // if no collision
             // player movement
-            var mapInstance = this.mapRenderer.currentMapInstance;
-            var rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
+            let mapInstance = this.mapRenderer.currentMapInstance;
+            let rightBound = this.canvas.width - mapInstance.mapWidth * mapInstance.tileSize; // pseudo bound
 			
             if(mapInstance.mapX === rightBound) {// if canvas at pseudo right bound aka right bound of canvas is at right bound of whole map
 				this.coordX = Math.min(this.coordX + i, this.canvas.width - FRAME_WIDTH / 2);// move player until hits right bound
@@ -397,6 +425,7 @@ _p.onMovement = function() {
 	
 	this.updateMovementAnimation();
 	this.checkInteractionPointsProximity();
+	this.checkCurrentRoom();
 };
 
 _p.keyUp = function(e, speed = this.speed) {
@@ -459,34 +488,3 @@ _p.keyDownLeft = function(e) {
 _p.keyRelease = function() {
 	this.stopWalking();
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
