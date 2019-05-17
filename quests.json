@@ -1,0 +1,95 @@
+[
+{
+"npc_id":0,
+"texts":["What, someone from the capital came? I thought you forgot abot your damn duties.",
+"Look, I'm sorry for what I've said earlier. Just get this thing over with and you can move on with your life.",
+"Oh, nothing, it's just that we requestsed aid from the capital yesterday and it took you one whole day to come.",
+"Our crop fields have been overrun with these weird *things* and everyone is getting sick whenever they go out in the fields.We can't really tell why but that's where you come in. Just clear the fields...please.",
+"Thank god. You're a life saver. I know this was just another chore for you, but I really wanted to say I appreciate what you've done for us. Also, here's your reward. Farewell!",
+"Hey, it's you again. How's it going, hero?"],
+"answers":[[{"text":"So what do you want me to do?","stage":3,"close":false},{"text":"How about I came back later when you dropped the attitude?","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
+[{"text":"So what do you want me to do?","stage":3,"close":false},{"text":"Next time, try with 'please' and 'thank you'.","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
+[{"text":"I don't see how that's my fault though.","stage":1,"close":false}],
+[{"text":"Getting sick? Sounds like they're just cowards to me.","stage":3,"close":true}],
+[{"text":"Eh, I had fun myself.","stage":5,"close":true},{"text":"Glad to see you're relieved.","stage":5,"close":true},{"text":"Whatever.","stage":5,"close":true}],
+[{"text":"I'm good, thanks.","stage":5,"close":true}]
+],
+"max_stage":5
+},
+{
+"npc_id":1,
+"texts":["Hey, can you come over here for a second?",
+"Please, someone very special to me might be in grave danger. I'm begging you.",
+"We don't know why yet, but the mist that took over Khali is making everyone sick. But it looks like it didn't affect you, so please, help an old man out.",
+"It's about my daughter, Claire. She was supposed to be home by now. She went picnicking yesterday to clear her mind but since then the monsters appeared. I am really, really concerned. Please, look out for her."
+],
+"answers":[[{"text":"Sure, what will it be?","stage":3,"close":false},{"text":"I'm sorry pops, I'm busy. Royal army stuff.","stage":1,"close":true},{"text":"Are you feeling well? You don't look too good.","stage":2,"close":false}],
+[{"text":"I guess I could help then","stage":3,"close":false},{"text":"I'm sure she's just waiting for the fog to clear out. What can go wrong with a little picnic?","stage":1,"close":true},{"text":"What happened to you again?","stage":2,"close":false}],
+[{"text":"Oh...","stage":1,"close":false}],
+[{"text":"I'll keep an eye out, go rest for a bit.","stage":3,"close":true}]
+],
+"max_stage":3
+},
+{
+"npc_id":2,
+"texts":["Oh god, please don't hurt me. It wasn't me,I swear...",
+"It's you again! You won't fool me as well. LEAVE ME ALONE!",
+"The nightmares, oh god the nightmares! They were unbearable. This beast killed me slowly so many times.SO MANY TIMES!!!",
+"AND IT HURT AS MUCH EVERYTIME SHE DID IT! I don't want to go home. My dad, he is already reborn after dying in his dreams. I DON'T WANNA BE REBORN!",
+"I AM IN NO WAY GOING HOME. I am only safe beyond the Mist. I am not crazy... I know I am not crazy..."
+],
+"answers":[[{"text":"What the hell are you talking about?","stage":2,"close":false},{"text":"Whatever.","stage":1,"close":true},{"text":"Are you Claire? Just come with me, everything will be alright.","stage":4,"close":false}],
+[{"text":"What are you talking about?","stage":2,"close":false},{"text":"Maybe I'll come back when you are less of a lunatic.","stage":1,"close":true},{"text":"Just come with me, we'll get home in no time.","stage":4,"close":false}],
+[{"text":"...","stage":4,"close":false}],
+[{"text":"I understand nothing and frankly this is well above my paygrade. Just come home with me, you'll sort it out with your dad.","stage":4,"close":false}],
+[{"text":"The Mist? The 'poisonous fog' everyone is crying about? I have no time for this, I'll carry you home myself if I have to.","stage":4,"close":true}]
+],
+"max_stage":4
+},
+{
+"npc_id":1,
+"texts":["Oh thank the gods you brought her back, my little angel. I was so scared.",
+"She said what? I'm afraid these matters concern the locals only, but I guess it won't hurt if I told you, since you've done so much for us.",
+"Truth is, this island is inhabited by a goddess, and everyone being born here has a part of the god's soul residing within theirs. Rebirthing is when you learn to love that part within you, and understand that all it desires is to protect you.",
+"She said what? Maybe she was just scared of 'rebirthing' and was in denial. I bet she was blabbering a lot of crazy stuff, wasn't she?",
+"So, since my daughter is very sick from that weird fog  that appeared, can I ask you for even more help? I hope this doesn't make you feel bad or used. Claire really needs your help.",
+"I need you to meet a woman. Her name is Fraya, he lives in a hut in the woods near the cemetery, but you can probably find her at the cemetery. Can you tell her I said 'The dove broke its wings'? She'll know what it means."
+],
+"answers":[[{"text":"She put up quite a fight though. Care to explain what 'Rebirthing in your dreams' mean?","stage":1,"close":false},{"text":"No problem.","stage":4,"close":false}],
+[{"text":"...","stage":2,"close":false}],
+[{"text":"She also mentioned something about you being killed by a beast in her dreams. What was that all about?","stage":3,"close":false}],
+[{"text":"I guess she...was...","stage":4,"close":false}],
+[{"text":"I guess I can.","stage":5,"close":false},{"text":"Maybe later.","stage":4,"close":true}],
+[{"text":"Weirdly specific but ok. I'll do it.","stage":5,"close":true}]
+],
+"max_stage":5
+},
+{
+"npc_id":3,
+"texts":["*You see a very beautiful woman leaving flowers at a gravestone, you wanna approach her but suddenly, a green flame starts forming around her and she starts some kind of incantation on top of the gravestone.*",
+"*You hide behind another gravestone but as you crouch down, the ground itself seems to try and swallow you.*\nWHO IS THERE? STOP HIDING LIKE A RAT AND SHOW YOUR FACE.",
+"Oh? So the little rodent knows my name? Stand up, stop squirming around, it was just a little sand.",
+"Some old man sent you, huh? Well, you found her. What's your business with her?",
+"Oh, you have attitude now? I can bury you back again with the snap of my fingers. But I guess I won't. What do you need?",
+"Did he really say that? Well, that means YOU, my little soldier boy, are the fabled hero of Mogdrogen's prophecy. Congrats!",
+"Listen, you help me out and I'll do the same for you. You wanna get information, you gotta work for it. Sounds fair?",
+"Ha ha, curiosity killed the cat. Some of the dead bodies caught life and ran away since the Mist outbreak. Since you aren't affected by it, you'll go bury those zombies back where they came from.",
+"Uh uh, that's extra info and you haven't even earned the first part. Happy hunting.",
+"If you're in doubt, remember, dead bodies should be inside the ground, not outside running.",
+"Hey, you actually pulled this through. And you're barely scratched. You might be more than meets the eye, I'm impressed. Looks like Morrighan was right afterall."
+],
+"answers":[[{"text":"...","stage":1,"close":false}],
+[{"text":"PLEASE DON'T HURT ME! SOME OLD MAN SENT ME HERE, SAID TO ASK FOR FRAYA! DON'T BURY ME PLEASE!","stage":2,"close":false}],
+[{"text":"I'm sorry for sneaking around. Won't happen again, promise.","stage":3,"close":false},{"text":"What the hell were you doing?","stage":4,"close":false}],
+[{"text":"He told me to tell you that 'the dove broke its wings'. I have no idea what this means but he said you'll get it.","stage":5,"close":false}],
+[{"text":"He told me to tell you that 'the dove broke its wings'. I have no idea what this means but he said you'll get it.","stage":5,"close":false}],
+[{"text":"I'm sorry, I'm what now? Is everyone on this island a lunatic?","stage":6,"close":false},{"text":"Prophecy of who?","stage":6,"close":false}],
+[{"text":"It seems to me both these things suit you, but I guess I'm a bit intrigued.","stage":7,"close":false},{"text":"I don't really care about your stories, give me a minute to think about your offer.","stage":6,"close":true}],
+[{"text":"Sounds fair enough... Wait, what do you mean I am not affected? Why is that?","stage":8,"close":false}],
+[{"text":"......I guess......","stage":9,"close":true}],
+[{"text":"Very helpful.","stage":9,"close":true}],
+[{"text":"Do you always speak in code?","stage":10,"close":false}]
+],
+"max_stage":10
+}
+]
