@@ -522,35 +522,30 @@ _p.screenCoordsToMapCoords = function(coords) {
 _p.mapCoordsToScreenCoords = function(coords) {
     var mapInstance = this.currentMapInstance,
         mapX = mapInstance.mapX,
-        mapY = mapInstance.mapY,
-        
-        new_coords = {
-            x : coords.x - Math.abs(mapX),
-            y : coords.y - Math.abs(mapY)
-        };
-    
-    return new_coords;
-}
+        mapY = mapInstance.mapY;
+
+    return {
+		x : coords.x - Math.abs(mapX),
+		y: coords.y - Math.abs(mapY)
+	};
+};
 
 _p.mapCoordsToTileCoords = function(coords) {
-    var mapInstance = this.currentMapInstance;
-    
-    var tile_coords = {
-        x : Math.floor(coords.x / mapInstance.tileSize),
+    let mapInstance = this.currentMapInstance;
+
+	return {
+		x: Math.floor(coords.x / mapInstance.tileSize),
         y : Math.floor(coords.y / mapInstance.tileSize)
-    }
-    
-    return tile_coords;
-}
+    };
+};
 
 _p.tileCoordsToMapCoords = function(coords) {
-    let mapInstance = this.currentMapInstance,
-        new_coords = {
-            x : coords.x * mapInstance.tileSize,
-            y : coords.y * mapInstance.tileSize
-        };
-    
-    return new_coords;
+    let mapInstance = this.currentMapInstance;
+
+    return {
+        x : coords.x * mapInstance.tileSize,
+        y : coords.y * mapInstance.tileSize
+    };
 };
 
 _p.screenCoordsToTileCoords = function(coords) {
@@ -597,6 +592,10 @@ _p.getLastDrawnObjects = function() {
 	return this.lastDrawnObjects;
 };
 
+_p.getAllDrawableObjects = function() {
+	return this.currentMapInstance.drawableObjects;
+};
+
 _p.getTemplateObjects = function() {
 	return this.currentMapInstance.objectTemplates;
 };
@@ -618,3 +617,7 @@ _p.mapHasRooms = function() {
 _p.getTilesToRooms = function() {
 	return this.currentMapInstance.tileToRooms;
 };
+
+_p.getEnemySpawnPoints = function() {
+	return this.currentMapInstance.enemySpawnPoints;
+}

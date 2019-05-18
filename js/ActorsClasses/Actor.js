@@ -4,62 +4,6 @@
 const FRAME_WIDTH = 64, FRAME_HEIGHT = 64,
 	  ACTUAL_ACTOR_WIDTH = 32;
 
-
-var RESOURCES = [
-    {
-        name: "playerBody1",
-        itemType: "img",
-        url: "./img/player/playerBody1.png"
-    },
-    {
-        name: "bodyArmour1",
-        itemType: "img",
-        url: "./img/armour/bodyArmour1.png"
-    },
-    {
-        name: "bootsArmour1",
-        itemType: "img",
-        url: "./img/armour/bootsArmour1.png"
-    },
-    {
-        name: "armsArmour1",
-        itemType: "img",
-        url: "./img/armour/armsArmour1.png"
-    },
-    {
-        name: "helmArmour1",
-        itemType: "img",
-        url: "./img/armour/helmArmour1.png"
-    },
-    {
-        name: "pantsArmour1",
-        itemType: "img",
-        url: "./img/armour/pantsArmour1.png"
-    },
-	// WEAPONS
-    {
-        name: "bow",
-        itemType: "img",
-        url: "./img/weapons/recurvebow.png"
-    },
-    {
-        name: "arrow",
-        itemType: "img",
-        url: "./img/weapons/arrow.png"
-    },
-    {
-        name: "spear",
-        itemType: "img",
-        url: "./img/weapons/spear.png"
-    },
-    {
-        name: "dagger",
-        itemType: "img",
-        url: "./img/weapons/dagger_male.png"
-    },
-];
-
-
 class Actor {
     constructor(loadedPromisesArr, customResources, attackType) {
         this.canvas = CanvasManagerFactory().canvas;
@@ -104,7 +48,6 @@ class Actor {
 		
         // loading Actor sprite
         this.resLoader = new ResourceLoader();
-        this.resLoader.add(RESOURCES);
         
         // column, row for specific frame in sprite
         // expected order for frames top-down: up/0, left/1, down/2, right/3
@@ -118,43 +61,8 @@ class Actor {
 		// save the propertiesNames for resources that are non-null
 		// this way we can draw the actor by piece using the propertyName
 		this.propertiesNames = [];
-		
-		/*
-		 *	the constructor for the Actor accepts an object like this :
-		 *
-		 *	{
-		 *		"base" : "resourceName",
-		 *		"hair" : "resourceName",
-		 *		"bootsArmour" : "resourceName",
-		 *		"feetArmour" : "resourceName",
-		 *		"bodyArmour" : "resourceName",
-		 *		"armsArmour" : "resourceName",
-		 *		"headArmour" : "resourceName"
-		 *	}
-		 *
-		 * IF ONE RESOURCE IS MISSING IT SHOULD BE SET TO NULL e.g.
-		 *		"bodyArmour" : null,
-		 */
-		for (let propertyName in customResources) {
-			let resourceName = customResources[propertyName];
-			
-			if (resourceName !== null) {
-				// wait for the resource to load
-				Actor.waitOn(this, this.globalPromisesArr, resourceName, propertyName);
-				
-				this.propertiesNames.push(propertyName);
-			}
-			else {
-				delete customResources[propertyName];
-			}
-		}
-        
-        // if both hair and helmet present, don't draw hair
-        let hairIndex = this.propertiesNames.indexOf("hair");
-        
-        if (hairIndex != -1 && this.propertiesNames.indexOf("headArmour") != -1) {
-            this.propertiesNames.splice(hairIndex, 1);
-        }
+
+		this.handleResourceLoadWaiting(customResources);
         
         // set attack type
 	    this.attackType = attackType;
@@ -175,10 +83,53 @@ class Actor {
 		// flag for ranged type attack
 	    this.spawnedProjectile = false;
 
-        this.resLoader.load();
 		this.initAnimators();
     }
 
+    // moved resource loading to a separate function so it can be overridden in the Enemy class
+	handleResourceLoadWaiting(customResources) {
+		/*
+		 *	the constructor for the Actor accepts an object like this :
+		 *
+		 *	{
+		 *		"base" : "resourceName",
+		 *		"hair" : "resourceName",
+		 *		"bootsArmour" : "resourceName",
+		 *		"feetArmour" : "resourceName",
+		 *		"bodyArmour" : "resourceName",
+		 *		"armsArmour" : "resourceName",
+		 *		"headArmour" : "resourceName"
+		 *	}
+		 *
+		 * IF ONE RESOURCE IS MISSING IT SHOULD BE SET TO NULL e.g.
+		 *		"bodyArmour" : null,
+		 */
+
+		//picking only the resource objects this actor needs
+		let resourceObjects = [];
+
+		for (let propertyName in customResources) {
+			let resourceName = customResources[propertyName];
+
+			if (resourceName !== null) {
+				// wait for the resource to load
+				Actor.waitOn(this, this.globalPromisesArr, resourceName, propertyName);
+
+				for (let obj of RESOURCES) {
+					if (obj.name === resourceName) {
+						resourceObjects.push(obj);
+					}
+				}
+
+				this.propertiesNames.push(propertyName);
+			} else {
+				delete customResources[propertyName];
+			}
+		}
+
+		this.resLoader.add(resourceObjects);
+		this.resLoader.load();
+	}
 }
 
 
@@ -332,6 +283,7 @@ _p.getMapCoords = function() {
 
 _p.updateScreenCoords = function() {
 	({x: this.coordX, y: this.coordY} = this.mapRenderer.mapCoordsToScreenCoords({x: this.mapCoordX, y: this.mapCoordY}));
+	this.coordBodyY = this.coordY - FRAME_HEIGHT / 5;
 };
 
 // when the screen coords are updated this function should be called too
@@ -376,27 +328,29 @@ _p.checkCollision = function(x, y, cY = this.coordY, cX = this.coordX) { // x,y 
 	return false;
 };
 
-// this functions checks the collision between the Actor and visible game objects
-_p.checkCollisionAgainstObjects = function(lftPlyrX, rghtPlyrX, y) {
+// this functions checks the collision between the Actor and all game objects
+_p.checkCollisionAgainstObjects = function(lftActorX, rightActorX, y, mapCoords = false) {
 	/* 
-		the Actor coords received by the function are screen coords
-		so they need to be converted to map coords
+		the Actor coords received by the function are screen coords (unless mapCoords is true)
+						so they need to be converted to map coords
 	*/
-	({x: lftPlyrX, y} = this.mapRenderer.screenCoordsToMapCoords({x : lftPlyrX, y}));
-	({x: rghtPlyrX} = this.mapRenderer.screenCoordsToMapCoords({x : rghtPlyrX, y}));
-	
-	let visibleObjects = this.mapRenderer.getLastDrawnObjects(),
+	if (!mapCoords) {
+		({x: lftActorX, y} = this.mapRenderer.screenCoordsToMapCoords({x : lftActorX, y}));
+		({x: rightActorX} = this.mapRenderer.screenCoordsToMapCoords({x : rightActorX, y}));
+	}
+
+	let visibleObjects = this.mapRenderer.getAllDrawableObjects(),
 		templates = this.mapRenderer.getTemplateObjects();
 	
 	// checking against every object
 	for (let obj of visibleObjects) {
 		let src = obj["template"],
-			correspTemplate = templates[src],
-			width = correspTemplate.width,
-			height = correspTemplate.height,
+			correspondingTemplate = templates[src],
+			width = correspondingTemplate.width,
+			height = correspondingTemplate.height,
 			lX = obj.x, rX = obj.x + width, bY = obj.y, uY = obj.y - height;
 		
-		if (rghtPlyrX >= lX && lftPlyrX <= rX && y >= uY && y <= bY) {
+		if (rightActorX >= lX && lftActorX <= rX && y >= uY && y <= bY) {
 			return true;
 		}
 	}
@@ -436,7 +390,7 @@ _p.stopWalking = function() {
 _p.computeDirection = function(x, y) {
 	// atan2 computes the angle relative to point 0, 0
 	// so we have to translate the coords to a coord system where 
-	// the origin is the player feet position
+	// the origin is the actor feet position
 	x -= this.coordX;
 	y -= this.coordY;
 	

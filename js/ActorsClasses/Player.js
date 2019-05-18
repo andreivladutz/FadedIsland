@@ -20,6 +20,10 @@ class Player extends Actor {
 		// and then removed when the player has left the proximity of that point
 		this.interactionHandlers = {};
 
+		// a dictionary of spawning intervals which get registered when the player
+	    // is close to an enemy spawn point, and then they get removed when the player gets further away
+		this.spawnIntervals = {};
+
 		// the player keeps count in which room it is now
 	    // and informs the mapRenderer with the room
 		this.currentRoom = -1;
@@ -75,6 +79,10 @@ class Player extends Actor {
 _p = Player.prototype;
 
 Player.INTERACTION_BOX_TIME = 2000;
+
+Player.ENEMYSPAWN_POINT_PROXIMITY = 1000;
+Player.DEFAULT_ENEMYSPAWN_INTERVAL = 3000;
+Player.MAX_SPAWNED_ENEMIES = 10;
 
 Player.INTERACTION_POINT_PROXIMITY = 100;
 Player.INTERACTION_KEY = "e";
@@ -170,6 +178,41 @@ _p.movePlayerToMapCoords = function(x, y) {
  */ 
 _p.updateCoordsOnResize = function() {
 	this.movePlayerToMapCoords(this.mapCoordX, this.mapCoordY);
+};
+
+/*
+	this functions checks the collision between the Player and visible game objects (drawn objects)
+	it overrides the function in the Actor class because the player is always in the visible zone
+	so it makes sense to check the collision only against currently drawn objects.
+
+	for other actors (e.g. enemies) we have to check collision against all drawable objects
+	since they might be out of sight
+ */
+_p.checkCollisionAgainstObjects = function(lftActorX, rightActorX, y) {
+	/*
+		the Player coords received by the function are screen coords
+				so they need to be converted to map coords
+	*/
+	({x: lftActorX, y} = this.mapRenderer.screenCoordsToMapCoords({x : lftActorX, y}));
+	({x: rightActorX} = this.mapRenderer.screenCoordsToMapCoords({x : rightActorX, y}));
+
+	let visibleObjects = this.mapRenderer.getLastDrawnObjects(),
+		templates = this.mapRenderer.getTemplateObjects();
+
+	// checking against every object
+	for (let obj of visibleObjects) {
+		let src = obj["template"],
+			correspondingTemplate = templates[src],
+			width = correspondingTemplate.width,
+			height = correspondingTemplate.height,
+			lX = obj.x, rX = obj.x + width, bY = obj.y, uY = obj.y - height;
+
+		if (rightActorX >= lX && lftActorX <= rX && y >= uY && y <= bY) {
+			return true;
+		}
+	}
+
+	return false;
 };
 
 _p.resetXCoordsToCenter = function() {
@@ -352,10 +395,36 @@ _p.removeInteractionHandlers = function(interactionPointName) {
 	}
 };
 
+_p.checkEnemySpawnPointsProximity = function() {
+	let spawnPoints = this.mapRenderer.getEnemySpawnPoints();
+
+	for (let point of spawnPoints) {
+		let euclDist = euclideanDistance(point, {x: this.mapCoordX, y: this.mapCoordY}),
+			uniqueKey = point.name + point.type,
+			// if it has an interval property set use that time, else use the default spawn interval
+			spawnInterval = point[MapInstance.ENEMY_SPAWN_INTERVAL]? point[MapInstance.ENEMY_SPAWN_INTERVAL] : Player.DEFAULT_ENEMYSPAWN_INTERVAL;
+
+		// if no max spawned enemies specified then default is considered
+		point[MapInstance.ENEMY_MAX_SPAWN] = point[MapInstance.ENEMY_MAX_SPAWN]? point[MapInstance.ENEMY_MAX_SPAWN] : Player.MAX_SPAWNED_ENEMIES;
+
+		if (euclDist <= Player.ENEMYSPAWN_POINT_PROXIMITY && !this.spawnIntervals[uniqueKey]) {
+			// call spawnEnemy regularly passing this spawn point along
+			this.spawnIntervals[uniqueKey] = setInterval(ActorFactory().spawnEnemy, spawnInterval, point);
+		}
+		else if (euclDist > Player.ENEMYSPAWN_POINT_PROXIMITY && this.spawnIntervals[uniqueKey]){
+			// stop spawning for this spawn point
+			clearInterval(this.spawnIntervals[uniqueKey]);
+			this.spawnIntervals[uniqueKey] = null;
+		}
+	}
+};
+
 _p.checkInteractionPointsProximity = function() {
+	this.checkEnemySpawnPointsProximity();
+
 	// for every point check if the player is close to it
 	for (let point of this.visibleInteractionPoints) {
-		let euclDist = Math.sqrt(Math.pow(point.x - this.mapCoordX, 2) + Math.pow(point.y - this.mapCoordY, 2));
+		let euclDist = euclideanDistance(point, {x: this.mapCoordX, y: this.mapCoordY});
 		
 		// concatenating point type and name to get a unique key in the handlers dictionary
 		let uniqueKeyName = point.type + point.name;

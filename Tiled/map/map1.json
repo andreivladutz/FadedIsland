@@ -2615,8 +2615,8 @@
                  "type":"spawnpoint",
                  "visible":true,
                  "width":0,
-                 "x":5518.66666666667,
-                 "y":5573.33333333333
+                 "x":5518.67,
+                 "y":5573.33
                 }, 
                 {
                  "height":0,
@@ -2627,8 +2627,8 @@
                  "type":"spawnpoint",
                  "visible":true,
                  "width":0,
-                 "x":1277.33333333333,
-                 "y":502.666666666667
+                 "x":1277.33,
+                 "y":502.667
                 }, 
                 {
                  "height":0,
@@ -2641,6 +2641,44 @@
                  "width":0,
                  "x":5761,
                  "y":3285
+                }, 
+                {
+                 "height":0,
+                 "id":462,
+                 "name":"cemetery",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"capedSkeleton",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"darkElf",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"maxEnemies",
+                         "type":"int",
+                         "value":5
+                        }, 
+                        {
+                         "name":"rangedSkeleton",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"spawnInterval",
+                         "type":"int",
+                         "value":2500
+                        }],
+                 "rotation":0,
+                 "type":"enemyspawn",
+                 "visible":true,
+                 "width":0,
+                 "x":909.333333333333,
+                 "y":493.333333333333
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2649,7 +2687,7 @@
          "y":0
         }],
  "nextlayerid":59,
- "nextobjectid":462,
+ "nextobjectid":463,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.2.3",

@@ -1,10 +1,10 @@
+const REMOVE_ENTITY = 1, KEEP_ENTITY = -1;
+
 class Projectile {
 	// receives the start coordinates and the angle at which it travels
 	constructor(stX, stY, angle) {
-		// adds itself to the array of drawn entities and remembers its own index in the array
-		// so once it runs out of it's life cycle it is easier to remove it from the array
+		// adds itself to the array of drawn entities
 		DRAWABLE_ENTITIES.push(this);
-		this.ownIndex = DRAWABLE_ENTITIES.length - 1;
 
 		this.canvas = CanvasManagerFactory().canvas;
 		this.ctx = CanvasManagerFactory().ctx;
@@ -125,17 +125,17 @@ _p.updatePosition = function() {
 		UPDATE position depending on passed time
 	 */
 	let fraction = this.animator.update(this.animationTimer);
-	this.x = this.stX + fraction * (this.endX - this.stX);
-	this.y = this.stY + fraction * (this.endY - this.stY);
+	this.coordX = this.stX + fraction * (this.endX - this.stX);
+	this.coordY = this.stY + fraction * (this.endY - this.stY);
 
 	this.animationTimer.lastUpdatedNow();
 
 	if (this.finishedAnimation) {
-		return this.ownIndex;
+		return REMOVE_ENTITY;
 	}
 	else
 		// haven't finished with it yet. do not remove it from the DRAWN_ENTITIES arr
-		return -1;
+		return KEEP_ENTITY;
 };
 
 _p.update = function() {
@@ -144,5 +144,5 @@ _p.update = function() {
 
 _p.draw = function() {
 	let width = this.spriteImg.width, height = this.spriteImg.height;
-	this.ctx.drawImage(this.spriteImg, 0, 0, width, height, this.x, this.y, width, height);
+	this.ctx.drawImage(this.spriteImg, 0, 0, width, height, this.coordX, this.coordY, width, height);
 };
