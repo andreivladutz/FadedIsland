@@ -115,7 +115,15 @@ _d.setQuestion = function (text) {
 _d.getOptions = function (quest, which) {
     let dialogue = new Dialogue(quest.texts[quest.stage],quest.answers[quest.stage]);
     this.setQuestion(dialogue.text);
-    this.setOptions(dialogue.answers);
+    let answers = [];
+    let counter = 0;
+    for(let answer of dialogue.answers)
+        if(answer.reqPath === undefined ||
+            (answer.reqPath &&
+            answer.reqPath.every(e => StoryParser.getPaths().includes(e.toString())))
+        )
+            answers[counter++] = answer;
+    this.setOptions(answers);
     this.waitOnInput(which);
 }
 
@@ -148,11 +156,15 @@ _d.setOptions = function (options) {
 
     //adding new options onto screen
     for (let i = 0; i < options.length; i++) {
+
         let newOption = document.createElement("li");
         newOption.classList.add("options");
         newOption.appendChild(document.createTextNode(options[i].text));
         newOption.setAttribute("stage", options[i].stage);
         newOption.setAttribute("close", options[i].close);
+        if (options[i].addPath !== undefined)
+            newOption.setAttribute("addPath", options[i].addPath);
+
         this.options.appendChild(newOption);
 
         let fontSize = parseInt(newOption.style.fontSize);
@@ -210,11 +222,9 @@ _d.waitOnInput = function (which) {
         //confirm
         if (e.keyCode === 32 || e.keyCode === 13) {
             window.removeEventListener("keydown",handler);
-            let parser = StoryParser.getReference();
-            setTimeout(function(){
-                parser.getAnswer(which, allOptions[currentPos].getAttribute("stage"),
-                    allOptions[currentPos].getAttribute("close"));
-            },100);
+            StoryParser.getReference().getAnswer(which, allOptions[currentPos].getAttribute("stage"),
+                allOptions[currentPos].getAttribute("close"),
+                allOptions[currentPos].getAttribute("addPath"));
         }
         if (e.keyCode === 27)  {
             window.removeEventListener("keydown",handler);

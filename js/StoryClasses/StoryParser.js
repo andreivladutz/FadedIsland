@@ -30,7 +30,9 @@ class StoryParser {
     }
 
     static upQuestsProgress(value) {
-        localStorage.setItem("questsProgress", localStorage.getItem("questsProgress") + value);
+        let oldValue = parseInt(localStorage.getItem("questsProgress"));
+            oldValue = isNaN(oldValue) ? 0 : oldValue;
+        localStorage.setItem("questsProgress", oldValue + value);
     }
 
     static getReference(box = "default") {
@@ -42,11 +44,34 @@ class StoryParser {
         return StoryParser.reference;
     };
 
+    static getPaths() {
+
+        if(localStorage.getItem(("questPaths")) === null)
+            localStorage.setItem("questPaths", [2,4,7]);
+
+        let paths = localStorage.getItem("questPaths").split(",");
+        if(paths[0] === "")
+            paths = [];
+        return paths;
+
+    }
+
+    static addPath(path) {
+
+        let paths = StoryParser.getPaths();
+        paths[paths.length] = path;
+        localStorage.setItem("questPaths", paths);
+
+    }
+
     constructor(dialogueBox) {
 
         this.dialogueBox = dialogueBox;
 
-        this.loadQuests = function(obj) {
+        this.loadQuests = function() {
+
+            let object = this;
+
             let xobj = new XMLHttpRequest();
             xobj.overrideMimeType("application/json");
             xobj.open('GET', 'quests.json', true);
@@ -68,21 +93,23 @@ class StoryParser {
                             quests[i].prevStage = stagesArray[i].prevStage;
                             quests[i].completed = stagesArray[i].completed;
                         }
-                    obj.quests = quests;
+                    object.quests = quests;
                 }
 
             };
             xobj.send(null);
         };
 
-        this.quests = null;
-        this.loadQuests(this);
+        this.loadQuests();
 
         this.getQuest = function(npc_id) {
 
-            let i = StoryParser.getQuestsProgress();
-            while(this.quests[i].npc_id !== npc_id && i >= 0)
-                i--;
+            let i = parseInt(StoryParser.getQuestsProgress()) > this.quests.length - 1 ?
+                this.quests.length - 1 : parseInt(StoryParser.getQuestsProgress());
+            while(i >= 0)
+                if(this.quests[i].npc_id !== npc_id)
+                    i--;
+            else break;
             if(i >= 0)
                 this.dialogueBox.getOptions(this.quests[i], i);
             else
@@ -90,7 +117,7 @@ class StoryParser {
 
         };
 
-        this.getAnswer = function(which, stage, close = false, prevStage = null) {
+        this.getAnswer = function(which, stage, close = false, addPath) {
 
             stage = parseInt(stage);
             close = close === "true";
@@ -98,11 +125,14 @@ class StoryParser {
             let quest = this.quests[which];
 
             quest.stage = stage;
-            if(prevStage)
-                quest.prevStage += parseInt(prevStage);
-            if(stage === quest.maxStage && quest.completed !== true) {
+
+            if(stage === quest.maxStage && quest.completed === false) {
                 quest.completed = true;
                 StoryParser.upQuestsProgress(1);
+                counter++;
+            }
+            if(addPath) {
+                StoryParser.addPath(addPath);
             }
             if(close)
                 this.dialogueBox.remove();
@@ -112,14 +142,16 @@ class StoryParser {
         }
     }
 }
+let x = [0,1,2,1,3,3,1,4,1,3,5,3,1,2,1,6,6,7,1];
+let counter = 1;
 localStorage.clear();
 StoryParser.getReference(null);
 setTimeout(function(){
-    StoryParser.getReference().quests[7].stage = 8;
+    StoryParser.upQuestsProgress(18);
     window.addEventListener("keydown",function(e) {
         if(e.key.toLowerCase() === "e") {
             if (StoryParser.getReference().dialogueBox === null) {
-                StoryParser.getReference(new DialogueBox()).getQuest(4);
+                StoryParser.getReference(new DialogueBox()).getQuest(1);
             }
         }
     })
