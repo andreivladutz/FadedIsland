@@ -2679,6 +2679,34 @@
                  "width":0,
                  "x":909.333,
                  "y":493.333
+                }, 
+                {
+                 "height":0,
+                 "id":463,
+                 "name":"fountain",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"darkElf",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"maxEnemies",
+                         "type":"int",
+                         "value":3
+                        }, 
+                        {
+                         "name":"spawnInterval",
+                         "type":"int",
+                         "value":500
+                        }],
+                 "rotation":0,
+                 "type":"enemyspawn",
+                 "visible":true,
+                 "width":0,
+                 "x":3105.33333333333,
+                 "y":2716
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2687,7 +2715,7 @@
          "y":0
         }],
  "nextlayerid":59,
- "nextobjectid":463,
+ "nextobjectid":464,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.2.3",

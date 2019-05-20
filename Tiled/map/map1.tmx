@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" infinite="0" nextlayerid="59" nextobjectid="463">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" infinite="0" nextlayerid="59" nextobjectid="464">
  <tileset firstgid="1" source="../tileset_workfiles/TERRAIN_TILESET.json"/>
  <tileset firstgid="1025" source="../tileset_workfiles/Tree.json"/>
  <tileset firstgid="1026" source="../tileset_workfiles/base_terrain_atlas.json"/>
@@ -7143,6 +7143,14 @@
     <property name="maxEnemies" type="int" value="5"/>
     <property name="rangedSkeleton" type="bool" value="true"/>
     <property name="spawnInterval" type="int" value="2500"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="463" name="fountain" type="enemyspawn" x="3105.33" y="2716">
+   <properties>
+    <property name="darkElf" type="bool" value="true"/>
+    <property name="maxEnemies" type="int" value="3"/>
+    <property name="spawnInterval" type="int" value="500"/>
    </properties>
    <point/>
   </object>

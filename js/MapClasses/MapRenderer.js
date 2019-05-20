@@ -621,3 +621,15 @@ _p.getTilesToRooms = function() {
 _p.getEnemySpawnPoints = function() {
 	return this.currentMapInstance.enemySpawnPoints;
 }
+
+// THE POINTS COORDS HAVE TO BE MAP COORDINATES!
+// IF THE MAP DOES NOT HAVE ROOMS THEN IT RETURNS TRUE
+_p.checkTwoPointsInSameRoom = function(pt1, pt2) {
+	if (!this.mapHasRooms()) {
+		return true;
+	}
+	let tilePt1 = this.mapCoordsToTileCoords(pt1), tilePt2 = this.mapCoordsToTileCoords(pt2),
+		pt1Room = this.getTilesToRooms()[tilePt1.y][tilePt1.x], pt2Room = this.getTilesToRooms()[tilePt2.y][tilePt2.x];
+
+	return pt1Room === pt2Room;
+};

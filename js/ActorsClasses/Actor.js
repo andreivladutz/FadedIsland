@@ -21,8 +21,10 @@ class Actor extends EventEmiter {
         this.speed = 0;
 
 	    // health bar details. values to be changed in player/enemy
-	    this.health = 0;
-		this.healthBarColor = "white";
+	    this.initHealthBar();
+
+	    this.healthBar = new HealthBar(this.health, this.healthBarColor, this);
+
 		this.collisionDamage = Actor.COLLISION_DAMAGE;
 
 		/* 
@@ -227,7 +229,7 @@ Actor.BLEED_TIME = 250;
 // distance pushed
 Actor.BLEED_PUSH = 10;
 
-Actor.COLLISION_DAMAGE = 10;
+Actor.COLLISION_DAMAGE = 3;
 
 _p = Actor.prototype;
 
@@ -354,6 +356,10 @@ _p.draw = function() {
 			drawCoordX, drawCoordY, FRAME_WIDTH, FRAME_HEIGHT);
 
 		ctx.restore();
+	}
+
+	if (!this.died) {
+		this.healthBar.draw();
 	}
 };
 
@@ -605,6 +611,7 @@ _p.bleed = function(damage, direction = null, waitTime = 0) {
 		self.timeStartedBleeding = new Date().getTime();
 		self.bleeding = true;
 
+		self.healthBar.tookDamage(damage);
 		// this hit killed the actor
 		self.health -= damage;
 		if (self.health <= 0) {
@@ -801,6 +808,8 @@ _p.update = function() {
 
 		return;
 	}
+
+	this.healthBar.update();
 
 	this.updateAttackAnimation();
 	this.updateDirection();

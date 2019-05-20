@@ -5,16 +5,6 @@ class Enemy extends Actor {
 		// save own name
 		this.name = name;
 
-		// override properties from actor
-		let randomness;
-		do {
-			randomness = Math.random();
-		} while (randomness < 0.5);
-
-		// random health between half DEFAULT_HEALTH and DEFAULT_HEALTH
-		this.health = randomness * Enemy.DEFAULT_HEALTH;
-		this.healthBarColor = "red";
-
 		// all enemies have to keep a reference to the player
 		this.playerReference = player;
 
@@ -27,6 +17,17 @@ class Enemy extends Actor {
 		// keep a timer to count how much time the enemy has been too far away from the player
 		this.timerAwayFromPlayer = new Timer();
 		this.timeAway = 0;
+	}
+
+	initHealthBar() {
+		let randomness;
+		do {
+			randomness = Math.random();
+		} while (randomness < 0.5);
+
+		// random health between half DEFAULT_HEALTH and DEFAULT_HEALTH
+		this.health = randomness * Enemy.DEFAULT_HEALTH;
+		this.healthBarColor = "red";
 	}
 
 	// overridden method so we don't wait for already loaded resources
@@ -88,6 +89,7 @@ class Enemy extends Actor {
 		this.updateScreenCoords();
 		super.update();
 		this.checkDistanceFromPlayer();
+		this.checkSameRoomWithPlayer();
 	}
 
 	draw() {
@@ -174,16 +176,8 @@ Enemy.getRandomPointAround = function(x, y, range) {
 
 _p = Enemy.prototype;
 
-function rectIntersection(rectA, rectB) {
-	// condition:
-	if (rectA.left <= rectB.right && rectA.right >= rectB.left &&
-		rectA.top <= rectB.bottom && rectA.bottom >= rectB.top ) {
-
-		return true;
-	}
-	return false;
-}
-
+// THIS FUNCTION CHECKS COLLISION INTERPRETING BOTH THE PLAYER AND THE ENEMY AS RECTANGLES (whole area)
+// FOR NICER COLLISION checkEnemiesCollision PLAYER METHOD SHOULD BE USED INSTEAD!!
 _p.checkPlayerCollision = function(cY = this.mapCoordY, cX = this.mapCoordX) {
 	let playerRect = {
 			top: this.playerReference.mapCoordY - ACTUAL_ACTOR_HEIGHT,
@@ -282,6 +276,16 @@ _p.checkDistanceFromPlayer = function() {
 		if (this.timeAway >= Enemy.DESPAWN_TIME) {
 			this.despawn();
 		}
+	}
+};
+
+// if not in the same room with the player then despawn
+_p.checkSameRoomWithPlayer = function() {
+	let playerPt = {x: this.playerReference.mapCoordX, y: this.playerReference.mapCoordY},
+		enemyPt = {x: this.mapCoordX, y: this.mapCoordY};
+
+	if (!this.mapRenderer.checkTwoPointsInSameRoom(playerPt, enemyPt)) {
+		this.despawn();
 	}
 };
 

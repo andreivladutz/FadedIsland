@@ -6,8 +6,6 @@ class Player extends Actor {
         super(loadedPromisesArr, customResources, attackType);
 		// override actor values
         this.speed = 5;
-	    this.health = Player.HEALTH;
-	    this.healthBarColor = "green";
 		
 		// make the player faster if we debug
 		// don't wanna waste time walking slow
@@ -30,6 +28,14 @@ class Player extends Actor {
 		// the player keeps count in which room it is now
 	    // and informs the mapRenderer with the room
 		this.currentRoom = -1;
+
+		setInterval(function regen(self) {
+			if (self.health < Player.HEALTH) {
+				self.health++;
+				// -(-1) actually gained health
+				self.healthBar.tookDamage(-1);
+			}
+		}, Player.REGEN_TIME, this);
 		
 		let self = this;
 		
@@ -46,6 +52,11 @@ class Player extends Actor {
 		window.addEventListener("mousemove", this.computeDirection.bind(this));
         
 		// window.addEventListener("mouseup", this.mouseRelease.bind(this));
+	}
+
+	initHealthBar() {
+		this.health = Player.HEALTH;
+		this.healthBarColor = "green";
 	}
 	
 	// after setting the mapRenderer we register mapChange and redrawnOffscreen event handlers
@@ -108,6 +119,9 @@ Player.INTERACTION_POINT_PROXIMITY = 100;
 Player.INTERACTION_KEY = "e";
 
 Player.HEALTH = 250;
+
+// regenerate player health every second
+Player.REGEN_TIME = 1000;
 
 
 /*
@@ -237,19 +251,9 @@ _p.checkCollisionAgainstObjects = function(lftActorX, rightActorX, y) {
 	return false;
 };
 
-function rectIntersection(rectA, rectB) {
-	// condition:
-	if (rectA.left <= rectB.right && rectA.right >= rectB.left &&
-		rectA.top <= rectB.bottom && rectA.bottom >= rectB.top ) {
-
-		return true;
-	}
-	return false;
-}
-
 _p.checkEnemiesCollision = function() {
 	let playerRect = {
-		top: this.mapCoordY - ACTUAL_ACTOR_HEIGHT,
+		top: this.mapCoordY - FRAME_HEIGHT / 5, // the coordBodyY equivalent in map coords,
 		left: this.mapCoordX - ACTUAL_ACTOR_WIDTH / 2,
 		right: this.mapCoordX + ACTUAL_ACTOR_WIDTH / 2,
 		bottom: this.mapCoordY
@@ -258,7 +262,7 @@ _p.checkEnemiesCollision = function() {
 
 	for (let enemy of ENEMIES) {
 		let enemyRect = {
-			top: enemy.mapCoordY - ACTUAL_ACTOR_HEIGHT,
+			top: enemy.mapCoordY - FRAME_HEIGHT / 5,
 			left: enemy.mapCoordX - ACTUAL_ACTOR_WIDTH / 2,
 			right: enemy.mapCoordX + ACTUAL_ACTOR_WIDTH / 2,
 			bottom: enemy.mapCoordY
@@ -456,7 +460,8 @@ _p.removeInteractionHandlers = function(interactionPointName) {
 };
 
 _p.checkEnemySpawnPointsProximity = function() {
-	let spawnPoints = this.mapRenderer.getEnemySpawnPoints();
+	let spawnPoints = this.mapRenderer.getEnemySpawnPoints(),
+		inProximityOfSpawnPoint = false;
 
 	for (let point of spawnPoints) {
 		let euclDist = euclideanDistance(point, {x: this.mapCoordX, y: this.mapCoordY}),
@@ -467,15 +472,31 @@ _p.checkEnemySpawnPointsProximity = function() {
 		// if no max spawned enemies specified then default is considered
 		point[MapInstance.ENEMY_MAX_SPAWN] = point[MapInstance.ENEMY_MAX_SPAWN]? point[MapInstance.ENEMY_MAX_SPAWN] : Player.MAX_SPAWNED_ENEMIES;
 
-		if (euclDist <= Player.ENEMYSPAWN_POINT_PROXIMITY && !this.spawnIntervals[uniqueKey]) {
-			// call spawnEnemy regularly passing this spawn point along
-			this.spawnIntervals[uniqueKey] = setInterval(ActorFactory().spawnEnemy, spawnInterval, point);
+		if (euclDist <= Player.ENEMYSPAWN_POINT_PROXIMITY
+			&& this.mapRenderer.checkTwoPointsInSameRoom({x: this.mapCoordX, y: this.mapCoordY}, point)) {
+
+			if (!this.spawnIntervals[uniqueKey]) {
+				// call spawnEnemy regularly passing this spawn point along
+				this.spawnIntervals[uniqueKey] = setInterval(ActorFactory().spawnEnemy, spawnInterval, point);
+			}
+
+			inProximityOfSpawnPoint = true;
 		}
-		else if (euclDist > Player.ENEMYSPAWN_POINT_PROXIMITY && this.spawnIntervals[uniqueKey]){
+		else {
+
 			// stop spawning for this spawn point
-			clearInterval(this.spawnIntervals[uniqueKey]);
-			this.spawnIntervals[uniqueKey] = null;
+			if (this.spawnIntervals[uniqueKey]) {
+				clearInterval(this.spawnIntervals[uniqueKey]);
+				this.spawnIntervals[uniqueKey] = null;
+			}
 		}
+	}
+
+	if (this.healthBar.hidden && inProximityOfSpawnPoint) {
+		this.healthBar.show();
+	}
+	if (!this.healthBar.hidden && !inProximityOfSpawnPoint) {
+		this.healthBar.hide();
 	}
 };
 
