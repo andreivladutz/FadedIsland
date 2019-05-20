@@ -246,14 +246,8 @@ function initGameOnLoaded() {
 
 // player added to the DRAWABLE_ENTITIES array
 function draw() {
-	for (let index = 0; index < DRAWABLE_ENTITIES.length; index++) {
-		// all update functions should return REMOVE_ENTITY if they ran out of use
-		// (i.e. they despawned, died, collided, etc.) or KEEP_ENTITY if they are still in use
-		let entity = DRAWABLE_ENTITIES[index], response = entity.update();
-
-		if (response === REMOVE_ENTITY) {
-			DRAWABLE_ENTITIES.splice(index, 1);
-		}
+	for (let entity of DRAWABLE_ENTITIES) {
+		entity.update();
 	}
 
 	// make sure we draw entities in order

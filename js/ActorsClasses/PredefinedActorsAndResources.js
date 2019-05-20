@@ -119,7 +119,7 @@ ActorFactory.predefinedActors = [
 			"armsArmour" : "armsArmour1",
 			"headArmour" : "helmArmour1"
 		},
-		attackType: Actor.DAGGER
+		attackType: Actor.BOW
 	},
 	{
 		name: "capedSkeleton",

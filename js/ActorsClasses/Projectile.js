@@ -2,9 +2,22 @@ const REMOVE_ENTITY = 1, KEEP_ENTITY = -1;
 
 class Projectile {
 	// receives the start coordinates and the angle at which it travels
-	constructor(stX, stY, angle) {
+	constructor(stX, stY, angle, direction, parentReference, mapRenderer) {
 		// adds itself to the array of drawn entities
 		DRAWABLE_ENTITIES.push(this);
+		PROJECTILES.push(this);
+
+		this.mapRenderer = mapRenderer;
+
+		// whose projectile is this? who does it do damage to?
+		if (parentReference instanceof Player) {
+			// we're looking to deal damage to any enemy
+			this.opponentArr = ENEMIES;
+		}
+		else if (parentReference instanceof Enemy) {
+			// just the player
+			this.opponentArr = [player];
+		}
 
 		this.canvas = CanvasManagerFactory().canvas;
 		this.ctx = CanvasManagerFactory().ctx;
@@ -15,8 +28,14 @@ class Projectile {
 		this.endX = stX + Projectile.DISTANCE_TRAVELED * Math.cos(angle);
 		this.endY = stY + Projectile.DISTANCE_TRAVELED * Math.sin(angle);
 
-		this.angle = angle;
+		// need last values for collision checking (animator might skip some coords)
+		this.lastFraction = 0;
+		this.actualFraction = 0;
 
+		this.angle = angle;
+		// the direction of the actor that launched the projectile
+		this.parentDirection = direction;
+		// the sprite chosen depending on the direction of the projectile
 		this.computeDirection();
 
 		// flag to know if the project traveled the distance it had to travel
@@ -107,14 +126,21 @@ Projectile.RESOURCES = [
 // Loaded images will be added to this dictionary
 Projectile.LOADED_RESOURCES = {};
 
-Projectile.DISTANCE_TRAVELED = 300;
+Projectile.DISTANCE_TRAVELED = 400;
 // travel time in ms
 Projectile.TRAVEL_TIME = 50;
+Projectile.FRACTION_STEP = 0.01;
 
 let _p = Projectile.prototype;
 /*
 	Trying to keep the same API as the Actor class
  */
+
+// removes itself from the arrays it's being kept in
+_p.removeSelf = function() {
+	DRAWABLE_ENTITIES.splice(DRAWABLE_ENTITIES.indexOf(this), 1);
+	PROJECTILES.splice(PROJECTILES.indexOf(this), 1);
+};
 
 _p.updatePosition = function() {
 	if (!this.animator.isRunning()) {
@@ -124,9 +150,18 @@ _p.updatePosition = function() {
 	/*
 		UPDATE position depending on passed time
 	 */
-	let fraction = this.animator.update(this.animationTimer);
-	this.coordX = this.stX + fraction * (this.endX - this.stX);
-	this.coordY = this.stY + fraction * (this.endY - this.stY);
+	this.lastFraction = this.actualFraction;
+
+	this.actualFraction = this.animator.update(this.animationTimer);
+
+	// if the animation has ended don't skip the last position
+	if (this.finishedAnimation) {
+		this.actualFraction = 1;
+		this.checkCollision();
+	}
+
+	this.coordX = this.stX + this.actualFraction * (this.endX - this.stX);
+	this.coordY = this.stY + this.actualFraction * (this.endY - this.stY);
 
 	this.animationTimer.lastUpdatedNow();
 
@@ -139,7 +174,51 @@ _p.updatePosition = function() {
 };
 
 _p.update = function() {
-	return this.updatePosition();
+	// it hasn't finished travelling yet, maybe we collided with some opponent
+	if (this.updatePosition() === KEEP_ENTITY && this.checkCollision() === KEEP_ENTITY) {
+		return;
+	}
+
+	this.removeSelf();
+};
+
+_p.checkCollision = function() {
+	for (let fraction = this.lastFraction; fraction <= this.actualFraction; fraction += Projectile.FRACTION_STEP) {
+		let cX = this.stX + fraction * (this.endX - this.stX),
+			cY = this.stY + fraction * (this.endY - this.stY),
+			projectileTile = this.mapRenderer.screenCoordsToTileCoords({x: cX, y: cY});
+
+		// encountered an unwalkable tile
+		if (this.mapRenderer.currentMapInstance.collisionMatrix[projectileTile.y][projectileTile.x]) {
+			return REMOVE_ENTITY;
+		}
+
+		for (let opponent of this.opponentArr) {
+			if (opponent instanceof Enemy) {
+				opponent.updateScreenCoords();
+			}
+
+			let projectileRect = {
+				top: cY,
+				left: cX,
+				right: cX + this.spriteImg.width,
+				bottom: cY + this.spriteImg.height
+			}, opponentRect = {
+				top: opponent.coordY - ACTUAL_ACTOR_HEIGHT,
+				left: opponent.coordX - ACTUAL_ACTOR_WIDTH / 2,
+				right: opponent.coordX + ACTUAL_ACTOR_WIDTH / 2,
+				bottom: opponent.coordY
+			};
+
+			if (rectIntersection(projectileRect, opponentRect)) {
+				opponent.bleed(Actor.BOW_DAMAGE, this.parentDirection, 0);
+
+				return REMOVE_ENTITY;
+			}
+		}
+	}
+
+	return KEEP_ENTITY;
 };
 
 _p.draw = function() {

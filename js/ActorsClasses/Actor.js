@@ -163,6 +163,11 @@ class Actor extends EventEmiter {
 		this.resLoader.add(resourceObjects);
 		this.resLoader.load();
 	}
+
+	// checks if actor has spear attack or dagger attack
+	melee() {
+		return this.attackType === Actor.SPEAR || this.attackType === Actor.DAGGER;
+	}
 }
 
 
@@ -413,7 +418,6 @@ _p.checkCollision = function(x, y, cY = this.coordY, cX = this.coordX) { // x,y 
 	for (let tileX = leftTileCoords.x; tileX <= rightTileCoords.x; tileX++) {
 		// the y is the same for all crossed tiles
 		if (this.mapRenderer.currentMapInstance.collisionMatrix[leftTileCoords.y][tileX]) {
-			//debugger;
 			return true;
 		}
 	}
@@ -756,7 +760,8 @@ _p.startAttack = function() {
 
 // special case for bow attack because it also spawns an arrow Projectile
 _p.handleBowAttack = function() {
-	new Projectile(this.coordX, this.coordY - ACTUAL_ACTOR_HEIGHT / 2, this.angle);
+	new Projectile(this.coordX, this.coordY - ACTUAL_ACTOR_HEIGHT / 2,
+		this.angle, this.direction, this, this.mapRenderer);
 };
 
 _p.updateAttackAnimation = function() {

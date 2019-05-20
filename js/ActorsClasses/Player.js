@@ -94,7 +94,7 @@ class Player extends Actor {
 
 		// checking if we hit any enemy
 		for (let enemy of ENEMIES) {
-			if (this.checkHitOnActor(enemy)) {
+			if (this.melee() && this.checkHitOnActor(enemy)) {
 				enemy.bleed(this.attackDamage, this.direction, this.attackDuration * 2);
 			}
 		}

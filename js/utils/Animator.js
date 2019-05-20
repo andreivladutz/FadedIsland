@@ -311,7 +311,7 @@ _p.update = function(timer) {
 	// adjust the direction of the animation, call hook functions etc.
 	if (this._timeSinceLoopStart >= this._duration) {
 		// Just in case, we skipped more than one loop, determine how many loops did we miss
-		this.loopsSkipped = Math.floor(this._timeSinceLoopStart/this._duration);
+		this.loopsSkipped = Math.floor(this._timeSinceLoopStart / this._duration);
 		this._timeSinceLoopStart %= this._duration;
 
 		// truncate to the number of loops skipped. Even if we skipped 5 loops,
