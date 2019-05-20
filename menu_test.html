@@ -6,19 +6,21 @@
 		<link href="css/general.css" rel="stylesheet" type="text/css">
 		<link href="css/main_menu.css" rel="stylesheet" type="text/css">
         
-        
+        <script src="js/menu.js"></script>
+
 		</head>
-	<body >
+	<body onload="init_menu()">
         <img src="img/menu/castle_stairs_mod-02.jpg" alt="bg" id = "bg-img">
 		<div id="main_menu_container">
             <div id="main_menu">
                 <h1>Faded Island</h1>
                 <ul>
-                    <li>New Game</li>
-                    <li>Continue</li>
-                    <li>Options</li>
-                    <li>Credits</li>
+                    <li class="option">New Game</li>
+                    <li class="option">Continue</li>
+                    <li class="option">Options</li>
+                    <li class="option">Credits</li>
                 </ul>
+                <div id="scroll_shadow"></div>
             </div>
         </div>
 	</body>
