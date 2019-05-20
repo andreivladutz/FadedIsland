@@ -75,7 +75,7 @@
          "tile":449
         }],
  "tilecount":1024,
- "tiledversion":"1.2.2",
+ "tiledversion":"1.2.3",
  "tileheight":32,
  "tiles":[
         {
@@ -3833,7 +3833,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -3842,7 +3842,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[13, 13, 13, -1]
         }, 
@@ -3852,7 +3852,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[13, 13, -1, 13]
         }, 
@@ -4132,7 +4132,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -4141,7 +4141,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[13, -1, 13, 13]
         }, 
@@ -4151,7 +4151,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[-1, 13, 13, 13]
         }, 
@@ -4433,7 +4433,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[-1, -1, -1, 13]
         }, 
@@ -4443,7 +4443,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[-1, -1, 13, 13]
         }, 
@@ -4453,7 +4453,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[-1, -1, 13, -1]
         }, 
@@ -4735,7 +4735,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[-1, 13, -1, 13]
         }, 
@@ -4745,7 +4745,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[13, 13, 13, 13]
         }, 
@@ -4755,7 +4755,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[13, -1, 13, -1]
         }, 
@@ -5032,7 +5032,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[-1, 13, -1, -1]
         }, 
@@ -5042,7 +5042,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[13, 13, -1, -1]
         }, 
@@ -5052,7 +5052,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "terrain":[13, -1, -1, -1]
         }, 
@@ -9771,7 +9771,7 @@
                 {
                  "name":"walkable",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {

@@ -432,9 +432,32 @@
          "width":200,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":33,
+         "name":"Interactions",
+         "objects":[
+                {
+                 "height":0,
+                 "id":312,
+                 "name":"MainMap",
+                 "point":true,
+                 "rotation":0,
+                 "type":"spawnpoint",
+                 "visible":true,
+                 "width":0,
+                 "x":2768,
+                 "y":2123.33333333333
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":33,
- "nextobjectid":310,
+ "nextlayerid":34,
+ "nextobjectid":313,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.2.3",

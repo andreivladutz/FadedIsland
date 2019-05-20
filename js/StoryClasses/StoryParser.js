@@ -117,10 +117,12 @@ StoryParser.getReference(null);
 setTimeout(function(){
     StoryParser.upQuestsProgress(4);
     window.addEventListener("keydown",function(e) {
+        /* I want to ignore this event because it is the same key as the interactions I'm working on
         if(e.key.toLowerCase() === "e") {
             if (StoryParser.getReference().dialogueBox === null) {
                 StoryParser.getReference(new DialogueBox()).getQuest(3);
             }
         }
+         */
     })
 },200);

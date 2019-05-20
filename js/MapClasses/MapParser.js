@@ -405,8 +405,6 @@ _p.startLoadingTilsetImages = function(imageResources) {
 	this.loadedResourcesPromises.push(
 		promisify(function(resolve, reject) {
 			self.resourceLoader.on("finishedLoading" + IMAGES_NAME, function() {
-				console.log(self.tilesetsWorkfiles);
-				
 				self.resourceLoader.moveResourcesTo(self.globalResLoader);
 				
 				// after loading the tilesets and the images and removing custom tilesets (for the objects)
