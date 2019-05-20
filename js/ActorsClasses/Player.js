@@ -4,7 +4,10 @@
 class Player extends Actor {
     constructor(loadedPromisesArr, customResources, attackType) {
         super(loadedPromisesArr, customResources, attackType);
-		this.speed = 5;
+		// override actor values
+        this.speed = 5;
+	    this.health = Player.HEALTH;
+	    this.healthBarColor = "green";
 		
 		// make the player faster if we debug
 		// don't wanna waste time walking slow
@@ -71,8 +74,25 @@ class Player extends Actor {
 	}
 	
 	startAttack(e) {
+    	// if already initialised attack or died
+    	if (this.attacking || this.died) {
+    		return;
+	    }
 		this.computeDirection(e);
 		super.startAttack();
+
+		// checking if we hit any enemy
+		for (let enemy of ENEMIES) {
+			if (this.checkHitOnActor(enemy)) {
+				enemy.bleed(this.attackDamage, this.direction, this.attackDuration * 2);
+			}
+		}
+	}
+
+	// this overridden function also check collision with enemies
+	update() {
+		this.checkEnemiesCollision();
+		super.update();
 	}
 }
 
@@ -86,6 +106,8 @@ Player.MAX_SPAWNED_ENEMIES = 10;
 
 Player.INTERACTION_POINT_PROXIMITY = 100;
 Player.INTERACTION_KEY = "e";
+
+Player.HEALTH = 250;
 
 
 /*
@@ -213,6 +235,44 @@ _p.checkCollisionAgainstObjects = function(lftActorX, rightActorX, y) {
 	}
 
 	return false;
+};
+
+function rectIntersection(rectA, rectB) {
+	// condition:
+	if (rectA.left <= rectB.right && rectA.right >= rectB.left &&
+		rectA.top <= rectB.bottom && rectA.bottom >= rectB.top ) {
+
+		return true;
+	}
+	return false;
+}
+
+_p.checkEnemiesCollision = function() {
+	let playerRect = {
+		top: this.mapCoordY - ACTUAL_ACTOR_HEIGHT,
+		left: this.mapCoordX - ACTUAL_ACTOR_WIDTH / 2,
+		right: this.mapCoordX + ACTUAL_ACTOR_WIDTH / 2,
+		bottom: this.mapCoordY
+	},
+		collision = false;
+
+	for (let enemy of ENEMIES) {
+		let enemyRect = {
+			top: enemy.mapCoordY - ACTUAL_ACTOR_HEIGHT,
+			left: enemy.mapCoordX - ACTUAL_ACTOR_WIDTH / 2,
+			right: enemy.mapCoordX + ACTUAL_ACTOR_WIDTH / 2,
+			bottom: enemy.mapCoordY
+		};
+
+		// the actors collide
+		if (rectIntersection(playerRect, enemyRect)) {
+			collision = true;
+			this.bleed(this.collisionDamage);
+			enemy.bleed(this.collisionDamage, this.direction);
+		}
+	}
+
+	return collision;
 };
 
 _p.resetXCoordsToCenter = function() {
@@ -498,7 +558,7 @@ _p.onMovement = function() {
 };
 
 _p.keyUp = function(e, speed = this.speed) {
-	if (!this.attacking) { // if player is attacking, can't move
+	if (!this.attacking && !this.died) { // if player is attacking, can't move
 		this.direction = Actor.UPWARD_DIRECTION;
 
         this.moveUp(speed);
@@ -507,7 +567,7 @@ _p.keyUp = function(e, speed = this.speed) {
 };
 
 _p.keyDown = function(e, speed = this.speed) {
-    if (!this.attacking) {
+    if (!this.attacking && !this.died) {
 		this.direction = Actor.DOWNWARD_DIRECTION;
 
         this.moveDown(speed);
@@ -516,7 +576,7 @@ _p.keyDown = function(e, speed = this.speed) {
 };
 
 _p.keyLeft = function(e, speed = this.speed) {
-    if (!this.attacking) {
+    if (!this.attacking && !this.died) {
 		this.direction = Actor.LEFT_DIRECTION;
 
         this.moveLeft(speed);
@@ -525,7 +585,7 @@ _p.keyLeft = function(e, speed = this.speed) {
 };
 
 _p.keyRight = function(e, speed = this.speed) {
-	if (!this.attacking) {
+	if (!this.attacking && !this.died) {
 		this.direction = Actor.RIGHT_DIRECTION;
 
         this.moveRight(speed);

@@ -177,6 +177,11 @@ function init() {
     );
 
     mapLoader.load();
+
+    player.addEventListener(Enemy.KILLED_ENEMY_EVENT, function(e) {
+    	let enemyName = e.detail;
+    	console.log("KILLED A " + enemyName);
+    })
 }
 
 function loadWeaponsResources() {

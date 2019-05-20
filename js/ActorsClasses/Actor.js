@@ -2,17 +2,29 @@
 
 // sprite consts
 const FRAME_WIDTH = 64, FRAME_HEIGHT = 64,
-	  ACTUAL_ACTOR_WIDTH = 32;
+	  ACTUAL_ACTOR_WIDTH = 32, ACTUAL_ACTOR_HEIGHT = 52;
 
-class Actor {
+class Actor extends EventEmiter {
     constructor(loadedPromisesArr, customResources, attackType) {
+    	super();
         this.canvas = CanvasManagerFactory().canvas;
         this.ctx = CanvasManagerFactory().ctx;
+
+        // special buffer to draw bleeding actor on first
+        this.bleedCanvas = document.createElement("canvas");
+        this.bleedCtx = this.bleedCanvas.getContext("2d");
+
+        this.bleedCanvas.height = FRAME_HEIGHT;
+        this.bleedCanvas.width = FRAME_WIDTH;
         
 		// will be overwritten in the Player/Enemy classes
         this.speed = 0;
-        this.power = 0; // attack power
-		
+
+	    // health bar details. values to be changed in player/enemy
+	    this.health = 0;
+		this.healthBarColor = "white";
+		this.collisionDamage = Actor.COLLISION_DAMAGE;
+
 		/* 
 		 * we keep timers for frame changing and coordinate updating 
 		 * at determined intervals of time.
@@ -70,18 +82,37 @@ class Actor {
 	        case Actor.DAGGER:
 		        this.attackFrames = Actor.NO_FOR_DAGGER;
 		        this.attackDuration = Actor.DAGGER_ATTACK_DURATION;
+		        this.attackDamage = Actor.DAGGER_DAMAGE;
+		        this.attackTileRange = Actor.DAGGER_RANGE;
+		        this.horizontalAttackPixelsRange = Actor.DAGGER_HORIZ_DIST;
+		        this.verticalAttackPixelsRange = Actor.DAGGER_VERT_DIST;
 		        break;
 	        case Actor.BOW:
 		        this.attackFrames = Actor.NO_FOR_BOW;
 		        this.attackDuration = Actor.BOW_ATTACK_DURATION;
+		        this.attackDamage = Actor.BOW_DAMAGE;
+		        // dummy values don't really care
+		        this.attackTileRange = Infinity;
+		        this.horizontalAttackPixelsRange = Infinity;
+		        this.verticalAttackPixelsRange = Infinity;
 		        break;
 	        case Actor.SPEAR:
 		        this.attackFrames = Actor.NO_FOR_SPEAR;
 		        this.attackDuration = Actor.SPEAR_ATTACK_DURATION;
+		        this.attackDamage = Actor.SPEAR_DAMAGE;
+		        this.attackTileRange = Actor.SPEAR_RANGE;
+		        this.horizontalAttackPixelsRange = Actor.SPEAR_HORIZ_DIST;
+		        this.verticalAttackPixelsRange = Actor.SPEAR_VERT_DIST;
 		        break;
         }
 		// flag for ranged type attack
 	    this.spawnedProjectile = false;
+
+        // tile area of the actor used for the attack
+	    this.leftTiles = [];
+	    this.rightTiles = [];
+	    this.upTiles = [];
+	    this.downTiles = [];
 
 		this.initAnimators();
     }
@@ -142,6 +173,12 @@ Actor.WALK_MAX_COLUMNS = 9;
 // position of walking in the spritesheet
 Actor.WALK_ROW = 8;
 
+// dying position in the spritesheet
+Actor.DEATH_ROW = 20;
+Actor.DEATH_FRAMES = 5;
+// dying frame time in ms
+Actor.DEATH_DURATION = 150;
+
 // launching "fake" keypresses so they are launched as uniformly as possible
 Actor.KEYDOWN_INTERVAL_DELAY = 16;
 
@@ -161,17 +198,36 @@ Actor.BOW_ATTACK_DURATION = 70;
 // attack consts, starting row + # of frames
 Actor.DAGGER = 12;
 Actor.NO_FOR_DAGGER = 6;
+// range of dagger attack in tiles
+Actor.DAGGER_RANGE = 1;
+// range in pixels euclidean distance
+Actor.DAGGER_HORIZ_DIST = 60;
+Actor.DAGGER_VERT_DIST = 76;
+Actor.DAGGER_DAMAGE = 20;
 
 Actor.BOW = 16;
 Actor.NO_FOR_BOW = 12;
 // the number of the frame when a projectile should also be spawned
 Actor.PROJECTILE_SPAWN_FRAME = 10;
+Actor.BOW_DAMAGE = 15;
 
 Actor.SPEAR = 4;
 Actor.NO_FOR_SPEAR = 8;
+Actor.SPEAR_RANGE = 1;
+// range in pixels euclidean distance
+Actor.SPEAR_HORIZ_DIST = 100;
+Actor.SPEAR_VERT_DIST = 116;
+Actor.SPEAR_DAMAGE = 30;
 
 // static dictionary of loaded resources(images) of all the weapons
 Actor.WEAPONS = {};
+
+// in ms
+Actor.BLEED_TIME = 250;
+// distance pushed
+Actor.BLEED_PUSH = 10;
+
+Actor.COLLISION_DAMAGE = 10;
 
 _p = Actor.prototype;
 
@@ -231,36 +287,73 @@ _p.initAnimators = function() {
 	    this.attackTimer = null;
 	    this.attackFrameAnimator.stop();
     }).bind(this);
+
+    // animator for dying animation
+	this.deathFrameAnimator = new Animator(Actor.DEATH_DURATION * Actor.DEATH_FRAMES);
+	// overriding hook function
+	this.deathFrameAnimator._onAnimationEnd = (function() {
+		this.dying = false;
+
+		this.deathTimer = null;
+		this.deathFrameAnimator.stop();
+
+		this.handleAfterDeath();
+	}).bind(this);
 }
 
-_p.drawSpriteFrame = function(image) {
-	let drawCoordX = Math.floor(this.coordX - FRAME_WIDTH / 2),
-		drawCoordY = Math.floor(this.coordY - FRAME_HEIGHT);
-	
-	this.ctx.drawImage(image, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, 
-                       drawCoordX, drawCoordY, FRAME_WIDTH, FRAME_HEIGHT);
+_p.drawSpriteFrame = function(ctx, image, x, y) {
+	ctx.drawImage(image, this.column * FRAME_WIDTH, this.row * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT,
+                       x, y, FRAME_WIDTH, FRAME_HEIGHT);
 };
 
 _p.draw = function() {
+	let drawCoordX = Math.floor(this.coordX - FRAME_WIDTH / 2),
+		drawCoordY = Math.floor(this.coordY - FRAME_HEIGHT),
+		ctx = this.ctx;
+
+	if (this.bleeding) {
+		ctx = this.bleedCtx;
+		drawCoordX = 0;
+		drawCoordY = 0;
+		ctx.clearRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+	}
+
     // draw the pieces of the actor
 	for (let propertyName of this.propertiesNames) {
-		this.drawSpriteFrame(this[propertyName]);
+		this.drawSpriteFrame(ctx, this[propertyName], drawCoordX, drawCoordY);
 	}
 
 	if (this.attacking) {
 		// depending on the type of attack we want to draw the actor's weapon
 		switch (this.attackType) {
 			case Actor.DAGGER:
-				this.drawSpriteFrame(Actor.WEAPONS["dagger"]);
+				this.drawSpriteFrame(ctx, Actor.WEAPONS["dagger"], drawCoordX, drawCoordY);
 				break;
 			case Actor.BOW:
-				this.drawSpriteFrame(Actor.WEAPONS["bow"]);
-				this.drawSpriteFrame(Actor.WEAPONS["arrow"]);
+				this.drawSpriteFrame(ctx, Actor.WEAPONS["bow"], drawCoordX, drawCoordY);
+				this.drawSpriteFrame(ctx, Actor.WEAPONS["arrow"], drawCoordX, drawCoordY);
 				break;
 			case Actor.SPEAR:
-				this.drawSpriteFrame(Actor.WEAPONS["spear"]);
+				this.drawSpriteFrame(ctx, Actor.WEAPONS["spear"], drawCoordX, drawCoordY);
 				break;
 		}
+	}
+
+	// actually just buffered actor
+	if (this.bleeding) {
+		let drawCoordX = Math.floor(this.coordX - FRAME_WIDTH / 2),
+			drawCoordY = Math.floor(this.coordY - FRAME_HEIGHT);
+
+		ctx.save();
+		ctx.globalCompositeOperation = "source-atop";
+
+		ctx.fillStyle = "rgba(193, 66, 66, 0.64)";
+		ctx.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+
+		this.ctx.drawImage(this.bleedCanvas, 0, 0, FRAME_WIDTH, FRAME_HEIGHT,
+			drawCoordX, drawCoordY, FRAME_WIDTH, FRAME_HEIGHT);
+
+		ctx.restore();
 	}
 };
 
@@ -426,16 +519,237 @@ _p.updateDirection = function() {
 	this.row = Actor.WALK_ROW + this.direction;
 };
 
+// return tiles under area
+_p.getTilesUnderActor = function() {
+	let leftMapX =  this.mapCoordX - ACTUAL_ACTOR_WIDTH / 2, rightMapX = this.mapCoordX + ACTUAL_ACTOR_WIDTH / 2,
+		topMapY = this.mapCoordY - FRAME_HEIGHT, bottomMapY = this.mapCoordY;
+
+	this.leftTiles = [];
+	this.rightTiles = [];
+	this.upTiles = [];
+	this.downTiles = [];
+
+	// keep a reference to the point situated in the middle of the player
+	this.middlePoint = {x: this.mapCoordX, y: this.mapCoordY - FRAME_HEIGHT / 2};
+
+	this.leftTiles.push(this.mapRenderer.mapCoordsToTileCoords({x: leftMapX, y: topMapY}));
+	this.rightTiles.push(this.mapRenderer.mapCoordsToTileCoords({x: rightMapX, y: topMapY}));
+
+	this.leftTiles.push({x: this.leftTiles[0].x, y: this.leftTiles[0].y + 1});
+	this.rightTiles.push({x: this.rightTiles[0].x, y: this.rightTiles[0].y + 1});
+
+	this.leftTiles.push(this.mapRenderer.mapCoordsToTileCoords({x: leftMapX, y: bottomMapY}));
+	this.rightTiles.push(this.mapRenderer.mapCoordsToTileCoords({x: rightMapX, y: bottomMapY}));
+
+	this.leftMiddleTile = this.leftTiles[1];
+	this.rightMiddleTile = this.rightTiles[1];
+
+	this.upTiles.push(this.mapRenderer.mapCoordsToTileCoords({x: leftMapX, y: topMapY}));
+	this.upTiles.push(this.mapRenderer.mapCoordsToTileCoords({x: rightMapX, y: topMapY}));
+
+	this.downTiles.push(this.mapRenderer.mapCoordsToTileCoords({x: leftMapX, y: bottomMapY}));
+	this.downTiles.push(this.mapRenderer.mapCoordsToTileCoords({x: rightMapX, y: bottomMapY}));
+};
+
+_p.updateDeathAnimation = function() {
+	// not dying so no need to update
+	if (!this.dying) {
+		return;
+	}
+
+	if (!this.deathTimer) {
+		this.deathTimer = new Timer();
+		this.deathFrameAnimator.start();
+	}
+	this.row = Actor.DEATH_ROW;
+	this.column = Math.floor(this.deathFrameAnimator.update(this.deathTimer) * Actor.DEATH_FRAMES);
+
+	// the animation might have finished in the last update above
+	if (this.dying) {
+		// we update the frames now
+		this.deathTimer.lastUpdatedNow();
+	}
+};
+
+// starting the dying animation. real aftermath is done in handleAfterDeath
+_p.handleDeath = function() {
+	this.died = true;
+	this.dying = true;
+	this.bleeding = false;
+	this.attacking = false;
+	this.walking = false;
+};
+
+// SHOULD BE OVERRIDDEN IN THE SUBCLASS
+_p.handleAfterDeath = function() {
+	// different logic for player and enemy...
+};
+
+// @param damage = it receives the damage depending on the attack type or collision,
+// @param direction = the direction in which the other actor attacked this actor
+// @param waitTime =  and a wait time (in case of attack) -> we want the animation for the attack to reach the hit phase
+// before starting bleeding
+_p.bleed = function(damage, direction = null, waitTime = 0) {
+	// if already bleeding we have temporary invincibility
+	if (this.bleedTimeout || this.bleeding || this.died) {
+		return;
+	}
+
+	this.bleedTimeout = setTimeout(function(self) {
+		// if already bleeding we have temporary invincibility
+		if (self.bleeding || self.died) {
+			return;
+		}
+
+		self.bleedTimeout = null;
+		self.timeStartedBleeding = new Date().getTime();
+		self.bleeding = true;
+
+		// this hit killed the actor
+		self.health -= damage;
+		if (self.health <= 0) {
+			self.handleDeath();
+
+			return;
+		}
+
+		// if the enemy died it doesn't make any sense to push it
+		if (self instanceof Enemy) {
+			self.push(direction);
+		}
+	}, waitTime, this);
+};
+
+_p.isStillBleeding = function() {
+	if (new Date().getTime() - this.timeStartedBleeding >= Actor.BLEED_TIME) {
+		this.bleeding = false;
+		this.timeStartedBleeding = null;
+	}
+};
+
+// get two sets of tiles and return true if they collide
+function tileCollision(set1, set2) {
+	for (let tile1 of set1) {
+		for (let tile2 of set2) {
+			if (tile1.x === tile2.x && tile1.y === tile2.y) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+// this function receives another actor (after an attack has been started)
+// and checks if the actor has been hit by this attack
+_p.checkHitOnActor = function(actor) {
+	actor.getTilesUnderActor();
+
+	if (this.direction === Actor.RIGHT_DIRECTION) {
+		let rightTilesX = this.rightTiles[0].x;
+		for (let tileX = rightTilesX; tileX <= rightTilesX + this.attackTileRange; tileX++) {
+			// creating intermediate hit boxes
+			let rightTilesHitBoxes = [];
+			rightTilesHitBoxes.push({x: tileX, y: this.rightMiddleTile.y});
+
+			if (tileCollision(rightTilesHitBoxes, actor.leftTiles) || tileCollision(rightTilesHitBoxes, actor.rightTiles)) {
+				if (euclideanDistance(this.middlePoint, actor.middlePoint) <= this.horizontalAttackPixelsRange) {
+					return true;
+				}
+			}
+		}
+	}
+	else if (this.direction === Actor.LEFT_DIRECTION) {
+		let leftTilesX = this.leftTiles[0].x;
+		for (let tileX = leftTilesX; tileX >= leftTilesX - this.attackTileRange; tileX--) {
+			// creating intermediate hit boxes
+			let leftTilesHitBoxes = [];
+			leftTilesHitBoxes.push({x: tileX, y: this.leftMiddleTile.y});
+
+			if (tileCollision(leftTilesHitBoxes, actor.rightTiles) ||  tileCollision(leftTilesHitBoxes, actor.leftTiles) ) {
+				if (euclideanDistance(this.middlePoint, actor.middlePoint) <= this.horizontalAttackPixelsRange) {
+					return true;
+				}
+			}
+		}
+	}
+	else if (this.direction === Actor.DOWNWARD_DIRECTION) {
+		/*
+		let bottomTilesY = this.downTiles[0].y;
+		for (let tileY = bottomTilesY; tileY <= bottomTilesY + (this.attackTileRange - 1); tileY++) {
+			let bottomHitBoxes = [];
+			for (let tile of this.downTiles) {
+				bottomHitBoxes.push({x: tile.x, y: tileY});
+			}
+		*/
+
+		// leftTiles and rightTiles of an actor covers all of its area (including up and bottom hit boxes)
+		if (tileCollision(this.downTiles, actor.leftTiles) || tileCollision(this.downTiles, actor.rightTiles)) {
+			if (euclideanDistance(this.middlePoint, actor.middlePoint) <= this.verticalAttackPixelsRange) {
+				return true;
+			}
+		}
+		//}
+	}
+	else if (this.direction === Actor.UPWARD_DIRECTION) {
+		/*
+		let upwardTilesY = this.upTiles[0].y;
+		for (let tileY = upwardTilesY; tileY >= upwardTilesY - (this.attackTileRange - 1); tileY--) {
+			let upwardHitBoxes = [];
+			for (let tile of this.upTiles) {
+				upwardHitBoxes.push({x: tile.x, y: tileY});
+			}
+		*/
+
+		// leftTiles and rightTiles of an actor covers all of its area (including up and bottom hit boxes)
+		if (tileCollision(this.upTiles, actor.leftTiles) || tileCollision(this.upTiles, actor.rightTiles)) {
+			if (euclideanDistance(this.middlePoint, actor.middlePoint) <= this.verticalAttackPixelsRange) {
+				return true;
+			}
+		}
+		//}
+	}
+
+	return false;
+
+	/* CODE FOR DRAWING HITBOXES. KEEPING IT AROUND
+			for (let tile of leftTilesHitBoxes) {
+				let screenTile = this.mapRenderer.tileCoordsToScreenCoords(tile);
+
+				this.ctx.fillStyle = "black";
+				this.ctx.fillRect(screenTile.x, screenTile.y, 32, 32);
+			}
+			debugger;
+			for (let tile of actor.leftTiles) {
+				let screenTile = this.mapRenderer.tileCoordsToScreenCoords(tile);
+
+				this.ctx.fillStyle = "green";
+				this.ctx.fillRect(screenTile.x, screenTile.y, 32, 32);
+			}
+			debugger;
+
+			for (let tile of actor.rightTiles) {
+				let screenTile = this.mapRenderer.tileCoordsToScreenCoords(tile);
+
+				this.ctx.fillStyle = "green";
+				this.ctx.fillRect(screenTile.x, screenTile.y, 32, 32);
+			}
+			debugger;
+			 */
+};
+
 _p.startAttack = function() {
 	// just set the flag to true. the update function will take care of the rest
 	this.attacking = true;
 	// we stopped walking. the attack has priority
 	this.stopWalking();
+
+	this.getTilesUnderActor();
 };
 
 // special case for bow attack because it also spawns an arrow Projectile
 _p.handleBowAttack = function() {
-	new Projectile(this.coordX, this.coordY - FRAME_HEIGHT / 2, this.angle);
+	new Projectile(this.coordX, this.coordY - ACTUAL_ACTOR_HEIGHT / 2, this.angle);
 };
 
 _p.updateAttackAnimation = function() {
@@ -478,8 +792,22 @@ _p.updateAttackAnimation = function() {
 	- to be added...
  */
 _p.update = function() {
+	if (this.died) {
+		this.updateDeathAnimation();
+
+		if (!this.dying) {
+			this.column = Actor.DEATH_FRAMES;
+		}
+
+		return;
+	}
+
 	this.updateAttackAnimation();
 	this.updateDirection();
+
+	if (this.bleeding) {
+		this.isStillBleeding();
+	}
 };
 
 

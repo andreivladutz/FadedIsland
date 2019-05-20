@@ -1,6 +1,19 @@
 class Enemy extends Actor {
-	constructor(loadedPromisesArr, customResources, attackType) {
+	constructor(loadedPromisesArr, customResources, attackType, name) {
 		super(loadedPromisesArr, customResources, attackType);
+
+		// save own name
+		this.name = name;
+
+		// override properties from actor
+		let randomness;
+		do {
+			randomness = Math.random();
+		} while (randomness < 0.5);
+
+		// random health between half DEFAULT_HEALTH and DEFAULT_HEALTH
+		this.health = randomness * Enemy.DEFAULT_HEALTH;
+		this.healthBarColor = "red";
 
 		// all enemies have to keep a reference to the player
 		this.playerReference = player;
@@ -72,6 +85,7 @@ class Enemy extends Actor {
 			return;
 		}
 
+		this.updateScreenCoords();
 		super.update();
 		this.checkDistanceFromPlayer();
 	}
@@ -83,6 +97,14 @@ class Enemy extends Actor {
 
 		super.draw();
 	}
+
+	startAttack() {
+		if (this.attacking || this.died) {
+			return;
+		}
+
+		super.startAttack();
+	}
 }
 
 // look for a random point for a maximum of quarter of a second
@@ -93,6 +115,10 @@ Enemy.SPAWN_RANGE = 500;
 // After being more than MAX_DIST_FROM_PLAYER away for more than DESPAWN_TIME the enemy despawns
 Enemy.MAX_DIST_FROM_PLAYER = 2500;
 Enemy.DESPAWN_TIME = 5000;
+
+Enemy.KILLED_ENEMY_EVENT = "killedEnemy";
+// max health
+Enemy.DEFAULT_HEALTH = 100;
 
 // keep a dictionary of already loaded images. There are a lot of enemies that look the same
 // so they reuse the same images. Doesn't make sense to wait again for the loading of those images
@@ -110,12 +136,16 @@ Enemy.verifyValidMapCoords = function(x, y) {
 
 	let collisionChecker = {
 		mapRenderer,
+		playerReference: player,
 		checkCollisionAgainstObjects: Actor.prototype.checkCollisionAgainstObjects,
-		checkCollision: Enemy.prototype.checkCollisionMapCoords
+		checkCollisionMapCoords: Enemy.prototype.checkCollisionMapCoords,
+		checkPlayerCollision: Enemy.prototype.checkPlayerCollision,
+		checkCollision: Enemy.prototype.checkCollision
 	};
 
 	// check if there is no collision at (x, y) map coords and (x, bodyY) coords
-	return !(collisionChecker.checkCollision(y, x) || collisionChecker.checkCollision(y - FRAME_HEIGHT / 5, x));
+	// also check collision against the player
+	return !collisionChecker.checkCollision(y, x) && !collisionChecker.checkPlayerCollision(y, x);
 };
 
 /*
@@ -143,6 +173,44 @@ Enemy.getRandomPointAround = function(x, y, range) {
 };
 
 _p = Enemy.prototype;
+
+function rectIntersection(rectA, rectB) {
+	// condition:
+	if (rectA.left <= rectB.right && rectA.right >= rectB.left &&
+		rectA.top <= rectB.bottom && rectA.bottom >= rectB.top ) {
+
+		return true;
+	}
+	return false;
+}
+
+_p.checkPlayerCollision = function(cY = this.mapCoordY, cX = this.mapCoordX) {
+	let playerRect = {
+			top: this.playerReference.mapCoordY - ACTUAL_ACTOR_HEIGHT,
+			left: this.playerReference.mapCoordX - ACTUAL_ACTOR_WIDTH / 2,
+			right: this.playerReference.mapCoordX + ACTUAL_ACTOR_WIDTH / 2,
+			bottom: this.playerReference.mapCoordY
+		};
+
+	let enemyRect = {
+		top: cY - ACTUAL_ACTOR_HEIGHT,
+		left: cX - ACTUAL_ACTOR_WIDTH / 2,
+		right: cX + ACTUAL_ACTOR_WIDTH / 2,
+		bottom: cY
+	};
+
+	// the actors collide
+	if (rectIntersection(playerRect, enemyRect)) {
+		return true;
+	}
+
+	return false;
+};
+
+_p.checkCollision = function(cY = this.mapCoordY, cX = this.mapCoordX, shouldCheckUpwardCollision = true) {
+	return this.checkCollisionMapCoords(cY, cX) ||
+		(shouldCheckUpwardCollision && this.checkCollisionMapCoords(cY - FRAME_HEIGHT / 5, cX));
+}
 
 // version of checkCollision function that checks collision using map coordinates
 _p.checkCollisionMapCoords = function(cY = this.mapCoordY, cX = this.mapCoordX) {
@@ -181,7 +249,6 @@ _p.checkCollisionMapCoords = function(cY = this.mapCoordY, cX = this.mapCoordX) 
 // overridden function so it updates it's direction depending on the player position at always
 // THIS FUNCTION IS CALLED REGULARLY IN THE UPDATE FUNCTION OF THE ACTOR CLASS
 _p.updateDirection = function() {
-	this.updateScreenCoords();
 	this.computeDirection(this.playerReference.coordX, this.playerReference.coordY);
 
 	this.row = Actor.WALK_ROW + this.direction;
@@ -216,4 +283,52 @@ _p.checkDistanceFromPlayer = function() {
 			this.despawn();
 		}
 	}
+};
+
+// only enemies get pushed.
+_p.push = function(direction) {
+	let sgnX = 0, sgnY = 0;
+
+	// the enemy got pushed only in one direction
+	if (direction === Actor.UPWARD_DIRECTION) {
+		sgnY = -1;
+	}
+	else if (direction === Actor.DOWNWARD_DIRECTION) {
+		sgnY = 1;
+	}
+	else if (direction === Actor.LEFT_DIRECTION) {
+		sgnX = -1;
+	}
+	else if (direction === Actor.RIGHT_DIRECTION) {
+		sgnX = 1;
+	}
+
+	// trying to push as much as possible
+	for (let pushed = Actor.BLEED_PUSH; pushed >= 0; pushed--) {
+		// push on x axis
+		if (sgnX !== 0 && !this.checkCollision(this.mapCoordY, this.mapCoordX + pushed * sgnX, false)) {
+			this.mapCoordX += pushed * sgnX;
+			break;
+		}
+		else if (sgnY !== 0) {
+			if (sgnY === -1 && !this.checkCollision(this.mapCoordY - pushed, this.mapCoordX)) {
+				this.mapCoordY -= pushed;
+				break
+			}
+			else if (sgnY === 1 && !this.checkCollision(this.mapCoordY + pushed, this.mapCoordX, false)){
+				this.mapCoordY += pushed;
+				break;
+			}
+		}
+	}
+
+	this.updateScreenCoords();
+};
+
+_p.handleAfterDeath = function() {
+	// self remove from everywhere
+	this.despawn();
+
+	// emit enemy killed event on the player
+	this.playerReference.emit(Enemy.KILLED_ENEMY_EVENT, this.name);
 };

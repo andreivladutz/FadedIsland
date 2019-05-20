@@ -55,7 +55,7 @@ const ActorFactory = (function() {
 			}
 		}
 		else if (predefActor.type === "enemy") {
-			actor = new Enemy(waitedOnPromises, resourcesCopy, predefActor.attackType);
+			actor = new Enemy(waitedOnPromises, resourcesCopy, predefActor.attackType, predefActor.name);
 
 			if (x !== -1 && y !== -1) {
 				actor.mapCoordX = x;
