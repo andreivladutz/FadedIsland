@@ -166,7 +166,7 @@ const AStarInstanceManager = (function() {
 		}
 
 		// get shortest path between stTile and one of endTiles
-		computePath(stTile, endTiles) {
+		computePath(stTile, endTiles, distToleranceStop) {
 			let startNode = new Node(stTile),
 				endNodes = [];
 
@@ -196,6 +196,12 @@ const AStarInstanceManager = (function() {
 				/*console.log("OPEN", OPEN);
 				console.log("currNode", currNode);
 				debugger;*/
+
+				if (distToleranceStop !== undefined) {
+					if (currNode.f !== 0 && currNode.f <= distToleranceStop) {
+						return currNode.getPath();
+					}
+				}
 
 				// if we reached any of the endNodes
 				for (let endNode of endNodes) {

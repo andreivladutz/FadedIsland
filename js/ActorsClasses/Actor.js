@@ -93,10 +93,10 @@ class Actor extends EventEmiter {
 		        this.attackFrames = Actor.NO_FOR_BOW;
 		        this.attackDuration = Actor.BOW_ATTACK_DURATION;
 		        this.attackDamage = Actor.BOW_DAMAGE;
-		        // dummy values don't really care
-		        this.attackTileRange = Infinity;
-		        this.horizontalAttackPixelsRange = Infinity;
-		        this.verticalAttackPixelsRange = Infinity;
+		        // dummy values don't really care (except horizontalAttackPixelsRange)
+		        this.attackTileRange = Projectile.DISTANCE_TRAVELED / Node.TILE_SIZE;
+		        this.horizontalAttackPixelsRange = Projectile.DISTANCE_TRAVELED;
+		        this.verticalAttackPixelsRange = Projectile.DISTANCE_TRAVELED;
 		        break;
 	        case Actor.SPEAR:
 		        this.attackFrames = Actor.NO_FOR_SPEAR;

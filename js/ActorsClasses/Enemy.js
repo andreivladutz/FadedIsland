@@ -17,6 +17,18 @@ class Enemy extends Actor {
 		// keep a timer to count how much time the enemy has been too far away from the player
 		this.timerAwayFromPlayer = new Timer();
 		this.timeAway = 0;
+
+		switch(attackType) {
+			case Actor.DAGGER:
+				this.enemyAttackRange = Enemy.DAGGER_IN_RANGE;
+				break;
+			case Actor.SPEAR:
+				this.enemyAttackRange = Enemy.SPEAR_IN_RANGE;
+				break;
+			case Actor.BOW:
+				this.enemyAttackRange = Enemy.BOW_IN_RANGE;
+				break;
+		}
 	}
 
 	initHealthBar() {
@@ -88,13 +100,16 @@ class Enemy extends Actor {
 
 		super.update();
 
-		this.followPlayer();
 		this.updateWalkingMovement();
 		this.updateScreenCoords();
 
 		// might despawn in these two methods
 		this.checkDistanceFromPlayer();
 		this.checkSameRoomWithPlayer();
+
+		if (!this.despawned) {
+			this.attackPlayer();
+		}
 	}
 
 	draw() {
@@ -111,6 +126,10 @@ class Enemy extends Actor {
 		}
 
 		super.startAttack();
+
+		if (this.melee() && this.checkHitOnActor(this.playerReference)) {
+			this.playerReference.bleed(this.attackDamage, this.direction, this.attackDuration * 2);
+		}
 	}
 
 	initAnimators() {
@@ -119,6 +138,20 @@ class Enemy extends Actor {
 		// animator for updating coordinates
 		this.movementAnimator = new Animator(Enemy.ONE_TILE_TIME);
 	}
+
+	// overridden function so it updates it's direction depending on the player position at always
+	// THIS FUNCTION IS CALLED REGULARLY IN THE UPDATE FUNCTION OF THE ACTOR CLASS
+	updateDirection() {
+		if (!this.walking) {
+			this.computeDirection(this.playerReference.coordX, this.playerReference.coordY);
+		}
+
+		if (this.attacking) {
+			return;
+		}
+
+		this.row = Actor.WALK_ROW + this.direction;
+	};
 }
 
 // look for a random point for a maximum of quarter of a second
@@ -128,11 +161,13 @@ Enemy.SPAWN_RANGE = 500;
 
 Enemy.PLAYER_FOLLOW_RANGE = 40;
 
+Enemy.DITANCE_TOLERANCE = Node.TILE_SIZE * 4;
+
 // every enemy tries to get to one of 5 random tiles around the player
 Enemy.PLAYER_RANDOM_POINTS_AROUND = 5;
 // if player moved more than PLAYER_MOVED_DISTANCE from the point we're following
 // follow him again by recomputing the path to him
-Enemy.PLAYER_MOVED_DISTANCE = 128;
+Enemy.PLAYER_MOVED_DISTANCE = 500;
 // After being more than MAX_DIST_FROM_PLAYER away for more than DESPAWN_TIME the enemy despawns
 Enemy.MAX_DIST_FROM_PLAYER = 2500;
 Enemy.DESPAWN_TIME = 5000;
@@ -142,6 +177,10 @@ Enemy.KILLED_ENEMY_EVENT = "killedEnemy";
 Enemy.DEFAULT_HEALTH = 100;
 
 Enemy.ONE_TILE_TIME = 500;
+
+Enemy.SPEAR_IN_RANGE = 70;
+Enemy.DAGGER_IN_RANGE = 60;
+Enemy.BOW_IN_RANGE = Projectile.DISTANCE_TRAVELED;
 
 // keep a dictionary of already loaded images. There are a lot of enemies that look the same
 // so they reuse the same images. Doesn't make sense to wait again for the loading of those images
@@ -265,16 +304,6 @@ _p.checkCollisionMapCoords = function(cY = this.mapCoordY, cX = this.mapCoordX) 
 	return false;
 };
 
-// overridden function so it updates it's direction depending on the player position at always
-// THIS FUNCTION IS CALLED REGULARLY IN THE UPDATE FUNCTION OF THE ACTOR CLASS
-_p.updateDirection = function() {
-	if (!this.walking) {
-		this.computeDirection(this.playerReference.coordX, this.playerReference.coordY);
-	}
-
-	this.row = Actor.WALK_ROW + this.direction;
-};
-
 _p.setSpawnPoint = function(spawnPoint) {
 	this.spawnPoint = spawnPoint;
 };
@@ -369,25 +398,13 @@ _p.handleAfterDeath = function() {
 	this.playerReference.emit(Enemy.KILLED_ENEMY_EVENT, this.name);
 };
 
-_p.followPlayer = function() {
-	let playerCoords = {x: this.playerReference.mapCoordX, y: this.playerReference.mapCoordY};
-
-	if (this.randomMapCoordsAroundPlayer &&
-		euclideanDistance(this.randomMapCoordsAroundPlayer, playerCoords) < Enemy.PLAYER_MOVED_DISTANCE) {
-
-		return;
-	}
-
-	this.computePathToPlayer();
-};
-
 _p.getTileAroundPlayer = function() {
 	// get the tile position of the enemy and a random tile around the player
 	let playerMiddleX = this.playerReference.mapCoordX,
 		playerMiddleY = this.playerReference.mapCoordY - ACTUAL_ACTOR_HEIGHT / 2;
 
 	// keep these coords so we can check if the player got away from them
-	this.randomMapCoordsAroundPlayer = Enemy.getRandomPointAround(playerMiddleX, playerMiddleY, Enemy.PLAYER_FOLLOW_RANGE = 40);
+	this.randomMapCoordsAroundPlayer = Enemy.getRandomPointAround(playerMiddleX, playerMiddleY, this.enemyAttackRange);
 
 	// cannot find any tile around the player
 	if (this.randomMapCoordsAroundPlayer === null) {
@@ -410,16 +427,40 @@ _p.computePathToPlayer = function() {
 		}
 	}
 
-	this.foundPath = AStarInstanceManager().computePath(thisTile, playerTiles);
+	this.foundPath = AStarInstanceManager().computePath(thisTile, playerTiles, this.distFromPlayer - Enemy.DITANCE_TOLERANCE);
 
 	if (this.foundPath === null) {
-		console.log("DIDN'T FIND ANY PATH");
 		return;
 	}
 
 	this.foundPath.pop();
-	console.log(this.foundPath);
 };
+
+_p.computePathBackToSpawnPoint = function() {
+	let thisTile = this.mapRenderer.mapCoordsToTileCoords({x: this.mapCoordX, y: this.mapCoordY}),
+		spawnTiles = [];
+
+	// get 5 random points
+	for (let i = 0; i < Enemy.PLAYER_RANDOM_POINTS_AROUND; i++) {
+		let randPoint = Enemy.getRandomPointAround(this.spawnPoint.x, this.spawnPoint.y, Enemy.SPAWN_RANGE);
+
+		if (randPoint === null) {
+			continue;
+		}
+
+		let tile = this.mapRenderer.mapCoordsToTileCoords(randPoint);
+
+		if (tile !== null) {
+			spawnTiles.push(tile);
+		}
+	}
+
+	this.foundPath = AStarInstanceManager().computePath(thisTile, spawnTiles);
+
+	if (this.foundPath !== null) {
+		this.foundPath.pop();
+	}
+}
 
 _p.moveOneTile = function(tile) {
 	this.movingOneTile = true;
@@ -475,25 +516,48 @@ _p.updateWalkingMovement = function() {
 
 	// the animator might have stopped
 	if (!this.movingOneTile) {
-		return;
+		fraction = 1;
 	}
 
 	this.mapCoordX = this.startX + (this.endX - this.startX) * fraction;
 	this.mapCoordY = this.startY + (this.endY - this.startY) * fraction;
-	this.movementTimer.lastUpdatedNow();
+
+	this.movementTimer && this.movementTimer.lastUpdatedNow();
 };
 
 _p.handleWalkEnd = function() {
-	this.updateScreenCoords();
-	this.checkDistanceFromPlayer();
-
-	if (this.distFromPlayer > this.horizontalAttackPixelsRange) {
-		this.computePathToPlayer();
-	}
-
-	//this.startAttack();
-
 	// walking in general stopped
 	this.walking = false;
 	this.column = Actor.STANDSTILL_POSITION;
-}
+};
+
+_p.attackPlayer = function() {
+	// still walking or player died
+	if ((!this.returnedToSpawnPoint && this.walking) || this.playerReference.died) {
+		return;
+	}
+
+	// if the player reaches the limit from the spawn point the enemy shouldn't
+	// follow it anymore and return to the spawn point
+	let playerDistFromSpawnPoint = euclideanDistance(this.spawnPoint,
+		{x: this.playerReference.mapCoordX, y: this.playerReference.mapCoordY});
+
+	if (playerDistFromSpawnPoint > Player.ENEMYSPAWN_POINT_PROXIMITY) {
+		if (!this.returnedToSpawnPoint) {
+			this.returnedToSpawnPoint = true;
+			this.computePathBackToSpawnPoint();
+		}
+		return;
+	}
+	else {
+		this.returnedToSpawnPoint = false;
+	}
+
+	// while player not in range to attack we walk to him
+	if (this.distFromPlayer > this.enemyAttackRange) {
+		this.computePathToPlayer();
+		return;
+	}
+
+	this.startAttack();
+};
