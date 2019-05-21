@@ -101,3 +101,24 @@ body{
     100% {text-shadow: 0px -2px 4px #fff, 0px -2px 10px #FF3, 0px -10px 20px #F90, 0px -20px 40px #C33;
         color: #3a0000;}
 }
+
+#sal{
+    position: absolute;
+    height: 300px;
+    left: 500px;
+    top: 400px;
+}
+
+#sal1{
+    position: absolute;
+    height: 260px;
+    left: 700px;
+    top: 440px;
+}
+
+#sal2{
+    position: absolute;
+    height: 270px;
+    left: 900px;
+    top: 430px;
+}

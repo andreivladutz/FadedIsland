@@ -77,7 +77,7 @@ function init() {
 		"bodyArmour" : "bodyArmour1",
 		"armsArmour" : "armsArmour1",
 		"headArmour" : "helmArmour1"
-	}, Actor.DAGGER);
+	}, Actor.SPEAR);
 	
 	// setting the stateSaver in the mapLoader and also initialising it
 	mapLoader.setStateSaver(StateSaverManager());
