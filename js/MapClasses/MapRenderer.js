@@ -71,6 +71,9 @@ _p.changeMap = function(mapName) {
 	
 	this.currentMapName = mapName;
 	this.currentMapInstance = MapRenderer.MAP_INSTANCES[mapName];
+
+	// Every time the map changes make sure to let the Node class know
+	Node.CURR_MAP_NAME = mapName;
 		
 	// offDirty flag tells if the offscreenBuffer canvas should be redrawn
 	this.offDirty = true;
@@ -476,7 +479,6 @@ _p.draw = function() {
 				 );
 };
 
-
 /*
 	when we redraw the offscreenBuffer we also compute the interaction points that are in proximity
  */
@@ -620,7 +622,7 @@ _p.getTilesToRooms = function() {
 
 _p.getEnemySpawnPoints = function() {
 	return this.currentMapInstance.enemySpawnPoints;
-}
+};
 
 // THE POINTS COORDS HAVE TO BE MAP COORDINATES!
 // IF THE MAP DOES NOT HAVE ROOMS THEN IT RETURNS TRUE

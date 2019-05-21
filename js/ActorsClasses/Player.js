@@ -572,7 +572,7 @@ _p.interactWithRoomTransitionPoint = function(point, e) {
 _p.onMovement = function() {
 	this.walking = true;
 	this.row = Actor.WALK_ROW + this.direction;
-	
+
 	this.updateMovementAnimation();
 	this.checkInteractionPointsProximity();
 	this.checkCurrentRoom();

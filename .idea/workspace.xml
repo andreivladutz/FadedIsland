@@ -2,12 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="44d72bdf-22b7-42e9-8c3d-681accc85269" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/js/utils/AStar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/ActorsClasses/Actor.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/ActorsClasses/Actor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/ActorsClasses/Enemy.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/ActorsClasses/Enemy.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/ActorsClasses/Player.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/ActorsClasses/Player.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/ActorsClasses/PredefinedActorsAndResources.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/ActorsClasses/PredefinedActorsAndResources.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/ActorsClasses/Projectile.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/ActorsClasses/Projectile.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/utils/Animator.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/utils/Animator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/MapClasses/MapInstance.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/MapClasses/MapInstance.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/MapClasses/MapRenderer.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/MapClasses/MapRenderer.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -21,37 +23,26 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/main.js">
+        <entry file="file://$PROJECT_DIR$/js/utils/AStar.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="111">
-              <caret line="248" column="20" selection-start-line="248" selection-start-column="20" selection-end-line="248" selection-end-column="20" />
+            <state relative-caret-position="1420">
+              <caret line="251" column="28" selection-start-line="251" selection-start-column="28" selection-end-line="251" selection-end-column="28" />
+              <folding>
+                <element signature="n#!!block;n#hasSouth#0;n#Node#0" />
+                <element signature="n#!!block;n#hasEast#0;n#Node#0" />
+                <element signature="n#!!block;n#hasWest#0;n#Node#0" />
+                <element signature="n#!!block;n#getSouth#0;n#Node#0" />
+                <element signature="n#!!block;n#getEast#0;n#Node#0" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Player.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="128">
-              <caret line="81" column="17" selection-start-line="81" selection-start-column="17" selection-end-line="81" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/utils/mathFunctions.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Enemy.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="196">
-              <caret line="179" column="83" selection-start-line="179" selection-start-column="83" selection-end-line="179" selection-end-column="83" />
+            <state relative-caret-position="199">
+              <caret line="493" column="6" selection-start-line="493" selection-start-column="6" selection-end-line="493" selection-end-column="6" />
               <folding>
                 <element signature="n#!!block;n#handleResourceLoadWaiting#0;n#Enemy#0" />
                 <element signature="n#!!block;n#setMapRenderer#0;n#Enemy#0" />
@@ -61,55 +52,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/ActorsClasses/ActorFactory.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="71" column="18" selection-start-line="71" selection-start-column="18" selection-end-line="71" selection-end-column="18" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Actor.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="162">
-              <caret line="419" column="91" selection-start-line="419" selection-start-column="91" selection-end-line="419" selection-end-column="91" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Projectile.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="191" column="96" selection-start-line="191" selection-start-column="96" selection-end-line="191" selection-end-column="96" />
+            <state relative-caret-position="-790">
+              <caret line="754" column="14" selection-start-line="754" selection-start-column="3" selection-end-line="754" selection-end-column="14" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/utils/xstats.js">
+        <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Player.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="355" column="15" selection-start-line="355" selection-start-column="15" selection-end-line="355" selection-end-column="15" />
-              <folding>
-                <element signature="e#37#43#1" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/ActorsClasses/PredefinedActorsAndResources.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-280">
-              <caret line="121" column="29" lean-forward="true" selection-start-line="121" selection-start-column="29" selection-end-line="121" selection-end-column="29" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
+            <state relative-caret-position="-804">
+              <caret line="575" column="35" lean-forward="true" selection-start-line="575" selection-start-column="35" selection-end-line="575" selection-end-column="35" />
             </state>
           </provider>
         </entry>
@@ -125,36 +80,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>bleed</find>
-      <find>this.bleeding = false</find>
-      <find>bleed =</find>
-      <find>che</find>
-      <find>checke</find>
-      <find>hit</find>
-      <find>FRAME_HEIGHT</find>
-      <find>checkPlayerCollision</find>
-      <find>checkEnemies</find>
-      <find>this.healthBar</find>
-      <find>this.health</find>
-      <find>healthBar</find>
-      <find>draw</find>
-      <find>died</find>
-      <find>draw = function</find>
-      <find>COLLISION_DAMAGE</find>
-      <find>hidden</find>
-      <find>start</find>
-      <find>checkDistanceFromPlayer</find>
+      <find>console.log</find>
+      <find>checkDistance</find>
+      <find>despawn</find>
+      <find>consol</find>
+      <find>updateMovementAnimation</find>
+      <find>initAnimators</find>
+      <find>valid</find>
+      <find>checkSameRo</find>
+      <find>initAnimators = fun</find>
+      <find>updateMoveme</find>
+      <find>update =</find>
+      <find>computePathToPlayer</find>
+      <find>setMap</find>
+      <find>updateDire</find>
+      <find>updateDirection</find>
+      <find>computeDirection</find>
+      <find>this.walkin</find>
+      <find>range</find>
+      <find>Node.</find>
+      <find>this.walking</find>
+      <find>checkDistanceFrom</find>
+      <find>computePathTop</find>
+      <find>this.foundPath.length</find>
+      <find>RANGE</find>
+      <find>.length</find>
+      <find>attackPixels</find>
+      <find>32</find>
+      <find>s</find>
+      <find>startAtt</find>
       <find>startAttack</find>
-      <find>INTERSECTION</find>
-      <find>RECT</find>
-      <find>checkCollisi</find>
-      <find>checkCol</find>
-      <find>remove</find>
-      <find>new Pro</find>
-      <find>update</find>
-      <find>update = functi</find>
-      <find>new Proj</find>
-      <find>Checkcoll</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -165,27 +120,28 @@
       <list>
         <option value="$PROJECT_DIR$/js/MapClasses/MapLoader.js" />
         <option value="$PROJECT_DIR$/css/interactions.css" />
-        <option value="$PROJECT_DIR$/js/MapClasses/MapInstance.js" />
         <option value="$PROJECT_DIR$/js/utils/ResourceLoader.js" />
         <option value="$PROJECT_DIR$/js/ActorsClasses/ActorFactory.js" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/GameUIClasses/HealthBar.js" />
-        <option value="$PROJECT_DIR$/js/MapClasses/MapRenderer.js" />
         <option value="$PROJECT_DIR$/js/utils/distanceFunctions.js" />
-        <option value="$PROJECT_DIR$/js/ActorsClasses/Enemy.js" />
-        <option value="$PROJECT_DIR$/js/ActorsClasses/Player.js" />
         <option value="$PROJECT_DIR$/js/ActorsClasses/PredefinedActorsAndResources.js" />
-        <option value="$PROJECT_DIR$/js/main.js" />
         <option value="$PROJECT_DIR$/js/utils/Animator.js" />
-        <option value="$PROJECT_DIR$/js/ActorsClasses/Actor.js" />
         <option value="$PROJECT_DIR$/js/ActorsClasses/Projectile.js" />
+        <option value="$PROJECT_DIR$/js/MapClasses/MapInstance.js" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/js/MapClasses/MapRenderer.js" />
+        <option value="$PROJECT_DIR$/js/main.js" />
+        <option value="$PROJECT_DIR$/js/ActorsClasses/Actor.js" />
+        <option value="$PROJECT_DIR$/js/utils/AStar.js" />
+        <option value="$PROJECT_DIR$/js/ActorsClasses/Player.js" />
+        <option value="$PROJECT_DIR$/js/ActorsClasses/Enemy.js" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-163" />
-    <option name="y" value="247" />
-    <option name="width" value="979" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="-165" />
+    <option name="y" value="245" />
+    <option name="width" value="980" />
     <option name="height" value="1040" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -223,19 +179,7 @@
               <item name="FadedIsland" type="b2602c69:ProjectViewProjectNode" />
               <item name="FadedIsland" type="462c0819:PsiDirectoryNode" />
               <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="GameUIClasses" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="FadedIsland" type="b2602c69:ProjectViewProjectNode" />
-              <item name="FadedIsland" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
               <item name="MapClasses" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="FadedIsland" type="b2602c69:ProjectViewProjectNode" />
-              <item name="FadedIsland" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="StoryClasses" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="FadedIsland" type="b2602c69:ProjectViewProjectNode" />
@@ -286,12 +230,14 @@
       <workItem from="1558118791777" duration="4606000" />
       <workItem from="1558148427463" duration="53740000" />
       <workItem from="1558321969323" duration="2404000" />
-      <workItem from="1558342668246" duration="35503000" />
+      <workItem from="1558342668246" duration="47739000" />
+      <workItem from="1558437756791" duration="5477000" />
+      <workItem from="1558443562181" duration="13373000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="119223000" />
+    <option name="totallyTimeSpent" value="150309000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -420,13 +366,6 @@
     <entry file="http://localhost:63342/FadedIsland/js/ActorsClasses/Actor.js">
       <provider selected="true" editor-type-id="httpFileEditor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/MapClasses/MapInstance.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="313" column="4" lean-forward="true" selection-start-line="313" selection-start-column="4" selection-end-line="321" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/GameUIClasses/HealthBar.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="901">
@@ -437,34 +376,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/MapClasses/MapRenderer.js">
+    <entry file="file://$PROJECT_DIR$/js/utils/Animator.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="145">
-          <caret line="619" lean-forward="true" selection-start-line="619" selection-end-line="619" />
+        <state relative-caret-position="-289">
+          <caret line="313" column="64" selection-start-line="313" selection-start-column="64" selection-end-line="313" selection-end-column="64" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
+    <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Projectile.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="539">
-          <caret line="48" column="47" selection-start-line="48" selection-start-column="47" selection-end-line="48" selection-end-column="47" />
+        <state relative-caret-position="136">
+          <caret line="191" column="96" selection-start-line="191" selection-start-column="96" selection-end-line="191" selection-end-column="96" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/utils/mathFunctions.js">
+    <entry file="file://$PROJECT_DIR$/js/ActorsClasses/PredefinedActorsAndResources.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Enemy.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="179" column="83" selection-start-line="179" selection-start-column="83" selection-end-line="179" selection-end-column="83" />
+        <state relative-caret-position="-280">
+          <caret line="121" column="29" lean-forward="true" selection-start-line="121" selection-start-column="29" selection-end-line="121" selection-end-column="29" />
           <folding>
-            <element signature="n#!!block;n#handleResourceLoadWaiting#0;n#Enemy#0" />
-            <element signature="n#!!block;n#setMapRenderer#0;n#Enemy#0" />
+            <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -479,17 +410,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Player.js">
+    <entry file="file://$PROJECT_DIR$/js/MapClasses/MapInstance.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="81" column="17" selection-start-line="81" selection-start-column="17" selection-end-line="81" selection-end-column="17" />
+        <state relative-caret-position="357">
+          <caret line="36" column="54" selection-start-line="36" selection-start-column="54" selection-end-line="36" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="833">
+          <caret line="49" column="61" selection-start-line="49" selection-start-column="61" selection-end-line="49" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/MapClasses/MapRenderer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="562" column="22" selection-start-line="562" selection-start-column="22" selection-end-line="562" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/utils/mathFunctions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="4" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="111">
-          <caret line="248" column="20" selection-start-line="248" selection-start-column="20" selection-end-line="248" selection-end-column="20" />
+        <state relative-caret-position="43">
+          <caret line="244" column="1" selection-start-line="244" selection-start-column="1" selection-end-line="244" selection-end-column="1" />
         </state>
       </provider>
     </entry>
@@ -497,40 +449,45 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
           <caret line="355" column="15" selection-start-line="355" selection-start-column="15" selection-end-line="355" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/utils/AStar.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1420">
+          <caret line="251" column="28" selection-start-line="251" selection-start-column="28" selection-end-line="251" selection-end-column="28" />
           <folding>
-            <element signature="e#37#43#1" expanded="true" />
+            <element signature="n#!!block;n#hasSouth#0;n#Node#0" />
+            <element signature="n#!!block;n#hasEast#0;n#Node#0" />
+            <element signature="n#!!block;n#hasWest#0;n#Node#0" />
+            <element signature="n#!!block;n#getSouth#0;n#Node#0" />
+            <element signature="n#!!block;n#getEast#0;n#Node#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/ActorsClasses/PredefinedActorsAndResources.js">
+    <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Player.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-280">
-          <caret line="121" column="29" lean-forward="true" selection-start-line="121" selection-start-column="29" selection-end-line="121" selection-end-column="29" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/utils/Animator.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-289">
-          <caret line="313" column="64" selection-start-line="313" selection-start-column="64" selection-end-line="313" selection-end-column="64" />
+        <state relative-caret-position="-804">
+          <caret line="575" column="35" lean-forward="true" selection-start-line="575" selection-start-column="35" selection-end-line="575" selection-end-column="35" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Actor.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="419" column="91" selection-start-line="419" selection-start-column="91" selection-end-line="419" selection-end-column="91" />
+        <state relative-caret-position="-790">
+          <caret line="754" column="14" selection-start-line="754" selection-start-column="3" selection-end-line="754" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Projectile.js">
+    <entry file="file://$PROJECT_DIR$/js/ActorsClasses/Enemy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="191" column="96" selection-start-line="191" selection-start-column="96" selection-end-line="191" selection-end-column="96" />
+        <state relative-caret-position="199">
+          <caret line="493" column="6" selection-start-line="493" selection-start-column="6" selection-end-line="493" selection-end-column="6" />
+          <folding>
+            <element signature="n#!!block;n#handleResourceLoadWaiting#0;n#Enemy#0" />
+            <element signature="n#!!block;n#setMapRenderer#0;n#Enemy#0" />
+          </folding>
         </state>
       </provider>
     </entry>

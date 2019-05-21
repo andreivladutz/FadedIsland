@@ -462,20 +462,23 @@ _p.checkCollisionAgainstObjects = function(lftActorX, rightActorX, y, mapCoords 
 };
 
 _p.updateMovementAnimation = function() {
-        // if no movement timer has been created or it has been stopped by keyRelease()
-        // another instance of Timer is created (so lastUpdateTime is reinitialised to now)
-        if (!this.walkAnimationTimer) {
-            this.walkAnimationTimer = new Timer();
+	if (!this.walking) {
+		return;
+	}
+	// if no movement timer has been created or it has been stopped by keyRelease()
+	// another instance of Timer is created (so lastUpdateTime is reinitialised to now)
+	if (!this.walkAnimationTimer) {
+		this.walkAnimationTimer = new Timer();
 
-            this.walkingFrameAnimator.start();
-        }
+		this.walkingFrameAnimator.start();
+	}
 
-        // pass the timer to get the deltaTime and compute the frame that should be drawn right now
-        // We get the number of a frame between 0 and NumberOfFrames - 1 which we offset by 1 so we skip the 0 frame which is STANDSTILL_POSITION
-        this.column = Math.floor(this.walkingFrameAnimator.update(this.walkAnimationTimer) * (Actor.WALK_MAX_COLUMNS - 1)) + 1;
+	// pass the timer to get the deltaTime and compute the frame that should be drawn right now
+	// We get the number of a frame between 0 and NumberOfFrames - 1 which we offset by 1 so we skip the 0 frame which is STANDSTILL_POSITION
+	this.column = Math.floor(this.walkingFrameAnimator.update(this.walkAnimationTimer) * (Actor.WALK_MAX_COLUMNS - 1)) + 1;
 
-        // we updated the frames now
-        this.walkAnimationTimer.lastUpdatedNow();
+	// we updated the frames now
+	this.walkAnimationTimer.lastUpdatedNow();
 };
 
 // this stops the walking for all Actors (moved the code from the player KeyRelease)
@@ -817,6 +820,7 @@ _p.update = function() {
 	this.healthBar.update();
 
 	this.updateAttackAnimation();
+	this.updateMovementAnimation();
 	this.updateDirection();
 
 	if (this.bleeding) {

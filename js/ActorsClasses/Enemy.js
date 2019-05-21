@@ -86,8 +86,13 @@ class Enemy extends Actor {
 			return;
 		}
 
-		this.updateScreenCoords();
 		super.update();
+
+		this.followPlayer();
+		this.updateWalkingMovement();
+		this.updateScreenCoords();
+
+		// might despawn in these two methods
 		this.checkDistanceFromPlayer();
 		this.checkSameRoomWithPlayer();
 	}
@@ -107,6 +112,13 @@ class Enemy extends Actor {
 
 		super.startAttack();
 	}
+
+	initAnimators() {
+		super.initAnimators();
+
+		// animator for updating coordinates
+		this.movementAnimator = new Animator(Enemy.ONE_TILE_TIME);
+	}
 }
 
 // look for a random point for a maximum of quarter of a second
@@ -114,6 +126,13 @@ Enemy.POINT_SEARCH_TIME = 250;
 
 Enemy.SPAWN_RANGE = 500;
 
+Enemy.PLAYER_FOLLOW_RANGE = 40;
+
+// every enemy tries to get to one of 5 random tiles around the player
+Enemy.PLAYER_RANDOM_POINTS_AROUND = 5;
+// if player moved more than PLAYER_MOVED_DISTANCE from the point we're following
+// follow him again by recomputing the path to him
+Enemy.PLAYER_MOVED_DISTANCE = 128;
 // After being more than MAX_DIST_FROM_PLAYER away for more than DESPAWN_TIME the enemy despawns
 Enemy.MAX_DIST_FROM_PLAYER = 2500;
 Enemy.DESPAWN_TIME = 5000;
@@ -122,12 +141,14 @@ Enemy.KILLED_ENEMY_EVENT = "killedEnemy";
 // max health
 Enemy.DEFAULT_HEALTH = 100;
 
+Enemy.ONE_TILE_TIME = 500;
+
 // keep a dictionary of already loaded images. There are a lot of enemies that look the same
 // so they reuse the same images. Doesn't make sense to wait again for the loading of those images
 Enemy.loadedResourceImages = {};
 
 // verify if map coords are in range and not colliding with anything on the map
-Enemy.verifyValidMapCoords = function(x, y) {
+Enemy.verifyValidMapCoords = function(x, y, shouldCheckPlayerCollision = true) {
 	let currMapWidth = mapRenderer.getMapWidth(), currMapHeight = mapRenderer.getMapHeight();
 
 	if (x < ACTUAL_ACTOR_WIDTH / 2 || x > currMapWidth - ACTUAL_ACTOR_WIDTH / 2
@@ -147,7 +168,12 @@ Enemy.verifyValidMapCoords = function(x, y) {
 
 	// check if there is no collision at (x, y) map coords and (x, bodyY) coords
 	// also check collision against the player
-	return !collisionChecker.checkCollision(y, x) && !collisionChecker.checkPlayerCollision(y, x);
+	if (shouldCheckPlayerCollision) {
+		return !collisionChecker.checkCollision(y, x) && !collisionChecker.checkPlayerCollision(y, x);
+	}
+	else {
+		return !collisionChecker.checkCollision(y, x);
+	}
 };
 
 /*
@@ -176,18 +202,17 @@ Enemy.getRandomPointAround = function(x, y, range) {
 
 _p = Enemy.prototype;
 
-// THIS FUNCTION CHECKS COLLISION INTERPRETING BOTH THE PLAYER AND THE ENEMY AS RECTANGLES (whole area)
-// FOR NICER COLLISION checkEnemiesCollision PLAYER METHOD SHOULD BE USED INSTEAD!!
+
 _p.checkPlayerCollision = function(cY = this.mapCoordY, cX = this.mapCoordX) {
 	let playerRect = {
-			top: this.playerReference.mapCoordY - ACTUAL_ACTOR_HEIGHT,
+			top: this.playerReference.mapCoordY - FRAME_HEIGHT / 5,
 			left: this.playerReference.mapCoordX - ACTUAL_ACTOR_WIDTH / 2,
 			right: this.playerReference.mapCoordX + ACTUAL_ACTOR_WIDTH / 2,
 			bottom: this.playerReference.mapCoordY
 		};
 
 	let enemyRect = {
-		top: cY - ACTUAL_ACTOR_HEIGHT,
+		top: cY - FRAME_HEIGHT / 5,
 		left: cX - ACTUAL_ACTOR_WIDTH / 2,
 		right: cX + ACTUAL_ACTOR_WIDTH / 2,
 		bottom: cY
@@ -243,7 +268,9 @@ _p.checkCollisionMapCoords = function(cY = this.mapCoordY, cX = this.mapCoordX) 
 // overridden function so it updates it's direction depending on the player position at always
 // THIS FUNCTION IS CALLED REGULARLY IN THE UPDATE FUNCTION OF THE ACTOR CLASS
 _p.updateDirection = function() {
-	this.computeDirection(this.playerReference.coordX, this.playerReference.coordY);
+	if (!this.walking) {
+		this.computeDirection(this.playerReference.coordX, this.playerReference.coordY);
+	}
 
 	this.row = Actor.WALK_ROW + this.direction;
 };
@@ -253,19 +280,24 @@ _p.setSpawnPoint = function(spawnPoint) {
 };
 
 _p.despawn = function() {
+	if (this.despawned) {
+		return;
+	}
 	// remove the current enemy from all the arrays
 	this.spawnPoint.SPAWNED_ENEMIES.splice(this.spawnPoint.SPAWNED_ENEMIES.indexOf(this), 1);
 	ENEMIES.splice(ENEMIES.indexOf(this), 1);
 	DRAWABLE_ENTITIES.splice(DRAWABLE_ENTITIES.indexOf(this), 1);
+
+	this.despawned = true;
 }
 
 // check the distance away from the player and start counting the time spent away from the player
 // so we know when to despawn the enemy if it stayed away for too long
 _p.checkDistanceFromPlayer = function() {
-	let distFromPlayer = euclideanDistance({x: this.playerReference.coordX, y: this.playerReference.coordY},
-		{x: this.coordX, y: this.coordY});
+	this.distFromPlayer = euclideanDistance({x: this.playerReference.coordX, y: this.playerReference.coordY - ACTUAL_ACTOR_HEIGHT / 2},
+		{x: this.coordX, y: this.coordY  - ACTUAL_ACTOR_HEIGHT / 2});
 
-	if (distFromPlayer < Enemy.MAX_DIST_FROM_PLAYER) {
+	if (this.distFromPlayer < Enemy.MAX_DIST_FROM_PLAYER) {
 		this.timerAwayFromPlayer.lastUpdatedNow();
 		this.timeAway = 0;
 	}
@@ -336,3 +368,132 @@ _p.handleAfterDeath = function() {
 	// emit enemy killed event on the player
 	this.playerReference.emit(Enemy.KILLED_ENEMY_EVENT, this.name);
 };
+
+_p.followPlayer = function() {
+	let playerCoords = {x: this.playerReference.mapCoordX, y: this.playerReference.mapCoordY};
+
+	if (this.randomMapCoordsAroundPlayer &&
+		euclideanDistance(this.randomMapCoordsAroundPlayer, playerCoords) < Enemy.PLAYER_MOVED_DISTANCE) {
+
+		return;
+	}
+
+	this.computePathToPlayer();
+};
+
+_p.getTileAroundPlayer = function() {
+	// get the tile position of the enemy and a random tile around the player
+	let playerMiddleX = this.playerReference.mapCoordX,
+		playerMiddleY = this.playerReference.mapCoordY - ACTUAL_ACTOR_HEIGHT / 2;
+
+	// keep these coords so we can check if the player got away from them
+	this.randomMapCoordsAroundPlayer = Enemy.getRandomPointAround(playerMiddleX, playerMiddleY, Enemy.PLAYER_FOLLOW_RANGE = 40);
+
+	// cannot find any tile around the player
+	if (this.randomMapCoordsAroundPlayer === null) {
+		return null;
+	}
+
+	return this.mapRenderer.mapCoordsToTileCoords(this.randomMapCoordsAroundPlayer);
+};
+
+_p.computePathToPlayer = function() {
+	let thisTile = this.mapRenderer.mapCoordsToTileCoords({x: this.mapCoordX, y: this.mapCoordY}),
+		playerTiles = [];
+
+	// get 5 random points
+	for (let i = 0; i < Enemy.PLAYER_RANDOM_POINTS_AROUND; i++) {
+		let tile = this.getTileAroundPlayer();
+
+		if (tile !== null) {
+			playerTiles.push(tile);
+		}
+	}
+
+	this.foundPath = AStarInstanceManager().computePath(thisTile, playerTiles);
+
+	if (this.foundPath === null) {
+		console.log("DIDN'T FIND ANY PATH");
+		return;
+	}
+
+	this.foundPath.pop();
+	console.log(this.foundPath);
+};
+
+_p.moveOneTile = function(tile) {
+	this.movingOneTile = true;
+
+	this.movementTimer = new Timer();
+	this.startX = this.mapCoordX;
+	this.startY = this.mapCoordY;
+
+	let tileToMapCoords = Node.translateToMapCoords(tile);
+	this.endX = tileToMapCoords.x;
+	this.endY = tileToMapCoords.y;
+
+	let screenEndCoords = this.mapRenderer.mapCoordsToScreenCoords({x: this.endX, y: this.endY});
+	this.computeDirection(screenEndCoords.x, screenEndCoords.y);
+
+	this.movementAnimator.start();
+
+	// overriding hook function
+	this.movementAnimator._onAnimationEnd = (function() {
+		// moving stopped
+		this.movingOneTile = false;
+
+		if (this.foundPath && this.foundPath.length === 0) {
+			this.handleWalkEnd();
+		}
+
+		this.movementTimer = null;
+		this.movementAnimator.stop();
+	}).bind(this);
+};
+
+_p.updateWalkingMovement = function() {
+	if (!this.movingOneTile) {
+		if (this.died || this.attacking) {
+			return;
+		}
+		// get the next tile in the path to the player
+		let nextTile;
+		this.foundPath && (nextTile = this.foundPath.pop());
+
+		if (!nextTile) {
+			return;
+		}
+
+		this.moveOneTile(nextTile);
+
+		if (!this.walking) {
+			this.walking = true;
+		}
+	}
+
+	let fraction = this.movementAnimator.update(this.movementTimer);
+
+	// the animator might have stopped
+	if (!this.movingOneTile) {
+		return;
+	}
+
+	this.mapCoordX = this.startX + (this.endX - this.startX) * fraction;
+	this.mapCoordY = this.startY + (this.endY - this.startY) * fraction;
+	this.movementTimer.lastUpdatedNow();
+};
+
+_p.handleWalkEnd = function() {
+	this.updateScreenCoords();
+	this.checkDistanceFromPlayer();
+
+	if (this.distFromPlayer > this.horizontalAttackPixelsRange) {
+		this.computePathToPlayer();
+	}
+
+	//this.startAttack();
+
+	// walking in general stopped
+	this.walking = false;
+	this.column = Actor.STANDSTILL_POSITION;
+}

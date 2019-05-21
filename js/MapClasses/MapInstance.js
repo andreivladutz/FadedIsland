@@ -31,7 +31,11 @@ class MapInstance extends EventEmiter {
 			//map size in number of tiles
 			this.mapWidth = mapWidth;
 			this.mapHeight = mapHeight;
-			
+
+			// make sure the Node class KNOWS THE SIZE OF THIS MAP
+			Node.MAP_SIZES[mapName].WIDTH = mapWidth;
+			Node.MAP_SIZES[mapName].HEIGHT = mapHeight;
+
 			//the array of matrices of tile numbers
 			//each matrix is a layer of tiles
 			this.tilesMatrices = tilesMatrices;
