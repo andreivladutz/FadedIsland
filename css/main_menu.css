@@ -1,14 +1,14 @@
-@font-face{
+@font-face {
     font-family: "Bleeding_Cowboys";
     src: url("fonts/Bleeding_Cowboys.ttf");
 }
 
-body{
+body {
     user-select: none;
     cursor: url("../img/menu/STEP-normal.png"), auto;
 }
 
-#bg-img{
+#bg-img {
     position: absolute;
     left: 0;
     top: 0;
@@ -23,100 +23,112 @@ body{
 
 #main_menu {
     font-family: Bleeding_Cowboys, Verdana, Geneva, sans-serif;
-    
+
     position: absolute;
     margin-left: 50px;
 }
 
-#main_menu h1{
+#main_menu h1 {
     width: 650px;
-    
+
     position: absolute;
     left: 430px;
     top: 180px;
-    
+
     font-size: 110px;
     font-weight: normal;
     text-shadow: 30px 30px 30px;
     animation: fadein 2s;
 }
 
-#main_menu ul{
+#main_menu ul {
     position: absolute;
     top: 370px;
-    
+
     width: 450px;
     height: 550px;
-    
+
     list-style: none;
-    
+
     background-image: url("../img/menu/scroll_res1.png");
     background-size: contain;
     background-repeat: no-repeat;
-    
+
     z-index: 100;
-    
+
     animation: fadein 2s;
 }
-.hovered{
-    animation: burn 1s; /*not working*/
+
+.hovered {
+    animation: burn 1s;
+    /*not working*/
     text-shadow: 0px -2px 4px #fff, 0px -2px 10px #FF3, 0px -10px 20px #F90, 0px -20px 40px #C33;
     color: #3a0000;
 }
 
-#main_menu ul li:first-child{
+#main_menu ul li:first-child {
     margin-top: 50px;
 }
 
-#main_menu ul li{
+#main_menu ul li {
     margin-left: 104px;
     margin-right: 104px;
     font-size: 50px;
     animation: fadein 3s;
 }
 
-#scroll_shadow{
+#scroll_shadow {
     position: absolute;
     top: 400px;
     left: 30px;
     width: 330px;
     height: 485px;
     box-shadow: 0px 20px 60px, 20px 0px 60px, 0px -10px 60px, -10px 0px 60px;
-    
+
     animation: fadein 4s;
 }
 
-.hidden{
+.hidden {
     display: none;
 }
 
-@keyframes fadein{
-    from {opacity: 0;}
-    to {opacity: 1;}
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
-@keyframes burn{
-    0% {text-shadow: none;
-        color: black;}
-    100% {text-shadow: 0px -2px 4px #fff, 0px -2px 10px #FF3, 0px -10px 20px #F90, 0px -20px 40px #C33;
-        color: #3a0000;}
+@keyframes burn {
+    0% {
+        text-shadow: none;
+        color: black;
+    }
+
+    100% {
+        text-shadow: 0px -2px 4px #fff, 0px -2px 10px #FF3, 0px -10px 20px #F90, 0px -20px 40px #C33;
+        color: #3a0000;
+    }
 }
 
-#sal{
+#sal {
     position: absolute;
     height: 300px;
     left: 500px;
     top: 400px;
 }
 
-#sal1{
+#sal1 {
     position: absolute;
     height: 260px;
     left: 700px;
     top: 440px;
 }
 
-#sal2{
+#sal2 {
     position: absolute;
     height: 270px;
     left: 900px;
