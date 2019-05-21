@@ -181,54 +181,64 @@ _d.setOptions = function (options) {
 _d.waitOnInput = function (which) {
     var allOptions = this.options.childNodes;
     var currentPos = 0;
-    allOptions[currentPos].classList.add("active");
-    window.addEventListener("keydown", function handler(e) {
-        //handles cases when user keeps pressing down
-        if (e.repeat) {
-            return;
-        }
-        //shuffling between different options (not needed if only one option exists)
-        if (allOptions.length > 1) {
-            //left
-            if (e.keyCode === 37 && currentPos > 0) {
-                allOptions[currentPos].classList.remove("active");
-                currentPos--;
-                allOptions[currentPos].classList.add("active");
+    if(allOptions.length !== 0) {
+        allOptions[currentPos].classList.add("active");
+        window.addEventListener("keydown", function handler(e) {
+            //handles cases when user keeps pressing down
+            if (e.repeat) {
+                return;
             }
-            //up
-            if (e.keyCode === 38 && currentPos > 1 && allOptions.length > 2) {
-                allOptions[currentPos].classList.remove("active");
-                currentPos -= 2;
-                allOptions[currentPos].classList.add("active");
+            //shuffling between different options (not needed if only one option exists)
+            if (allOptions.length > 1) {
+                //left
+                if (e.keyCode === 37 && currentPos > 0) {
+                    allOptions[currentPos].classList.remove("active");
+                    currentPos--;
+                    allOptions[currentPos].classList.add("active");
+                }
+                //up
+                if (e.keyCode === 38 && currentPos > 1 && allOptions.length > 2) {
+                    allOptions[currentPos].classList.remove("active");
+                    currentPos -= 2;
+                    allOptions[currentPos].classList.add("active");
+                }
+                //right
+                if (e.keyCode === 39 && (currentPos < allOptions.length - 1)) {
+                    allOptions[currentPos].classList.remove("active");
+                    currentPos++;
+                    allOptions[currentPos].classList.add("active");
+                }
+                //down
+                if (e.keyCode === 40 && currentPos + 2 < allOptions.length) {
+                    allOptions[currentPos].classList.remove("active");
+                    currentPos += 2;
+                    allOptions[currentPos].classList.add("active");
+                }
+                if (e.keyCode === 40 && allOptions.length === 3 && currentPos === 1) {
+                    allOptions[currentPos].classList.remove("active");
+                    currentPos += 1;
+                    allOptions[currentPos].classList.add("active");
+                }
             }
-            //right
-            if (e.keyCode === 39 && (currentPos < allOptions.length-1)) {
-                allOptions[currentPos].classList.remove("active");
-                currentPos++;
-                allOptions[currentPos].classList.add("active");
+            //confirm
+            if (e.keyCode === 32 || e.keyCode === 13) {
+                window.removeEventListener("keydown", handler);
+                StoryParser.getReference().getAnswer(which, allOptions[currentPos].getAttribute("stage"),
+                    allOptions[currentPos].getAttribute("close"),
+                    allOptions[currentPos].getAttribute("addPath"));
             }
-            //down
-            if (e.keyCode === 40 && currentPos+2 < allOptions.length) {
-                allOptions[currentPos].classList.remove("active");
-                currentPos += 2;
-                allOptions[currentPos].classList.add("active");
+            if (e.keyCode === 27) {
+                window.removeEventListener("keydown", handler);
+                StoryParser.getReference().dialogueBox.remove();
             }
-            if (e.keyCode === 40 && allOptions.length === 3 && currentPos === 1) {
-                allOptions[currentPos].classList.remove("active");
-                currentPos += 1;
-                allOptions[currentPos].classList.add("active");
+        });
+    }
+    else {
+        window.addEventListener("keydown", function handler(e) {
+            if (e.keyCode === 27) {
+                window.removeEventListener("keydown", handler);
+                StoryParser.getReference().dialogueBox.remove();
             }
-        }
-        //confirm
-        if (e.keyCode === 32 || e.keyCode === 13) {
-            window.removeEventListener("keydown",handler);
-            StoryParser.getReference().getAnswer(which, allOptions[currentPos].getAttribute("stage"),
-                allOptions[currentPos].getAttribute("close"),
-                allOptions[currentPos].getAttribute("addPath"));
-        }
-        if (e.keyCode === 27)  {
-            window.removeEventListener("keydown",handler);
-            StoryParser.getReference().dialogueBox.remove();
-        }
-    });
+        });
+    }
 }

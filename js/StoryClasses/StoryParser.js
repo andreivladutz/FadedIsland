@@ -1,11 +1,13 @@
 class Quest {
-    constructor(npc_id, texts, answers, maxStage) {
+    constructor(npc_id, texts, answers, maxStage, objectives) {
         this.npc_id = npc_id;
         this.texts = texts;
         this.answers = answers;
         this.stage = 0;
         this.prevStage = 1;
         this.maxStage = maxStage;
+        this.objectives = objectives;
+        this.currentObjective = 0;
         this.completed = false;
     }
 }
@@ -47,7 +49,7 @@ class StoryParser {
     static getPaths() {
 
         if(localStorage.getItem(("questPaths")) === null)
-            localStorage.setItem("questPaths", [2,4,7]);
+            localStorage.setItem("questPaths", []);
 
         let paths = localStorage.getItem("questPaths").split(",");
         if(paths[0] === "")
@@ -64,6 +66,18 @@ class StoryParser {
 
     }
 
+    static save(which) {
+
+        let quest = StoryParser.getReference().quests[which];
+        let saveState = {
+            stage: quest.stage,
+            prevStage: quest.prevStage,
+            completed: quest.completed,
+            currentObjective: quest.currentObjective
+        };
+        localStorage.setItem(`questStages|${which}`, JSON.stringify(saveState));
+    }
+
     constructor(dialogueBox) {
 
         this.dialogueBox = dialogueBox;
@@ -77,13 +91,15 @@ class StoryParser {
             xobj.open('GET', 'quests.json', true);
             xobj.onreadystatechange = function () {
                 if (xobj.readyState === 4 && xobj.status == "200") {
-                    let textsArray = JSON.parse(xobj.responseText);
+                    let jsonObject = JSON.parse(xobj.responseText);
+                    let textsArray = jsonObject.quests;
+                    let defaults = jsonObject.defaults;
                     let stagesArray = [];
                     let quests = [];
 
                     for(let i = 0; i < textsArray.length; i++) {
                         quests[i] = new Quest(textsArray[i].npc_id, textsArray[i].texts,
-                            textsArray[i].answers, textsArray[i].maxStage);
+                            textsArray[i].answers, textsArray[i].maxStage, textsArray[i].objectives);
                     }
 
                     for(let i = 0; i < textsArray.length; i++)
@@ -92,8 +108,10 @@ class StoryParser {
                             quests[i].stage = stagesArray[i].stage;
                             quests[i].prevStage = stagesArray[i].prevStage;
                             quests[i].completed = stagesArray[i].completed;
+                            quests[i].currentObjective = stagesArray[i].currentObjective;
                         }
                     object.quests = quests;
+                    object.defaults = defaults;
                 }
 
             };
@@ -112,12 +130,14 @@ class StoryParser {
             else break;
             if(i >= 0)
                 this.dialogueBox.getOptions(this.quests[i], i);
-            else
-                this.dialogueBox.remove();
+            else {
+                this.dialogueBox.setQuestion(this.defaults[npc_id]);
+                this.dialogueBox.waitOnInput();
+            }
 
         };
 
-        this.getAnswer = function(which, stage, close = false, addPath) {
+        this.getAnswer = function(which, stage, close, addPath, progressObjective) {
 
             stage = parseInt(stage);
             close = close === "true";
@@ -134,6 +154,12 @@ class StoryParser {
             if(addPath) {
                 StoryParser.addPath(addPath);
             }
+            if(progressObjective) {
+                quest.currentObjective++;
+            }
+
+            StoryParser.save(which);
+
             if(close)
                 this.dialogueBox.remove();
             else
@@ -142,16 +168,16 @@ class StoryParser {
         }
     }
 }
-let x = [0,1,2,1,3,3,1,4,1,3,5,3,1,2,1,6,6,7,1];
+let x = [0,1,2,1,3,3,1,4,1,3,5,3,1,8,1,6,7,1];
 let counter = 1;
-localStorage.clear();
+//localStorage.clear();
 StoryParser.getReference(null);
 setTimeout(function(){
-    StoryParser.upQuestsProgress(18);
+    StoryParser.setQuestsProgress(1);
     window.addEventListener("keydown",function(e) {
         if(e.key.toLowerCase() === "e") {
             if (StoryParser.getReference().dialogueBox === null) {
-                StoryParser.getReference(new DialogueBox()).getQuest(1);
+                StoryParser.getReference(new DialogueBox()).getQuest(x[counter]);
             }
         }
     })
