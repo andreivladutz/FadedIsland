@@ -251,20 +251,21 @@ _p.processObjects = function() {
 						if (prop["name"] === enemyName && prop["value"] === true) {
 							obj[enemyName] = prop["value"];
 						}
+					}
+					if (prop["name"] === MapInstance.ENEMY_SPAWN_INTERVAL) {
+						obj[MapInstance.ENEMY_SPAWN_INTERVAL] = prop["value"];
+					}
 
-						if (prop["name"] === MapInstance.ENEMY_SPAWN_INTERVAL) {
-							obj[MapInstance.ENEMY_SPAWN_INTERVAL] = prop["value"];
-						}
-
-						if (prop["name"] === MapInstance.ENEMY_MAX_SPAWN) {
-							obj[MapInstance.ENEMY_MAX_SPAWN] = prop["value"];
-						}
+					if (prop["name"] === MapInstance.ENEMY_MAX_SPAWN) {
+						obj[MapInstance.ENEMY_MAX_SPAWN] = prop["value"];
 					}
 				}
 
 				obj.active = true;
 				// keep a reference to all spawned enemies
 				obj.SPAWNED_ENEMIES = [];
+				// this spawn point belongs to this map
+				obj.mapName = this.mapName;
 
 				this.enemySpawnPoints.push(obj);
 			}

@@ -144,7 +144,7 @@ function init() {
 	loadProjectileResources();
 
 	// instantiate the player using the actorFactory
-    player = ActorFactory().getActor("player1", -1, -1, loadedPromisesArr);
+    player = ActorFactory().getActor("player3", -1, -1, loadedPromisesArr);
 
     // add the player with the rest of the drawable entities
 	DRAWABLE_ENTITIES.push(player);
@@ -181,7 +181,13 @@ function init() {
     player.addEventListener(Enemy.KILLED_ENEMY_EVENT, function(e) {
     	let enemyName = e.detail;
     	console.log("KILLED A " + enemyName);
-    })
+    });
+
+    /* THROWS ERROR. MAP PARSING HASN'T TAKEN PLACE YET
+    ActorFactory().generateEnemySpawnPoint(DUNGEON, 2779, 2239, ["rangedSkeleton", "darkElf", "capedSkeleton"],
+	    4, 3000);
+
+     */
 }
 
 function loadWeaponsResources() {
@@ -239,6 +245,12 @@ function initGameOnLoaded() {
     // begin drawing everything
     requestAnimationFrame(draw);
     loadingScreen.removeLoadingScreen();
+
+    // generating dynamic spawn point
+	ActorFactory().generateEnemySpawnPoint(DUNGEON, 2779, 2239, ["rangedSkeleton", "darkElf", "capedSkeleton"],
+		4, 3000, 5, function() {
+		console.log("The player killed 5 enemies on this spawn point");
+	}, 7);
 
     // testing enemy random point generation with 10000 tests
 	//TEST_RANDOM_POINT_GENERATION(player, 5000, 10000);

@@ -8,9 +8,34 @@ const RESOURCES = [
 		url: "./img/player/playerBody1.png"
 	},
 	{
+		name: "playerBodyTanned",
+		itemType: "img",
+		url: "./img/player/playerBodyTanned.png"
+	},
+	{
+		name: "playerBodyDark",
+		itemType: "img",
+		url: "./img/player/playerBodyDark.png"
+	},
+	{
 		name: "bodyArmour1",
 		itemType: "img",
 		url: "./img/armour/bodyArmour1.png"
+	},
+	{
+		name: "leatherBracers",
+		itemType: "img",
+		url: "./img/armour/leatherBracers.png"
+	},
+	{
+		name: "maroonLongsleeve",
+		itemType: "img",
+		url: "./img/armour/maroonLongsleeve.png"
+	},
+	{
+		name: "shouldersMale",
+		itemType: "img",
+		url: "./img/armour/shouldersMale.png"
 	},
 	{
 		name: "bootsArmour1",
@@ -23,9 +48,24 @@ const RESOURCES = [
 		url: "./img/armour/bootsArmour2.png"
 	},
 	{
+		name: "brownShoes",
+		itemType: "img",
+		url: "./img/armour/brownShoes.png"
+	},
+	{
 		name: "armsArmour1",
 		itemType: "img",
 		url: "./img/armour/armsArmour1.png"
+	},
+	{
+		name: "leatherBraces",
+		itemType: "img",
+		url: "./img/armour/leatherBraces.png"
+	},
+	{
+		name: "redPants",
+		itemType: "img",
+		url: "./img/armour/redPants.png"
 	},
 	{
 		name: "helmArmour1",
@@ -33,9 +73,49 @@ const RESOURCES = [
 		url: "./img/armour/helmArmour1.png"
 	},
 	{
+		name: "chainHat",
+		itemType: "img",
+		url: "./img/armour/chainHat.png"
+	},
+	{
+		name: "leatherCap",
+		itemType: "img",
+		url: "./img/armour/leatherCap.png"
+	},
+	{
+		name: "ravenHair",
+		itemType: "img",
+		url: "./img/armour/ravenHair.png"
+	},
+	{
+		name: "messyHair",
+		itemType: "img",
+		url: "./img/armour/messyHair.png"
+	},
+	{
 		name: "pantsArmour1",
 		itemType: "img",
 		url: "./img/armour/pantsArmour1.png"
+	},
+	{
+		name: "tealPants",
+		itemType: "img",
+		url: "./img/armour/tealPants.png"
+	},
+	{
+		name: "quiver",
+		itemType: "img",
+		url: "./img/armour/quiver.png"
+	},
+	{
+		name: "shield",
+		itemType: "img",
+		url: "./img/armour/shield.png"
+	},
+	{
+		name: "leatherBelt",
+		itemType: "img",
+		url: "./img/armour/leatherBelt.png"
 	},
 	// WEAPONS
 	{
@@ -112,14 +192,50 @@ ActorFactory.predefinedActors = [
 		type: "player",
 		resources: {
 			"base" : "playerBody1",
-			"hair" : null,
-			"feetArmour" : "pantsArmour1",
-			"bootsArmour" : "bootsArmour1",
-			"bodyArmour" : "bodyArmour1",
-			"armsArmour" : "armsArmour1",
-			"headArmour" : "helmArmour1"
+			"hair" : "shouldersMale",
+			"feetArmour" : "robeSkirt",
+			"bootsArmour" : "brownShoes",
+			"bodyArmour" : "brownLongsleeve",
+			"armsArmour" : "leatherBraces",
+			"headArmour" : "chainHat"
+		},
+		attackType: Actor.DAGGER
+	},
+	{
+		name: "player2",
+		type: "player",
+		resources: {
+			"base" : "playerBodyDark",
+			"hair" : "ravenHair",
+			"shoulders" : "shouldersMale",
+			"bracers" : "leatherBracers",
+			"quiver" : "quiver",
+			"belt" : "leatherBelt",
+			"feetArmour" : "tealPants",
+			"bootsArmour" : "brownShoes",
+			"bodyArmour" : "maroonLongsleeve",
+			"armsArmour" : "leatherBraces",
+			"headArmour" : "leatherCap"
 		},
 		attackType: Actor.BOW
+	},
+	{
+		name: "player3",
+		type: "player",
+		resources: {
+			"base" : "playerBodyTanned",
+			"hair" : "messyHair",
+			"shoulders" : "shouldersMale",
+			"bracers" : "leatherBracers",
+			"belt" : "leatherBelt",
+			"feetArmour" : "redPants",
+			"bootsArmour" : "brownShoes",
+			"bodyArmour" : "bodyArmour1",
+			"armsArmour" : "armsArmour1",
+			"headArmour" : "leatherCap",
+			"shield" : "shield"
+		},
+		attackType: Actor.SPEAR
 	},
 	{
 		name: "capedSkeleton",

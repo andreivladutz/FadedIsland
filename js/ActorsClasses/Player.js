@@ -9,9 +9,11 @@ class Player extends Actor {
 		
 		// make the player faster if we debug
 		// don't wanna waste time walking slow
+		/*
 		if (DEBUGGING) {
 			this.speed = 20;
 		}
+	    */
 		
 		// keeping the close interaction points so we can check every time if we are in proximity of any point
         this.visibleInteractionPoints = [];

@@ -391,6 +391,10 @@ _p.push = function(direction) {
 };
 
 _p.handleAfterDeath = function() {
+	// the number of killed enemies for this spawn point increased
+	this.spawnPoint[ActorFactory.KILLED_ENEMIES]++;
+	// this callback verifies if the killed enemies exceeded a threshold and executes callbacks if it did
+	this.spawnPoint[ActorFactory.VERIFY_KILLED_ENEMIES] && this.spawnPoint[ActorFactory.VERIFY_KILLED_ENEMIES]();
 	// self remove from everywhere
 	this.despawn();
 

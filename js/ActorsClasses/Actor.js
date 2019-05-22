@@ -55,7 +55,6 @@ class Actor extends EventEmiter {
         
 		// Player updates his angle by the position of the mouse cursor
 		// Enemies update their angle by the player position
-		// # TODO: if the player will be out of range they should have a neutral angle
 		this.angle = null;
 		// direction is updated depending on the angle
 		this.direction = null;
@@ -233,6 +232,7 @@ Actor.WEAPONS = {};
 Actor.BLEED_TIME = 250;
 // distance pushed
 Actor.BLEED_PUSH = 10;
+Actor.SHIELD = "shield";
 
 Actor.COLLISION_DAMAGE = 3;
 
@@ -344,6 +344,10 @@ _p.draw = function() {
 				this.drawSpriteFrame(ctx, Actor.WEAPONS["spear"], drawCoordX, drawCoordY);
 				break;
 		}
+	}
+
+	if (Actor.SHIELD in this) {
+		this.drawSpriteFrame(ctx, this[Actor.SHIELD], drawCoordX, drawCoordY);
 	}
 
 	// actually just buffered actor
