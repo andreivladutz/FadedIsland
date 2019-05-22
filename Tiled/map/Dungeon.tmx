@@ -5062,13 +5062,13 @@
    </properties>
    <point/>
   </object>
-  <object id="327" name="12" type="changeroom" x="5621.33" y="1206.67">
+  <object id="327" name="12" type="changeroom" x="5599.08" y="1207.17">
    <properties>
     <property name="to" type="int" value="13"/>
    </properties>
    <point/>
   </object>
-  <object id="328" name="13" type="changeroom" x="5707.33" y="1212">
+  <object id="328" name="13" type="changeroom" x="5733.08" y="1209.75">
    <properties>
     <property name="to" type="int" value="12"/>
    </properties>

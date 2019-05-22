@@ -236,6 +236,9 @@ _p.processObjects = function() {
 					if (prop["name"] === "to") {
 						obj.to = prop["value"];
 					}
+					if (prop["name"] === "interact") {
+						obj.interact = prop["value"];
+					}
 				}
 
 				this.interactionPoints.push(obj);

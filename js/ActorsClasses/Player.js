@@ -514,7 +514,9 @@ _p.checkInteractionPointsProximity = function() {
 
 		// if we are close to the interactionPoint we start listening for keydown
 		if (euclDist <= Player.INTERACTION_POINT_PROXIMITY) {
-			this.showInteractionMessage("PRESS E TO INTERACT");
+			if (!("interact" in point)) {
+				this.showInteractionMessage("PRESS E TO INTERACT");
+			}
 
 			if (this.interactionHandlers[uniqueKeyName]) {
 				// handler already registered
