@@ -77,6 +77,11 @@ body {
     animation: fadein 3s;
 }
 
+a{
+    color: inherit;
+    text-decoration: none;
+}
+
 #scroll_shadow {
     position: absolute;
     top: 400px;
