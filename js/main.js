@@ -33,10 +33,84 @@ const MAPS_READY_EVENT = "mapRendererInitialised";
 /*
     all the global objects should be moved in a Game class later
 */
-let loadingScreen, resourceLoader, canvasManager, mapRenderer, mapLoader, player, movementManager, loadedPromisesArr = [];
+let loadingScreen, resourceLoader, canvasManager, mapRenderer, mapLoader, player, movementManager, loadedPromisesArr = [],
+	// Projectiles and Enemies are also kept separate for collision checking, etc
+	PROJECTILES = [], ENEMIES = [];
+
 // all Actors and Projectiles are kept in this array so they all are
 // updated and drawn every game update cycle
 let DRAWABLE_ENTITIES = [];
+
+/*
+	A unit test to verify if the Enemy.getRandomPointAround behaves as expected
+ */
+function TEST_RANDOM_POINT_GENERATION(playerRef, range, noOfTest) {
+	// the 4 directions in which the player can move (without diagonals)
+	let possibleMovements = ["keyUp", "keyLeft", "keyDown", "keyRight"],
+		mapCoordXBeforeMovement = playerRef.mapCoordX,
+		mapCoordYBeforeMovement = playerRef.mapCoordY,
+		failedTests = 0, passedTests = 0;
+
+	// function to check if player could actually move (changed his coords)
+	function playerMoved() {
+		return mapCoordXBeforeMovement !== playerRef.mapCoordX || mapCoordYBeforeMovement !== playerRef.mapCoordY;
+	}
+
+	// when the tests end print the results
+	function printTestResults(i) {
+		console.log("TOTAL TESTS RUN = " + i + " OF WHICH:");
+		console.log(failedTests + " FAILED / " + passedTests + " PASSED");
+	}
+
+	for (let i = 1; i <= noOfTest; i++) {
+		console.log("TEST " + i + ": ");
+
+		// randomly generate a map point around the player
+		let randomPoint = Enemy.getRandomPointAround(playerRef.mapCoordX, playerRef.mapCoordY, range);
+
+		// if we cannot generate a new point we stop the test
+		if (randomPoint === null) {
+			console.log("CANNOT GENERATE ANY MORE RANDOM POINTS. TEST ABORTING!");
+			failedTests++;
+			printTestResults(i);
+			return;
+		}
+
+		// move player to new generated random map point
+		playerRef.movePlayerToMapCoords(randomPoint.x, randomPoint.y);
+
+		// save map coords before trying to move
+		mapCoordXBeforeMovement = playerRef.mapCoordX;
+		mapCoordYBeforeMovement = playerRef.mapCoordY;
+
+		// check if the player is stuck
+		let stuck = true;
+
+		// try all direction movements until the player moves
+		for (let moveAction of possibleMovements) {
+			playerRef[moveAction]();
+
+			// it could move so it is not stuck
+			if (playerMoved()) {
+				stuck = false;
+				break;
+			}
+		}
+
+		// if the player got stuck then the test failed
+		if (stuck) {
+			console.log("FAILED. PLAYER IS STUCK");
+			failedTests++;
+		} else {
+			console.log("PASSED.");
+			passedTests++;
+		}
+
+		if (i === noOfTest) {
+			printTestResults(i);
+		}
+	}
+}
 
 function init() {
     loadingScreen = new LoadingScreen();
@@ -68,16 +142,18 @@ function init() {
     // Load images for Actor weapons and arrow Projectiles
 	loadWeaponsResources();
 	loadProjectileResources();
-	
-    player = new Player(loadedPromisesArr, {
-		"base" : "playerBody1",
-		"hair" : null,
-		"feetArmour" : "pantsArmour1",
-		"bootsArmour" : "bootsArmour1",
-		"bodyArmour" : "bodyArmour1",
-		"armsArmour" : "armsArmour1",
-		"headArmour" : "helmArmour1"
-	}, Actor.DAGGER);
+
+	// instantiate the player using the actorFactory
+    player = ActorFactory().getActor("player3", -1, -1, loadedPromisesArr);
+
+    // add the player with the rest of the drawable entities
+	DRAWABLE_ENTITIES.push(player);
+
+    // instantiate each enemy once, ignoring the returned instantiated enemy just to force
+	// the loading of all the image resources used in the enemies
+    for (let enemyName of ActorFactory.enemyNames) {
+	    ActorFactory().getActor(enemyName);
+    }
 	
 	// setting the stateSaver in the mapLoader and also initialising it
 	mapLoader.setStateSaver(StateSaverManager());
@@ -90,9 +166,6 @@ function init() {
     // push map loading to pseudo-semaphore so we wait on all the maps
     loadedPromisesArr.push(promisify(loadedMap));
 
-    // initialise the movementManager with the player reference
-    movementManager = new MovementManager(player);
-
     // wait on loadMap and loadPlayer
     waitOnAllPromises(loadedPromisesArr).then(
         function onResolved() {
@@ -104,6 +177,17 @@ function init() {
     );
 
     mapLoader.load();
+
+    player.addEventListener(Enemy.KILLED_ENEMY_EVENT, function(e) {
+    	let enemyName = e.detail;
+    	console.log("KILLED A " + enemyName);
+    });
+
+    /* THROWS ERROR. MAP PARSING HASN'T TAKEN PLACE YET
+    ActorFactory().generateEnemySpawnPoint(DUNGEON, 2779, 2239, ["rangedSkeleton", "darkElf", "capedSkeleton"],
+	    4, 3000);
+
+     */
 }
 
 function loadWeaponsResources() {
@@ -161,23 +245,33 @@ function initGameOnLoaded() {
     // begin drawing everything
     requestAnimationFrame(draw);
     loadingScreen.removeLoadingScreen();
+
+    // generating dynamic spawn point
+	ActorFactory().generateEnemySpawnPoint(DUNGEON, 2779, 2239, ["rangedSkeleton", "darkElf", "capedSkeleton"],
+		4, 3000, 5, function() {
+		console.log("The player killed 5 enemies on this spawn point");
+	}, 7);
+
+    // testing enemy random point generation with 10000 tests
+	//TEST_RANDOM_POINT_GENERATION(player, 5000, 10000);
 }
 
+// player added to the DRAWABLE_ENTITIES array
 function draw() {
-	player.update();
-
 	for (let entity of DRAWABLE_ENTITIES) {
-		// all update functions should return their index in the DRAWABLE_ENTITIES arr if they ran out of use
-		// (i.e. they despawned, died, collided, etc.) or -1 if they are still in use
-		let index = entity.update();
-
-		if (index != -1 && typeof(index) === "number") {
-			DRAWABLE_ENTITIES.splice(index, 1);
-		}
+		entity.update();
 	}
+
+	// make sure we draw entities in order
+	DRAWABLE_ENTITIES.sort(function cmp(a, b) {
+		if (a.coordY === b.coordY) {
+			return a.coordX - b.coordX;
+		}
+
+		return a.coordY - b.coordY;
+	});
 	
 	mapRenderer.draw();
-	player.draw();
 
 	for (let entity of DRAWABLE_ENTITIES) {
 		entity.draw();
