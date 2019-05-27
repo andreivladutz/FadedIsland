@@ -11,20 +11,18 @@
 </head>
 
 <body onload="init_menu()">
-    <img src="img/menu/castle_stairs_mod-02.jpg" alt="bg" id="bg-img">
     <div id="main_menu_container">
         <div id="main_menu">
-            <h1>Faded Island</h1>
+            <h1 id = "title">Faded Island</h1>
             <ul>
-                <li class="option" onclick="eraseSavedData"><a href="index.html">New Game</a></li>
+                <li class="option" onclick="eraseSavedData()"><a href="index.html">New Game</a></li>
                 <li class="option"><a href="index.html">Continue</a></li>
-                <li class="option" onclick="getOptionMenu()">Options</li>
-                <li class="option" onclick="getCredits">Credits</li>
+                <li class="option" onclick="getCharacters()">Options</li>
+                <li class="option" onclick="getCredits()">Credits</li>
             </ul>
             <div id="scroll_shadow"></div>
         </div>
     </div>
-    <img src="img/menu/archer_icon.png" id="sal">
-    <img src="img/menu/assassin_icon.png" id="sal1">
-    <img src="img/menu/warrior_icon.png" id="sal2">
+    
+    
 </body></html>
