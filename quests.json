@@ -8,7 +8,7 @@
 "Our crop fields have been overrun with these weird *things* and everyone is getting sick whenever they go out in the fields.We can't really tell why but that's where you come in. Just clear the fields...please.",
 "Thank god. You're a life saver. I know this was just another chore for you, but I really wanted to say I appreciate what you've done for us. Also, here's your reward. Farewell!",
 "Hey, it's you again. How's it going, hero?"],
-"answers":[[{"text":"So what do you want me to do?","stage":3,"close":false},{"text":"How about I came back later when you dropped the attitude?","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
+"answers":[[{"text":"So what do you want me to do?","stage":3,"close":false,"progressObjectives":true},{"text":"How about I came back later when you dropped the attitude?","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
 [{"text":"So what do you want me to do?","stage":3,"close":false,"progressObjectives":true},{"text":"Next time, try with 'please' and 'thank you'.","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
 [{"text":"I don't see how that's my fault though.","stage":1,"close":false}],
 [{"text":"Getting sick? Sounds like they're just cowards to me.","stage":3,"close":true}],

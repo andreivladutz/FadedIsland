@@ -176,6 +176,12 @@ class StoryParser {
 
             StoryParser.save(which);
 
+            objectiveBox.showObjective(StoryParser.getObjective());
+            if(progressObjectives)
+                objectiveBox.showQuestProgress("Monster", 0, 10);
+            else
+                objectiveBox.removeQuestProgress();
+
             if(close)
                 this.dialogueBox.remove();
             else
@@ -188,8 +194,11 @@ let x = [0,1,2,1,3,3,1,4,1,3,5,3,1,8,1,6,7,1];
 let counter = 0;
 localStorage.clear();
 StoryParser.getReference(null);
+let objectiveBox = new ObjectiveBox();
 setTimeout(function(){
     StoryParser.setQuestsProgress(0);
+    objectiveBox.showObjective(StoryParser.getObjective());
+    objectiveBox.toggleView();
     window.addEventListener("keydown",function(e) {
         if(e.key.toLowerCase() === "e") {
             if (StoryParser.getReference().dialogueBox === null) {
