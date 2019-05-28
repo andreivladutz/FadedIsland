@@ -201,10 +201,12 @@ setTimeout(function(){
     objectiveBox.showObjective(StoryParser.getObjective());
     objectiveBox.toggleView();
     window.addEventListener("keydown",function(e) {
+        /* I want to ignore this event because it is the same key as the interactions I'm working on
         if(e.key.toLowerCase() === "e") {
             if (StoryParser.getReference().dialogueBox === null) {
                 StoryParser.getReference(new DialogueBox()).getQuest(x[counter]);
             }
         }
+         */
     })
 },200);

@@ -19,7 +19,7 @@ class Timer {
 			this._timeNow = (new Date()).getTime();
 		}
 		
-		var deltaTime = this._timeNow - this._lastUpdateTime;
+		let deltaTime = this._timeNow - this._lastUpdateTime;
 		
 		return deltaTime;
 	}
@@ -28,6 +28,12 @@ class Timer {
 	lastUpdatedNow() {
 		this._lastUpdateTime = (new Date()).getTime();
 		// the timeNow will be resetted on the next call of getDeltaTime
+		this._timeNow = null;
+	}
+
+	// this method is not designated to work with the animator
+	// it exists just so the timer can be used as a regular timer
+	resetTimeNow() {
 		this._timeNow = null;
 	}
 }
@@ -292,7 +298,7 @@ _p.update = function(timer) {
 		return;
 	}
 	
-	var deltaTime = timer.getDeltaTime();
+	let deltaTime = timer.getDeltaTime();
 
 	// If the animator is paused we pass 0 as deltaTime - like nothing has changed
 	if (!this._running) {
@@ -305,7 +311,7 @@ _p.update = function(timer) {
 	// adjust the direction of the animation, call hook functions etc.
 	if (this._timeSinceLoopStart >= this._duration) {
 		// Just in case, we skipped more than one loop, determine how many loops did we miss
-		this.loopsSkipped = Math.floor(this._timeSinceLoopStart/this._duration);
+		this.loopsSkipped = Math.floor(this._timeSinceLoopStart / this._duration);
 		this._timeSinceLoopStart %= this._duration;
 
 		// truncate to the number of loops skipped. Even if we skipped 5 loops,
