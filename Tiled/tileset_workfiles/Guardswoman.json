@@ -1,0 +1,14 @@
+{ "columns":26,
+ "image":"..\/tileset_images\/someNPCs\/Guardswoman.png",
+ "imageheight":1344,
+ "imagewidth":832,
+ "margin":0,
+ "name":"Guardswoman",
+ "spacing":0,
+ "tilecount":1092,
+ "tiledversion":"1.2.4",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":1.2
+}
