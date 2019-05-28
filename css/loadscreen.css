@@ -1,5 +1,9 @@
 /*this is the background for the loading screen*/
 #load_screen{
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;    
     background: black;
     opacity: 1;
     position: absolute;

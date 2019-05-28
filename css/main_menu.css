@@ -1,40 +1,223 @@
+@font-face {
+    font-family: "Bleeding_Cowboys";
+    src: url("fonts/Bleeding_Cowboys.ttf");
+}
+
+body {
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */   
+    cursor: url("../img/menu/STEP-normal.png"), auto;
+    font-family: Bleeding_Cowboys, Verdana, Geneva, sans-serif;
+}
+
+#bg-img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 0;
+    height: 100vh;
+}
+
 #main_menu_container {
-    background-color: #2f3030;
-    background-image: url("/img/menu/castle_stairs.jpg");
+    position: absolute;
+    z-index: 100;
+
+    height: 100vh;
+    width: 100vw;
+    left: 0;
+    top: 0;
+
+    background-image: url("../img/menu/castle_stairs_mod-02.jpg");
+    background-size: cover;
     background-repeat: no-repeat;
-    background-position: center -200px;
-    background-size: contain;
-    opacity: 1;
-    position: fixed;
-    z-index: 10;
-    top: 0px;
-    width: 100%;
-    height: 1600px;
 }
 
 #main_menu {
-    font-family: Verdana, Geneva, sans-serif;
-    background: none;
-    color: aliceblue;
-    font-size: 60px;
-    width: 50;
+    font-family: Bleeding_Cowboys, Verdana, Geneva, sans-serif;
+
+    position: absolute;
     margin-left: 50px;
+}
+
+#main_menu h1 {
+    width: 650px;
+
+    position: absolute;
+    left: 430px;
+    top: 180px;
+
+    font-size: 110px;
+    font-weight: normal;
+    text-shadow: 30px 30px 30px;
+    animation: fadein 2s;
+}
+
+#main_menu ul {
+    position: absolute;
+    top: 370px;
+
+    width: 450px;
+    height: 550px;
+
+    list-style: none;
+
+    background-image: url("../img/menu/scroll_res1.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    z-index: 100;
+
+    animation: fadein 2s;
+}
+
+.hovered {
+    animation: burn 1s;
+    /*not working*/
+    text-shadow: 0px -2px 4px #fff, 0px -2px 10px #FF3, 0px -10px 20px #F90, 0px -20px 40px #C33;
+    color: #3a0000;
+}
+
+#main_menu ul li:first-child {
+    margin-top: 50px;
+}
+
+#main_menu ul li {
+    margin-left: 104px;
+    margin-right: 104px;
+    font-size: 50px;
+    animation: fadein 3s;
+}
+
+#scroll_shadow {
+    position: absolute;
+    top: 400px;
+    left: 30px;
+    width: 330px;
+    height: 485px;
+    box-shadow: 0px 20px 60px, 20px 0px 60px, 0px -10px 60px, -10px 0px 60px;
+
+    animation: fadein 4s;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes burn {
+    0% {
+        text-shadow: none;
+        color: black;
+    }
+
+    100% {
+        text-shadow: 0px -2px 4px #fff, 0px -2px 10px #FF3, 0px -10px 20px #F90, 0px -20px 40px #C33;
+        color: #3a0000;
+    }
+}
+
+@keyframes slidein{
+    0%{
+        top: -680px;
+    }
+    100%{
+        top: 20px;
+    }
+}
+
+@keyframes slideout{
+    0%{
+        top: 20px;
+    }
+    100%{
+        top: -680px;
+    }
+}
+
+.removing{
+    animation: slideout 1s;
+}
+
+.adding{
+    animation: slidein 1s;
+}
+
+.content-container {
+    
+    position: absolute;
+    height: 600px;
+    width: 800px;
+
+    left: 500px;
+    top: 20px;
+
+    background-image: url("../img/menu/scroll2.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    padding: 30px;
+    padding-top: 100px;
+}
+
+#character-container {
+    display: inline-grid;
+    grid-template-columns: 33% auto 33%;
+    grid-template-rows: 30% 40% 20%;
+
+}
+
+#character-container img {
+    margin-left: auto;
     margin-right: auto;
+    bottom: 0;
+}
+
+#character-container img:nth-child(3) {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    bottom: 0;
+}
+
+#character-container img:hover{
+    filter: brightness(1.3);
+}
+
+#character-container h2 {
+    grid-column-start: 1;
+    grid-column-end: 4;
+
+    font-family: Bleeding_Cowboys, Verdana, Geneva, sans-serif;
+    text-align: center;
+    font-weight: normal;
+    font-size: 60px;
+}
+
+#credits-container {
+    display: inline-grid;
+    grid-template-rows: 20% 80%;
+    grid-template-columns: 100%;
+}
+
+#credits-container h2 {
+    font-size: 80px;
+    font-weight: normal;
     text-align: center;
 }
 
-#main_menu h1{
-    margin-top: 120px;
+#credits-container div {
+    padding: 30px;
+    font-size: 29px;
+    font-weight: lighter;
 }
-
-#main_menu ul{
-    margin-top: 130px;
-    margin-left: auto;
-    margin-right: auto;
-    list-style: none;
-}
-
-#main_menu ul li{
-    
-}
-
