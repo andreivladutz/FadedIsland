@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="44d72bdf-22b7-42e9-8c3d-681accc85269" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tiled/map/Dungeon.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/Tiled/map/Dungeon.tmx" afterDir="false" />
+
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/dbox.css" afterPath="$PROJECT_DIR$/css/dbox.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/StoryClasses/StoryParser.js" afterPath="$PROJECT_DIR$/js/StoryClasses/StoryParser.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quests.json" afterPath="$PROJECT_DIR$/quests.json" />
+
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -16,27 +19,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/utils/AStar.js">
+
+      <file leaf-file-name="StoryParser.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/StoryClasses/StoryParser.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2873">
-              <caret line="199" column="37" selection-start-line="199" selection-start-column="20" selection-end-line="199" selection-end-column="37" />
-              <folding>
-                <element signature="n#!!block;n#hasSouth#0;n#Node#0" />
-                <element signature="n#!!block;n#hasEast#0;n#Node#0" />
-                <element signature="n#!!block;n#hasWest#0;n#Node#0" />
-                <element signature="n#!!block;n#getSouth#0;n#Node#0" />
-                <element signature="n#!!block;n#getEast#0;n#Node#0" />
-              </folding>
+            <state relative-caret-position="612">
+              <caret line="118" column="51" lean-forward="true" selection-start-line="118" selection-start-column="51" selection-end-line="118" selection-end-column="51" />
+              <folding />
+
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/main.js">
+
+      <file leaf-file-name="dbox.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/dbox.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1615">
-              <caret line="146" column="45" selection-start-line="146" selection-start-column="45" selection-end-line="146" selection-end-column="45" />
+            <state relative-caret-position="821">
+              <caret line="82" column="0" lean-forward="true" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
+              <folding />
+
             </state>
           </provider>
         </entry>
@@ -172,23 +174,13 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/js/MapClasses/MapLoader.js" />
-        <option value="$PROJECT_DIR$/css/interactions.css" />
-        <option value="$PROJECT_DIR$/js/utils/ResourceLoader.js" />
-        <option value="$PROJECT_DIR$/js/GameUIClasses/HealthBar.js" />
-        <option value="$PROJECT_DIR$/js/utils/distanceFunctions.js" />
-        <option value="$PROJECT_DIR$/js/utils/Animator.js" />
-        <option value="$PROJECT_DIR$/js/ActorsClasses/Projectile.js" />
-        <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/js/MapClasses/MapRenderer.js" />
-        <option value="$PROJECT_DIR$/js/utils/AStar.js" />
-        <option value="$PROJECT_DIR$/js/ActorsClasses/Enemy.js" />
-        <option value="$PROJECT_DIR$/js/MapClasses/MapInstance.js" />
+
         <option value="$PROJECT_DIR$/js/main.js" />
-        <option value="$PROJECT_DIR$/js/ActorsClasses/PredefinedActorsAndResources.js" />
-        <option value="$PROJECT_DIR$/js/ActorsClasses/Actor.js" />
-        <option value="$PROJECT_DIR$/js/ActorsClasses/Player.js" />
-        <option value="$PROJECT_DIR$/js/ActorsClasses/ActorFactory.js" />
+        <option value="$PROJECT_DIR$/js/StoryClasses/DialogueBox.js" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/css/dbox.css" />
+        <option value="$PROJECT_DIR$/js/StoryClasses/StoryParser.js" />
+
       </list>
     </option>
   </component>
@@ -278,35 +270,25 @@
       <created>1557932193740</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1557932193740</updated>
-      <workItem from="1557932197044" duration="5744000" />
-      <workItem from="1557944092057" duration="17226000" />
-      <workItem from="1558118791777" duration="4606000" />
-      <workItem from="1558148427463" duration="53740000" />
-      <workItem from="1558321969323" duration="2404000" />
-      <workItem from="1558342668246" duration="47739000" />
-      <workItem from="1558437756791" duration="5477000" />
-      <workItem from="1558443562181" duration="13436000" />
-      <workItem from="1558457878359" duration="4913000" />
-      <workItem from="1558464522872" duration="14513000" />
-      <workItem from="1558528334652" duration="30000" />
+
+      <updated>1557565649956</updated>
+      <workItem from="1557565651025" duration="1120000" />
+      <workItem from="1557586371717" duration="730000" />
+      <workItem from="1557652110211" duration="6696000" />
+      <workItem from="1557677177927" duration="6203000" />
+      <workItem from="1557851651538" duration="3009000" />
+      <workItem from="1557915749590" duration="6432000" />
+
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="169828000" />
-  </component>
-  <component name="TodoView">
-    <todo-panel id="selected-file">
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-    <todo-panel id="all">
-      <are-packages-shown value="true" />
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
+
+    <option name="totallyTimeSpent" value="28213000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1096" extended-state="0" />
+
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12491738" />
       <window_info id="Structure" order="1" weight="0.25" />
@@ -549,8 +531,50 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1615">
-          <caret line="146" column="45" selection-start-line="146" selection-start-column="45" selection-end-line="146" selection-end-column="45" />
+
+        <state relative-caret-position="1932">
+          <caret line="84" column="21" lean-forward="false" selection-start-line="84" selection-start-column="21" selection-end-line="84" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/utils/MovementManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/StoryClasses/DialogueBox.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2599">
+          <caret line="113" column="2" lean-forward="false" selection-start-line="113" selection-start-column="2" selection-end-line="113" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="8" column="68" lean-forward="false" selection-start-line="8" selection-start-column="68" selection-end-line="8" selection-end-column="68" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/dbox.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="821">
+          <caret line="82" column="0" lean-forward="true" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/StoryClasses/StoryParser.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="612">
+          <caret line="118" column="51" lean-forward="true" selection-start-line="118" selection-start-column="51" selection-end-line="118" selection-end-column="51" />
+          <folding />
+
         </state>
       </provider>
     </entry>
