@@ -46,11 +46,16 @@ _p.updateProgress = function(loadedItems, totalItemsToLoad) {
 	updatez bara de incarcare  
 */
 _p.load = function(resourcesName = "") {
-	var loadedItems = 0, totalItemsToLoad = 0;
+	// nothing to load
+	if (!this._resources.length) {
+		return;
+	}
+
+	let loadedItems = 0, totalItemsToLoad = 0;
 	
-	var self = this;
+	let self = this;
 	
-	for (var i = 0; i < this._resources.length; i++) {
+	for (let i = 0; i < this._resources.length; i++) {
 		//daca aceasta resursa a fost incarcata deja sarim peste ea
 		if (this._resources[i].resourceObject._availableResource)
 			continue;

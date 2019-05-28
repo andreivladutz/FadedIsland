@@ -71,6 +71,9 @@ _p.changeMap = function(mapName) {
 	
 	this.currentMapName = mapName;
 	this.currentMapInstance = MapRenderer.MAP_INSTANCES[mapName];
+
+	// Every time the map changes make sure to let the Node class know
+	Node.CURR_MAP_NAME = mapName;
 		
 	// offDirty flag tells if the offscreenBuffer canvas should be redrawn
 	this.offDirty = true;
@@ -476,7 +479,6 @@ _p.draw = function() {
 				 );
 };
 
-
 /*
 	when we redraw the offscreenBuffer we also compute the interaction points that are in proximity
  */
@@ -522,35 +524,30 @@ _p.screenCoordsToMapCoords = function(coords) {
 _p.mapCoordsToScreenCoords = function(coords) {
     var mapInstance = this.currentMapInstance,
         mapX = mapInstance.mapX,
-        mapY = mapInstance.mapY,
-        
-        new_coords = {
-            x : coords.x - Math.abs(mapX),
-            y : coords.y - Math.abs(mapY)
-        };
-    
-    return new_coords;
-}
+        mapY = mapInstance.mapY;
+
+    return {
+		x : coords.x - Math.abs(mapX),
+		y: coords.y - Math.abs(mapY)
+	};
+};
 
 _p.mapCoordsToTileCoords = function(coords) {
-    var mapInstance = this.currentMapInstance;
-    
-    var tile_coords = {
-        x : Math.floor(coords.x / mapInstance.tileSize),
+    let mapInstance = this.currentMapInstance;
+
+	return {
+		x: Math.floor(coords.x / mapInstance.tileSize),
         y : Math.floor(coords.y / mapInstance.tileSize)
-    }
-    
-    return tile_coords;
-}
+    };
+};
 
 _p.tileCoordsToMapCoords = function(coords) {
-    let mapInstance = this.currentMapInstance,
-        new_coords = {
-            x : coords.x * mapInstance.tileSize,
-            y : coords.y * mapInstance.tileSize
-        };
-    
-    return new_coords;
+    let mapInstance = this.currentMapInstance;
+
+    return {
+        x : coords.x * mapInstance.tileSize,
+        y : coords.y * mapInstance.tileSize
+    };
 };
 
 _p.screenCoordsToTileCoords = function(coords) {
@@ -597,6 +594,10 @@ _p.getLastDrawnObjects = function() {
 	return this.lastDrawnObjects;
 };
 
+_p.getAllDrawableObjects = function() {
+	return this.currentMapInstance.drawableObjects;
+};
+
 _p.getTemplateObjects = function() {
 	return this.currentMapInstance.objectTemplates;
 };
@@ -617,4 +618,20 @@ _p.mapHasRooms = function() {
 // get the matrix of tiles mapped to each room
 _p.getTilesToRooms = function() {
 	return this.currentMapInstance.tileToRooms;
+};
+
+_p.getEnemySpawnPoints = function() {
+	return this.currentMapInstance.enemySpawnPoints;
+};
+
+// THE POINTS COORDS HAVE TO BE MAP COORDINATES!
+// IF THE MAP DOES NOT HAVE ROOMS THEN IT RETURNS TRUE
+_p.checkTwoPointsInSameRoom = function(pt1, pt2) {
+	if (!this.mapHasRooms()) {
+		return true;
+	}
+	let tilePt1 = this.mapCoordsToTileCoords(pt1), tilePt2 = this.mapCoordsToTileCoords(pt2),
+		pt1Room = this.getTilesToRooms()[tilePt1.y][tilePt1.x], pt2Room = this.getTilesToRooms()[tilePt2.y][tilePt2.x];
+
+	return pt1Room === pt2Room;
 };

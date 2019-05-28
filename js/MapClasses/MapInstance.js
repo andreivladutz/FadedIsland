@@ -31,7 +31,11 @@ class MapInstance extends EventEmiter {
 			//map size in number of tiles
 			this.mapWidth = mapWidth;
 			this.mapHeight = mapHeight;
-			
+
+			// make sure the Node class KNOWS THE SIZE OF THIS MAP
+			Node.MAP_SIZES[mapName].WIDTH = mapWidth;
+			Node.MAP_SIZES[mapName].HEIGHT = mapHeight;
+
 			//the array of matrices of tile numbers
 			//each matrix is a layer of tiles
 			this.tilesMatrices = tilesMatrices;
@@ -46,6 +50,9 @@ class MapInstance extends EventEmiter {
 			// relevant points that the player can interact with on the map
 			// they mark NPCS, transition points from map to map
 			this.interactionPoints = [];
+
+			// all enemy spawn points are pushed here
+			this.enemySpawnPoints = [];
 
 			// we keep all the changeRoom points in interactionPoints and here separately
 			this.roomChangePoints = [];
@@ -111,6 +118,9 @@ class MapInstance extends EventEmiter {
 
 MapInstance.TEMPLATE = "template";
 MapInstance.SPAWN_POINT = "spawnpoint";
+MapInstance.ENEMY_SPAWN = "enemyspawn";
+MapInstance.ENEMY_SPAWN_INTERVAL = "spawnInterval";
+MapInstance.ENEMY_MAX_SPAWN = "maxEnemies";
 MapInstance.CHANGE_ROOM_POINT = "changeroom";
 MapInstance.ROOM_RECTANGLE = "room";
 
@@ -226,10 +236,41 @@ _p.processObjects = function() {
 					if (prop["name"] === "to") {
 						obj.to = prop["value"];
 					}
+					if (prop["name"] === "interact") {
+						obj.interact = prop["value"];
+					}
 				}
 
 				this.interactionPoints.push(obj);
 				this.roomChangePoints.push(obj);
+			}
+
+			// handle enemy spawn
+			if ("type" in obj && obj["type"] === MapInstance.ENEMY_SPAWN) {
+				// check for every enemy name if the current spawn point spawns it
+				for (let prop of obj["properties"]) {
+					for (let enemyName of ActorFactory.enemyNames) {
+						// it spawns the enemy with enemyName if it also has the value "true"
+						if (prop["name"] === enemyName && prop["value"] === true) {
+							obj[enemyName] = prop["value"];
+						}
+					}
+					if (prop["name"] === MapInstance.ENEMY_SPAWN_INTERVAL) {
+						obj[MapInstance.ENEMY_SPAWN_INTERVAL] = prop["value"];
+					}
+
+					if (prop["name"] === MapInstance.ENEMY_MAX_SPAWN) {
+						obj[MapInstance.ENEMY_MAX_SPAWN] = prop["value"];
+					}
+				}
+
+				obj.active = true;
+				// keep a reference to all spawned enemies
+				obj.SPAWNED_ENEMIES = [];
+				// this spawn point belongs to this map
+				obj.mapName = this.mapName;
+
+				this.enemySpawnPoints.push(obj);
 			}
 
 			// deleting useless properties
@@ -272,7 +313,7 @@ _p.processObjects = function() {
 		return a.y - b.y;
 	});
 	
-	console.log("non drawable objects: ", this.objectsArr);
+	console.log("spawn points ", this.enemySpawnPoints);
 }
 
 // find each tile what room it belongs to

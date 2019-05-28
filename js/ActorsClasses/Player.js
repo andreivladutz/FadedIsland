@@ -4,13 +4,16 @@
 class Player extends Actor {
     constructor(loadedPromisesArr, customResources, attackType) {
         super(loadedPromisesArr, customResources, attackType);
-		this.speed = 5;
+		// override actor values
+        this.speed = 5;
 		
 		// make the player faster if we debug
 		// don't wanna waste time walking slow
+		/*
 		if (DEBUGGING) {
 			this.speed = 20;
 		}
+	    */
 		
 		// keeping the close interaction points so we can check every time if we are in proximity of any point
         this.visibleInteractionPoints = [];
@@ -20,9 +23,21 @@ class Player extends Actor {
 		// and then removed when the player has left the proximity of that point
 		this.interactionHandlers = {};
 
+		// a dictionary of spawning intervals which get registered when the player
+	    // is close to an enemy spawn point, and then they get removed when the player gets further away
+		this.spawnIntervals = {};
+
 		// the player keeps count in which room it is now
 	    // and informs the mapRenderer with the room
 		this.currentRoom = -1;
+
+		setInterval(function regen(self) {
+			if (self.health < Player.HEALTH) {
+				self.health++;
+				// -(-1) actually gained health
+				self.healthBar.tookDamage(-1);
+			}
+		}, Player.REGEN_TIME, this);
 		
 		let self = this;
 		
@@ -39,6 +54,11 @@ class Player extends Actor {
 		window.addEventListener("mousemove", this.computeDirection.bind(this));
         
 		// window.addEventListener("mouseup", this.mouseRelease.bind(this));
+	}
+
+	initHealthBar() {
+		this.health = Player.HEALTH;
+		this.healthBarColor = "green";
 	}
 	
 	// after setting the mapRenderer we register mapChange and redrawnOffscreen event handlers
@@ -67,8 +87,25 @@ class Player extends Actor {
 	}
 	
 	startAttack(e) {
+    	// if already initialised attack or died
+    	if (this.attacking || this.died) {
+    		return;
+	    }
 		this.computeDirection(e);
 		super.startAttack();
+
+		// checking if we hit any enemy
+		for (let enemy of ENEMIES) {
+			if (this.melee() && this.checkHitOnActor(enemy)) {
+				enemy.bleed(this.attackDamage, this.direction, this.attackDuration * 2);
+			}
+		}
+	}
+
+	// this overridden function also check collision with enemies
+	update() {
+		this.checkEnemiesCollision();
+		super.update();
 	}
 }
 
@@ -76,8 +113,17 @@ _p = Player.prototype;
 
 Player.INTERACTION_BOX_TIME = 2000;
 
+Player.ENEMYSPAWN_POINT_PROXIMITY = 1000;
+Player.DEFAULT_ENEMYSPAWN_INTERVAL = 3000;
+Player.MAX_SPAWNED_ENEMIES = 10;
+
 Player.INTERACTION_POINT_PROXIMITY = 100;
 Player.INTERACTION_KEY = "e";
+
+Player.HEALTH = 250;
+
+// regenerate player health every second
+Player.REGEN_TIME = 1000;
 
 
 /*
@@ -170,6 +216,69 @@ _p.movePlayerToMapCoords = function(x, y) {
  */ 
 _p.updateCoordsOnResize = function() {
 	this.movePlayerToMapCoords(this.mapCoordX, this.mapCoordY);
+};
+
+/*
+	this functions checks the collision between the Player and visible game objects (drawn objects)
+	it overrides the function in the Actor class because the player is always in the visible zone
+	so it makes sense to check the collision only against currently drawn objects.
+
+	for other actors (e.g. enemies) we have to check collision against all drawable objects
+	since they might be out of sight
+ */
+_p.checkCollisionAgainstObjects = function(lftActorX, rightActorX, y) {
+	/*
+		the Player coords received by the function are screen coords
+				so they need to be converted to map coords
+	*/
+	({x: lftActorX, y} = this.mapRenderer.screenCoordsToMapCoords({x : lftActorX, y}));
+	({x: rightActorX} = this.mapRenderer.screenCoordsToMapCoords({x : rightActorX, y}));
+
+	let visibleObjects = this.mapRenderer.getLastDrawnObjects(),
+		templates = this.mapRenderer.getTemplateObjects();
+
+	// checking against every object
+	for (let obj of visibleObjects) {
+		let src = obj["template"],
+			correspondingTemplate = templates[src],
+			width = correspondingTemplate.width,
+			height = correspondingTemplate.height,
+			lX = obj.x, rX = obj.x + width, bY = obj.y, uY = obj.y - height;
+
+		if (rightActorX >= lX && lftActorX <= rX && y >= uY && y <= bY) {
+			return true;
+		}
+	}
+
+	return false;
+};
+
+_p.checkEnemiesCollision = function() {
+	let playerRect = {
+		top: this.mapCoordY - FRAME_HEIGHT / 5, // the coordBodyY equivalent in map coords,
+		left: this.mapCoordX - ACTUAL_ACTOR_WIDTH / 2,
+		right: this.mapCoordX + ACTUAL_ACTOR_WIDTH / 2,
+		bottom: this.mapCoordY
+	},
+		collision = false;
+
+	for (let enemy of ENEMIES) {
+		let enemyRect = {
+			top: enemy.mapCoordY - FRAME_HEIGHT / 5,
+			left: enemy.mapCoordX - ACTUAL_ACTOR_WIDTH / 2,
+			right: enemy.mapCoordX + ACTUAL_ACTOR_WIDTH / 2,
+			bottom: enemy.mapCoordY
+		};
+
+		// the actors collide
+		if (rectIntersection(playerRect, enemyRect)) {
+			collision = true;
+			this.bleed(this.collisionDamage);
+			enemy.bleed(this.collisionDamage, this.direction);
+		}
+	}
+
+	return collision;
 };
 
 _p.resetXCoordsToCenter = function() {
@@ -352,17 +461,62 @@ _p.removeInteractionHandlers = function(interactionPointName) {
 	}
 };
 
+_p.checkEnemySpawnPointsProximity = function() {
+	let spawnPoints = this.mapRenderer.getEnemySpawnPoints(),
+		inProximityOfSpawnPoint = false;
+
+	for (let point of spawnPoints) {
+		let euclDist = euclideanDistance(point, {x: this.mapCoordX, y: this.mapCoordY}),
+			uniqueKey = point.name + point.type,
+			// if it has an interval property set use that time, else use the default spawn interval
+			spawnInterval = point[MapInstance.ENEMY_SPAWN_INTERVAL]? point[MapInstance.ENEMY_SPAWN_INTERVAL] : Player.DEFAULT_ENEMYSPAWN_INTERVAL;
+
+		// if no max spawned enemies specified then default is considered
+		point[MapInstance.ENEMY_MAX_SPAWN] = point[MapInstance.ENEMY_MAX_SPAWN]? point[MapInstance.ENEMY_MAX_SPAWN] : Player.MAX_SPAWNED_ENEMIES;
+
+		if (euclDist <= Player.ENEMYSPAWN_POINT_PROXIMITY
+			&& this.mapRenderer.checkTwoPointsInSameRoom({x: this.mapCoordX, y: this.mapCoordY}, point)) {
+
+			if (!this.spawnIntervals[uniqueKey]) {
+				// call spawnEnemy regularly passing this spawn point along
+				this.spawnIntervals[uniqueKey] = setInterval(ActorFactory().spawnEnemy, spawnInterval, point);
+			}
+
+			inProximityOfSpawnPoint = true;
+		}
+		else {
+
+			// stop spawning for this spawn point
+			if (this.spawnIntervals[uniqueKey]) {
+				clearInterval(this.spawnIntervals[uniqueKey]);
+				this.spawnIntervals[uniqueKey] = null;
+			}
+		}
+	}
+
+	if (this.healthBar.hidden && inProximityOfSpawnPoint) {
+		this.healthBar.show();
+	}
+	if (!this.healthBar.hidden && !inProximityOfSpawnPoint) {
+		this.healthBar.hide();
+	}
+};
+
 _p.checkInteractionPointsProximity = function() {
+	this.checkEnemySpawnPointsProximity();
+
 	// for every point check if the player is close to it
 	for (let point of this.visibleInteractionPoints) {
-		let euclDist = Math.sqrt(Math.pow(point.x - this.mapCoordX, 2) + Math.pow(point.y - this.mapCoordY, 2));
+		let euclDist = euclideanDistance(point, {x: this.mapCoordX, y: this.mapCoordY});
 		
 		// concatenating point type and name to get a unique key in the handlers dictionary
 		let uniqueKeyName = point.type + point.name;
 
 		// if we are close to the interactionPoint we start listening for keydown
 		if (euclDist <= Player.INTERACTION_POINT_PROXIMITY) {
-			this.showInteractionMessage("PRESS E TO INTERACT");
+			if (!("interact" in point)) {
+				this.showInteractionMessage("PRESS E TO INTERACT");
+			}
 
 			if (this.interactionHandlers[uniqueKeyName]) {
 				// handler already registered
@@ -422,14 +576,14 @@ _p.interactWithRoomTransitionPoint = function(point, e) {
 _p.onMovement = function() {
 	this.walking = true;
 	this.row = Actor.WALK_ROW + this.direction;
-	
+
 	this.updateMovementAnimation();
 	this.checkInteractionPointsProximity();
 	this.checkCurrentRoom();
 };
 
 _p.keyUp = function(e, speed = this.speed) {
-	if (!this.attacking) { // if player is attacking, can't move
+	if (!this.attacking && !this.died) { // if player is attacking, can't move
 		this.direction = Actor.UPWARD_DIRECTION;
 
         this.moveUp(speed);
@@ -438,7 +592,7 @@ _p.keyUp = function(e, speed = this.speed) {
 };
 
 _p.keyDown = function(e, speed = this.speed) {
-    if (!this.attacking) {
+    if (!this.attacking && !this.died) {
 		this.direction = Actor.DOWNWARD_DIRECTION;
 
         this.moveDown(speed);
@@ -447,7 +601,7 @@ _p.keyDown = function(e, speed = this.speed) {
 };
 
 _p.keyLeft = function(e, speed = this.speed) {
-    if (!this.attacking) {
+    if (!this.attacking && !this.died) {
 		this.direction = Actor.LEFT_DIRECTION;
 
         this.moveLeft(speed);
@@ -456,7 +610,7 @@ _p.keyLeft = function(e, speed = this.speed) {
 };
 
 _p.keyRight = function(e, speed = this.speed) {
-	if (!this.attacking) {
+	if (!this.attacking && !this.died) {
 		this.direction = Actor.RIGHT_DIRECTION;
 
         this.moveRight(speed);
