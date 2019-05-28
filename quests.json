@@ -15,7 +15,10 @@
 [{"text":"Eh, I had fun myself.","stage":5,"close":true},{"text":"Glad to see you're relieved.","stage":5,"close":true},{"text":"Whatever.","stage":5,"close":true}],
 [{"text":"I'm good, thanks.","stage":5,"close":true}]
 ],
-"maxStage":5
+"maxStage":5,
+"quest":{
+"monsters":[]
+}
 },
 {
 "npc_id":1,
