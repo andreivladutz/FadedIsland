@@ -180,6 +180,7 @@ function getCharacters() {
 }
 
 function getCredits() {
+    console.log("sal");
     menu.getCredits();
 }
 
