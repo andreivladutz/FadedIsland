@@ -49,8 +49,10 @@ _objbox.showObjective = function(objectiveText){
     this.currObjective.textContent = "\u2022 " + objectiveText;
 }
 
-_objbox.showQuestProgress = function(creepName, currNum, desiredNum){
-    this.questProgressName.textContent = "\u2022 " + creepName;
+_objbox.showQuestProgress = function(monsterNames, currNum, desiredNum){
+    this.questProgressName.textContent = "\u2022 " + this.beautifyName(monsterNames[0]);
+    for(let i = 1; i < monsterNames.length; i++)
+        this.questProgressName.textContent += ", " + this.beautifyName(monsterNames[i]);
     
     this.questProgressCount.currNum = currNum;
     this.questProgressCount.desiredNum = desiredNum;
@@ -69,4 +71,13 @@ _objbox.updateQuestProgress = function(increment = 1){
 _objbox.removeQuestProgress = function() {
     this.questProgressName.textContent = "";
     this.questProgressCount.textContent = "";
+}
+
+_objbox.beautifyName = function(name) {
+    let namesArray = ["darkElf","capedSkeleton","rangedSkeleton"];
+    let beautifiedNamesArray = ["Dark Elf","Skeleton Warrior","Skeleton Archer"];
+    for(let i = 0; i < namesArray.length; i++)
+        if(namesArray[i] === name)
+            return beautifiedNamesArray[i];
+    return name;
 }

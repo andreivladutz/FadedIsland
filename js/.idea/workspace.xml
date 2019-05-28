@@ -18,8 +18,8 @@
       <file leaf-file-name="StoryParser.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/StoryClasses/StoryParser.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1375">
-              <caret line="209" column="0" lean-forward="false" selection-start-line="209" selection-start-column="0" selection-end-line="209" selection-end-column="0" />
+            <state relative-caret-position="455">
+              <caret line="174" column="41" lean-forward="true" selection-start-line="174" selection-start-column="41" selection-end-line="174" selection-end-column="41" />
               <folding />
             </state>
           </provider>
@@ -28,8 +28,8 @@
       <file leaf-file-name="QuestProgressManager.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/StoryClasses/QuestProgressManager.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="18" column="55" lean-forward="true" selection-start-line="18" selection-start-column="55" selection-end-line="18" selection-end-column="55" />
+            <state relative-caret-position="483">
+              <caret line="21" column="55" lean-forward="true" selection-start-line="21" selection-start-column="55" selection-end-line="21" selection-end-column="55" />
               <folding />
             </state>
           </provider>
@@ -48,8 +48,18 @@
       <file leaf-file-name="DialogueBox.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/StoryClasses/DialogueBox.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1237">
+            <state relative-caret-position="1927">
               <caret line="248" column="0" lean-forward="false" selection-start-line="248" selection-start-column="0" selection-end-line="248" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ObjectiveBox.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/StoryClasses/ObjectiveBox.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="179">
+              <caret line="54" column="87" lean-forward="false" selection-start-line="54" selection-start-column="87" selection-end-line="54" selection-end-column="87" />
               <folding />
             </state>
           </provider>
@@ -87,10 +97,10 @@
         <option value="$PROJECT_DIR$/DialogueBox.js" />
         <option value="$PROJECT_DIR$/StoryParser.js" />
         <option value="$PROJECT_DIR$/StoryClasses/DialogueBox.js" />
-        <option value="$PROJECT_DIR$/StoryClasses/StoryParser.js" />
-        <option value="$PROJECT_DIR$/StoryClasses/ObjectiveBox.js" />
-        <option value="$PROJECT_DIR$/StoryClasses/QuestProgressManager.js" />
         <option value="$PROJECT_DIR$/../index.html" />
+        <option value="$PROJECT_DIR$/StoryClasses/ObjectiveBox.js" />
+        <option value="$PROJECT_DIR$/StoryClasses/StoryParser.js" />
+        <option value="$PROJECT_DIR$/StoryClasses/QuestProgressManager.js" />
       </list>
     </option>
   </component>
@@ -295,7 +305,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="71791000" />
+    <option name="totallyTimeSpent" value="73718000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1096" extended-state="0" />
@@ -529,23 +539,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/StoryClasses/ObjectiveBox.js" />
-    <entry file="file://$PROJECT_DIR$/StoryClasses/DialogueBox.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1237">
-          <caret line="248" column="0" lean-forward="false" selection-start-line="248" selection-start-column="0" selection-end-line="248" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/StoryClasses/QuestProgressManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="18" column="55" lean-forward="true" selection-start-line="18" selection-start-column="55" selection-end-line="18" selection-end-column="55" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="637">
@@ -554,10 +547,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/StoryClasses/DialogueBox.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1927">
+          <caret line="248" column="0" lean-forward="false" selection-start-line="248" selection-start-column="0" selection-end-line="248" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/StoryClasses/ObjectiveBox.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="179">
+          <caret line="54" column="87" lean-forward="false" selection-start-line="54" selection-start-column="87" selection-end-line="54" selection-end-column="87" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/StoryClasses/QuestProgressManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="483">
+          <caret line="21" column="55" lean-forward="true" selection-start-line="21" selection-start-column="55" selection-end-line="21" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/StoryClasses/StoryParser.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1375">
-          <caret line="209" column="0" lean-forward="false" selection-start-line="209" selection-start-column="0" selection-end-line="209" selection-end-column="0" />
+        <state relative-caret-position="455">
+          <caret line="174" column="41" lean-forward="true" selection-start-line="174" selection-start-column="41" selection-end-line="174" selection-end-column="41" />
           <folding />
         </state>
       </provider>

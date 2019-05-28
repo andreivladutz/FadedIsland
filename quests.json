@@ -17,7 +17,8 @@
 ],
 "maxStage":5,
 "quest":{
-"monsters":[]
+"monsters":["darkElf"],
+"quota":10
 }
 },
 {
@@ -94,7 +95,11 @@
 [{"text":"Very helpful.","stage":9,"close":true}],
 [{"text":"Do you always speak in code?","stage":10,"close":false}]
 ],
-"maxStage":10
+"maxStage":10,
+"quest":{
+"monsters":["capedSkeleton","rangedSkeleton"],
+"quota":10
+}
 },
 {
 "npc_id":3,
@@ -168,7 +173,11 @@
 [{"text":"Sir......","stage":10,"close":false}],
 [{"text":"Sir yes sir...","stage":10,"close":true}]
 ],
-"maxStage":10
+"maxStage":10,
+"quest":{
+"monsters":["darkElf"],
+"quota":20
+}
 },
 {
 "npc_id":1,
@@ -371,7 +380,11 @@
 [{"text":"What do you mean by all that? I am the one that freed you! Explain yourself!","stage":5,"close":false}],
 [{"text":"I guide the blade myself. I don't need any help.","stage":5,"close":true,"progressObjectives":true}]
 ],
-"maxStage":5
+"maxStage":5,
+"quest":{
+"monsters":["capedSkeleton","rangedSkeleton"],
+"quota":10
+}
 },
 {
 "npc_id":7,

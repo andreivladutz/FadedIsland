@@ -1,5 +1,5 @@
 class Quest {
-    constructor(npc_id, texts, answers, maxStage, objectives) {
+    constructor(npc_id, texts, answers, maxStage, objectives, quest) {
         this.npc_id = npc_id;
         this.texts = texts;
         this.answers = answers;
@@ -8,6 +8,7 @@ class Quest {
         this.maxStage = maxStage;
         this.objectives = objectives;
         this.currentObjective = 0;
+        this.quest = quest;
         this.completed = false;
     }
 }
@@ -115,7 +116,7 @@ class StoryParser {
 
                     for(let i = 0; i < textsArray.length; i++) {
                         quests[i] = new Quest(textsArray[i].npc_id, textsArray[i].texts,
-                            textsArray[i].answers, textsArray[i].maxStage, objectives[i].texts);
+                            textsArray[i].answers, textsArray[i].maxStage, objectives[i].texts, textsArray[i].quest);
                     }
 
                     for(let i = 0; i < textsArray.length; i++)
@@ -177,10 +178,10 @@ class StoryParser {
             StoryParser.save(which);
 
             objectiveBox.showObjective(StoryParser.getObjective());
-            if(progressObjectives)
-                objectiveBox.showQuestProgress("Monster", 0, 10);
-            else
-                objectiveBox.removeQuestProgress();
+            if(progressObjectives) {
+                objectiveBox.showQuestProgress(quest["quest"].monsters, 0, quest["quest"].quota);
+                new QuestProgressManager(quest["quest"].monsters, 0, quest["quest"].quota);
+            }
 
             if(close)
                 this.dialogueBox.remove();
