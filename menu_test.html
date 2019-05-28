@@ -7,16 +7,16 @@
     <link href="css/main_menu.css" rel="stylesheet" type="text/css">
 
     <script src="js/menu.js"></script>
-
 </head>
 
 <body onload="init_menu()">
+    <audio preload="auto" id="click_sound"> <source src="audio/Click.wav" type="audio/wav"> </audio>
     <div id="main_menu_container">
         <div id="main_menu">
             <h1 id = "title">Faded Island</h1>
             <ul>
-                <li class="option" onclick="eraseSavedData()"><a href="index.html">New Game</a></li>
-                <li class="option"><a href="index.html">Continue</a></li>
+                <li class="option" onclick="newGame()">New Game</li>
+                <li class="option" onclick="continueGame()">Continue</li>
                 <li class="option" onclick="getCharacters()">Options</li>
                 <li class="option" onclick="getCredits()">Credits</li>
             </ul>

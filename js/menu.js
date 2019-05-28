@@ -114,6 +114,19 @@ class Menu {
         this.credits = new Credits();
 
         this.addHoveredEffect(this.optionList);
+        
+        this.audio = document.createElement("audio");
+        this.audio.preload = "auto";
+        this.audio.id = "click_sound";
+       
+        let audio_source = document.createElement("source");
+        audio_source.src = "audio/Click.wav";
+        audio_source.type = "audio/wav";
+        
+        this.audio.appendChild(audio_source);
+        
+        this.playSound(this.optionList, this.audio);
+        this.playSound(this.charContainer.characters, this.audio);
         var self = this;
     }
 }
@@ -140,6 +153,15 @@ _menu.getOptionMenu = function () {
 
 }
 
+_menu.playSound = function(list, audioSrc){
+    for(let i of list){
+        i.addEventListener("mouseenter", function(){
+            let cpy = audioSrc.cloneNode(true);
+            cpy.play();
+        })
+    }
+}
+
 _menu.getCredits = function (){
     var check = this.charContainer.inDOM();
     if(check !== null){
@@ -150,8 +172,7 @@ _menu.getCredits = function (){
 
 init_menu = function () {
     menu = new Menu();
-
-
+    CHOSEN = "WARRIOR";
 }
 
 function getCharacters() {
@@ -163,6 +184,13 @@ function getCredits() {
 }
 
 function eraseData(){
-    localStorage.clear();
     alert("AM REUSIT!");
+}
+
+function newGame(){
+    window.location.href = "index.html?continue=false&player="+CHOSEN;
+}
+
+function continueGame(){
+    window.location.href = "index.html?continue=true", true;
 }

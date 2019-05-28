@@ -4,7 +4,10 @@
 }
 
 body {
-    user-select: none;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */   
     cursor: url("../img/menu/STEP-normal.png"), auto;
     font-family: Bleeding_Cowboys, Verdana, Geneva, sans-serif;
 }
@@ -85,12 +88,6 @@ body {
     margin-right: 104px;
     font-size: 50px;
     animation: fadein 3s;
-}
-
-a {
-    color: inherit;
-    text-decoration: none;
-    cursor: inherit;
 }
 
 #scroll_shadow {

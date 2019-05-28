@@ -40,7 +40,8 @@ let DRAWABLE_ENTITIES = [];
 
 function init() {
 	loadingScreen = new LoadingScreen();
-
+	getPreferences();
+	
 	if (DEBUGGING) {
 		let stats = new xStats();
 		document.body.appendChild(stats.element);
