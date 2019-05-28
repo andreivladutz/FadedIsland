@@ -2820,6 +2820,26 @@
         {
          "firstgid":8031,
          "source":"..\/tileset_workfiles\/Sentinel.json"
+        }, 
+        {
+         "firstgid":9123,
+         "source":"..\/tileset_workfiles\/Thulsa.json"
+        }, 
+        {
+         "firstgid":10215,
+         "source":"..\/tileset_workfiles\/Claire.json"
+        }, 
+        {
+         "firstgid":11307,
+         "source":"..\/tileset_workfiles\/Guardswoman.json"
+        }, 
+        {
+         "firstgid":12399,
+         "source":"..\/tileset_workfiles\/Manahan.json"
+        }, 
+        {
+         "firstgid":13491,
+         "source":"..\/tileset_workfiles\/oldGuy.json"
         }],
  "tilewidth":32,
  "type":"map",
