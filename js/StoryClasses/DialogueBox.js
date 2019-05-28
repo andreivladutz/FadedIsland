@@ -115,7 +115,15 @@ _d.setQuestion = function (text) {
 _d.getOptions = function (quest, which) {
     let dialogue = new Dialogue(quest.texts[quest.stage],quest.answers[quest.stage]);
     this.setQuestion(dialogue.text);
-    this.setOptions(dialogue.answers);
+    let answers = [];
+    let counter = 0;
+    for(let answer of dialogue.answers)
+        if(answer.reqPath === undefined ||
+            (answer.reqPath &&
+            answer.reqPath.every(e => StoryParser.getPaths().includes(e.toString())))
+        )
+            answers[counter++] = answer;
+    this.setOptions(answers);
     this.waitOnInput(which);
 }
 
@@ -148,11 +156,17 @@ _d.setOptions = function (options) {
 
     //adding new options onto screen
     for (let i = 0; i < options.length; i++) {
+
         let newOption = document.createElement("li");
         newOption.classList.add("options");
         newOption.appendChild(document.createTextNode(options[i].text));
         newOption.setAttribute("stage", options[i].stage);
         newOption.setAttribute("close", options[i].close);
+        if (options[i].addPath !== undefined)
+            newOption.setAttribute("addPath", options[i].addPath);
+        if (options[i].progressObjectives !== undefined)
+            newOption.setAttribute("progressObjectives", options[i].progressObjectives);
+
         this.options.appendChild(newOption);
 
         let fontSize = parseInt(newOption.style.fontSize);
@@ -169,56 +183,66 @@ _d.setOptions = function (options) {
 _d.waitOnInput = function (which) {
     var allOptions = this.options.childNodes;
     var currentPos = 0;
-    allOptions[currentPos].classList.add("active");
-    window.addEventListener("keydown", function handler(e) {
-        //handles cases when user keeps pressing down
-        if (e.repeat) {
-            return;
-        }
-        //shuffling between different options (not needed if only one option exists)
-        if (allOptions.length > 1) {
-            //left
-            if (e.keyCode === 37 && currentPos > 0) {
-                allOptions[currentPos].classList.remove("active");
-                currentPos--;
-                allOptions[currentPos].classList.add("active");
+    if(allOptions.length !== 0) {
+        allOptions[currentPos].classList.add("active");
+        window.addEventListener("keydown", function handler(e) {
+            //handles cases when user keeps pressing down
+            if (e.repeat) {
+                return;
             }
-            //up
-            if (e.keyCode === 38 && currentPos > 1 && allOptions.length > 2) {
-                allOptions[currentPos].classList.remove("active");
-                currentPos -= 2;
-                allOptions[currentPos].classList.add("active");
+            //shuffling between different options (not needed if only one option exists)
+            if (allOptions.length > 1) {
+                //left
+                if (e.keyCode === 37 && currentPos > 0) {
+                    allOptions[currentPos].classList.remove("active");
+                    currentPos--;
+                    allOptions[currentPos].classList.add("active");
+                }
+                //up
+                if (e.keyCode === 38 && currentPos > 1 && allOptions.length > 2) {
+                    allOptions[currentPos].classList.remove("active");
+                    currentPos -= 2;
+                    allOptions[currentPos].classList.add("active");
+                }
+                //right
+                if (e.keyCode === 39 && (currentPos < allOptions.length - 1)) {
+                    allOptions[currentPos].classList.remove("active");
+                    currentPos++;
+                    allOptions[currentPos].classList.add("active");
+                }
+                //down
+                if (e.keyCode === 40 && currentPos + 2 < allOptions.length) {
+                    allOptions[currentPos].classList.remove("active");
+                    currentPos += 2;
+                    allOptions[currentPos].classList.add("active");
+                }
+                if (e.keyCode === 40 && allOptions.length === 3 && currentPos === 1) {
+                    allOptions[currentPos].classList.remove("active");
+                    currentPos += 1;
+                    allOptions[currentPos].classList.add("active");
+                }
             }
-            //right
-            if (e.keyCode === 39 && (currentPos < allOptions.length-1)) {
-                allOptions[currentPos].classList.remove("active");
-                currentPos++;
-                allOptions[currentPos].classList.add("active");
+            //confirm
+            if (e.keyCode === 32 || e.keyCode === 13) {
+                window.removeEventListener("keydown", handler);
+                StoryParser.getReference().getAnswer(which, allOptions[currentPos].getAttribute("stage"),
+                    allOptions[currentPos].getAttribute("close"),
+                    allOptions[currentPos].getAttribute("addPath"),
+                    allOptions[currentPos].getAttribute("progressObjectives")
+                );
             }
-            //down
-            if (e.keyCode === 40 && currentPos+2 < allOptions.length) {
-                allOptions[currentPos].classList.remove("active");
-                currentPos += 2;
-                allOptions[currentPos].classList.add("active");
+            if (e.keyCode === 27) {
+                window.removeEventListener("keydown", handler);
+                StoryParser.getReference().dialogueBox.remove();
             }
-            if (e.keyCode === 40 && allOptions.length === 3 && currentPos === 1) {
-                allOptions[currentPos].classList.remove("active");
-                currentPos += 1;
-                allOptions[currentPos].classList.add("active");
+        });
+    }
+    else {
+        window.addEventListener("keydown", function handler(e) {
+            if (e.keyCode === 27) {
+                window.removeEventListener("keydown", handler);
+                StoryParser.getReference().dialogueBox.remove();
             }
-        }
-        //confirm
-        if (e.keyCode === 32 || e.keyCode === 13) {
-            window.removeEventListener("keydown",handler);
-            let parser = StoryParser.getReference();
-            setTimeout(function(){
-                parser.getAnswer(which, allOptions[currentPos].getAttribute("stage"),
-                    allOptions[currentPos].getAttribute("close"));
-            },100);
-        }
-        if (e.keyCode === 27)  {
-            window.removeEventListener("keydown",handler);
-            StoryParser.getReference().dialogueBox.remove();
-        }
-    });
+        });
+    }
 }

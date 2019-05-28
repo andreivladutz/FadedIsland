@@ -1,4 +1,5 @@
-[
+{
+"quests":[
 {
 "npc_id":0,
 "texts":["What, someone from the capital came? I thought you forgot abot your damn duties.",
@@ -7,14 +8,18 @@
 "Our crop fields have been overrun with these weird *things* and everyone is getting sick whenever they go out in the fields.We can't really tell why but that's where you come in. Just clear the fields...please.",
 "Thank god. You're a life saver. I know this was just another chore for you, but I really wanted to say I appreciate what you've done for us. Also, here's your reward. Farewell!",
 "Hey, it's you again. How's it going, hero?"],
-"answers":[[{"text":"So what do you want me to do?","stage":3,"close":false},{"text":"How about I came back later when you dropped the attitude?","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
-[{"text":"So what do you want me to do?","stage":3,"close":false},{"text":"Next time, try with 'please' and 'thank you'.","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
+"answers":[[{"text":"So what do you want me to do?","stage":3,"close":false,"progressObjectives":true},{"text":"How about I came back later when you dropped the attitude?","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
+[{"text":"So what do you want me to do?","stage":3,"close":false,"progressObjectives":true},{"text":"Next time, try with 'please' and 'thank you'.","stage":1,"close":true},{"text":"Did something happen?","stage":2,"close":false}],
 [{"text":"I don't see how that's my fault though.","stage":1,"close":false}],
 [{"text":"Getting sick? Sounds like they're just cowards to me.","stage":3,"close":true}],
 [{"text":"Eh, I had fun myself.","stage":5,"close":true},{"text":"Glad to see you're relieved.","stage":5,"close":true},{"text":"Whatever.","stage":5,"close":true}],
 [{"text":"I'm good, thanks.","stage":5,"close":true}]
 ],
-"max_stage":5
+"maxStage":5,
+"quest":{
+"monsters":["darkElf"],
+"quota":10
+}
 },
 {
 "npc_id":1,
@@ -24,32 +29,32 @@
 "It's about my daughter, Claire. She was supposed to be home by now. She went picnicking yesterday to clear her mind but since then the monsters appeared. I am really, really concerned. Please, look out for her."
 ],
 "answers":[[{"text":"Sure, what will it be?","stage":3,"close":false},{"text":"I'm sorry pops, I'm busy. Royal army stuff.","stage":1,"close":true},{"text":"Are you feeling well? You don't look too good.","stage":2,"close":false}],
-[{"text":"I guess I could help then","stage":3,"close":false},{"text":"I'm sure she's just waiting for the fog to clear out. What can go wrong with a little picnic?","stage":1,"close":true},{"text":"What happened to you again?","stage":2,"close":false}],
+[{"text":"I guess I could help then","stage":3,"close":false},{"text":"I'm sure they're just waiting for the fog to clear out.","stage":1,"close":true},{"text":"What happened to you again?","stage":2,"close":false}],
 [{"text":"Oh...","stage":1,"close":false}],
 [{"text":"I'll keep an eye out, go rest for a bit.","stage":3,"close":true}]
 ],
-"max_stage":3
+"maxStage":3
 },
 {
 "npc_id":2,
-"texts":["Oh god, please don't hurt me. It wasn't me,I swear...",
-"It's you again! You won't fool me as well. LEAVE ME ALONE!",
-"The nightmares, oh god the nightmares! They were unbearable. This beast killed me slowly so many times.SO MANY TIMES!!!",
-"AND IT HURT AS MUCH EVERYTIME SHE DID IT! I don't want to go home. My dad, he is already reborn after dying in his dreams. I DON'T WANNA BE REBORN!",
+"texts":["*You find a blond girl crying next to a tent.* ...it cannot be real...it was all in my mind...it must be...WHO ARE YOU? GO AWAY!",
+"IT'S YOU AGAIN! LEAVE ME ALONE!",
+"The nightmares, oh god, the nightmares! They were unbearable. She killed me slowly and painfully many times.SO MANY TIMES!!!",
+"AND IT HURT MORE AND MORE EVERYTIME SHE DID IT! I don't want to go home. My father, he is already reborn. I DON'T WANNA BE REBORN!",
 "I AM IN NO WAY GOING HOME. I am only safe beyond the Mist. I am not crazy... I know I am not crazy..."
 ],
-"answers":[[{"text":"What the hell are you talking about?","stage":2,"close":false},{"text":"Whatever.","stage":1,"close":true},{"text":"Are you Claire? Just come with me, everything will be alright.","stage":4,"close":false}],
+"answers":[[{"text":"Is everything ok?","stage":2,"close":false},{"text":"Whatever.","stage":1,"close":true},{"text":"Are you Claire? Just come with me, everything will be alright.","stage":4,"close":false}],
 [{"text":"What are you talking about?","stage":2,"close":false},{"text":"Maybe I'll come back when you are less of a lunatic.","stage":1,"close":true},{"text":"Just come with me, we'll get home in no time.","stage":4,"close":false}],
 [{"text":"...","stage":4,"close":false}],
-[{"text":"I understand nothing and frankly this is well above my paygrade. Just come home with me, you'll sort it out with your dad.","stage":4,"close":false}],
+[{"text":"I understand nothing and frankly this is well above my paygrade. Just come home with me, you'll sort it out with your father.","stage":4,"close":false}],
 [{"text":"The Mist? The 'poisonous fog' everyone is crying about? I have no time for this, I'll carry you home myself if I have to.","stage":4,"close":true}]
 ],
-"max_stage":4
+"maxStage":4
 },
 {
 "npc_id":1,
-"texts":["Oh thank the gods you brought her back, my little angel. I was so scared.",
-"She said what? I'm afraid these matters concern the locals only, but I guess it won't hurt if I told you, since you've done so much for us.",
+"texts":["Oh, thank the gods you brought her back, my little angel. I was so scared.",
+"Did she mention that? I'm afraid these matters concern the locals only, but I guess it won't hurt if I told you, since you've done so much for us.",
 "Truth is, this island is inhabited by a goddess, and everyone being born here has a part of the god's soul residing within theirs. Rebirthing is when you learn to love that part within you, and understand that all it desires is to protect you.",
 "She said what? Maybe she was just scared of 'rebirthing' and was in denial. I bet she was blabbering a lot of crazy stuff, wasn't she?",
 "So, since my daughter is very sick from that weird fog  that appeared, can I ask you for even more help? I hope this doesn't make you feel bad or used. Claire really needs your help.",
@@ -62,18 +67,18 @@
 [{"text":"I guess I can.","stage":5,"close":false},{"text":"Maybe later.","stage":4,"close":true}],
 [{"text":"Weirdly specific but ok. I'll do it.","stage":5,"close":true}]
 ],
-"max_stage":5
+"maxStage":5
 },
 {
 "npc_id":3,
 "texts":["*You see a very beautiful woman leaving flowers at a gravestone, you wanna approach her but suddenly, a green flame starts forming around her and she starts some kind of incantation on top of the gravestone.*",
 "*You hide behind another gravestone but as you crouch down, the ground itself seems to try and swallow you.*\nWHO IS THERE? STOP HIDING LIKE A RAT AND SHOW YOUR FACE.",
-"Oh? So the little rodent knows my name? Stand up, stop squirming around, it was just a little sand.",
+"Oh? So the little rodent knows my name? Stand up, stop squirming around, it was just a little dirt.",
 "Some old man sent you, huh? Well, you found her. What's your business with her?",
 "Oh, you have attitude now? I can bury you back again with the snap of my fingers. But I guess I won't. What do you need?",
 "Did he really say that? Well, that means YOU, my little soldier boy, are the fabled hero of Mogdrogen's prophecy. Congrats!",
 "Listen, you help me out and I'll do the same for you. You wanna get information, you gotta work for it. Sounds fair?",
-"Ha ha, curiosity killed the cat. Some of the dead bodies caught life and ran away since the Mist outbreak. Since you aren't affected by it, you'll go bury those zombies back where they came from.",
+"Ha ha, curiosity killed the cat. Some of the dead bodies caught life and ran away since the Mist outbreak. Since you aren't affected by it, you'll go bury those skeletons back where they came from.",
 "Uh uh, that's extra info and you haven't even earned the first part. Happy hunting.",
 "If you're in doubt, remember, dead bodies should be inside the ground, not outside running.",
 "Hey, you actually pulled this through. And you're barely scratched. You might be more than meets the eye, I'm impressed. Looks like Morrighan was right afterall."
@@ -84,12 +89,489 @@
 [{"text":"He told me to tell you that 'the dove broke its wings'. I have no idea what this means but he said you'll get it.","stage":5,"close":false}],
 [{"text":"He told me to tell you that 'the dove broke its wings'. I have no idea what this means but he said you'll get it.","stage":5,"close":false}],
 [{"text":"I'm sorry, I'm what now? Is everyone on this island a lunatic?","stage":6,"close":false},{"text":"Prophecy of who?","stage":6,"close":false}],
-[{"text":"It seems to me both these things suit you, but I guess I'm a bit intrigued.","stage":7,"close":false},{"text":"I don't really care about your stories, give me a minute to think about your offer.","stage":6,"close":true}],
+[{"text":"It seems to me both these things suit you, but I guess I'm a bit intrigued.","stage":7,"close":false,"progressObjectives":true},{"text":"I don't really care about your stories, give me a minute to think about your offer.","stage":6,"close":true}],
 [{"text":"Sounds fair enough... Wait, what do you mean I am not affected? Why is that?","stage":8,"close":false}],
 [{"text":"......I guess......","stage":9,"close":true}],
 [{"text":"Very helpful.","stage":9,"close":true}],
 [{"text":"Do you always speak in code?","stage":10,"close":false}]
 ],
-"max_stage":10
+"maxStage":10,
+"quest":{
+"monsters":["capedSkeleton","rangedSkeleton"],
+"quota":10
+}
+},
+{
+"npc_id":3,
+"texts":["So? How did it go?",
+"Lovely, lovely. Well, I guess I'm due some explanations then. What should I start off with? Hmm...",
+"Mogdrogen. Prophecy of Modgrogen. He is the Witch God, and I so happen to be his oracle. He is known to read the future of his followers to them, and he has not been wrong yet.",
+"Yes, I am a witch, obviously. It wasn't a trick. Can we move on, now?",
+"Well I, as his oracle, am bound to know the future of me and my tribe and so, I am responsible for the wellbeing of my tribe. His last prophecy is as far from good as possible. And let's just say it all depends on you.",
+"The prophecy reads: 'When Manahan, the God of Envy decides he can't cope with the hate he has for his sister, Morrighan, Goddess of Purity, he will infect Khali, Morrighan's Holy Ground, with Dullahan's own God-Sealer to corner Morrighan and render her powerless, hidden among the townsfolk, and then will use his power to destroy the island, and inherently, the witch tribe living on it.",
+"What Manahan cannot predict is that a warrior risen from 'the World of Those Greedy and Selfish' will make the supreme sacrifice to protect the Goddess and all she stands for by defeating the God of Envy and reclaiming the Holy Ground in the name of Morrighan.",
+"Are you daft? YOU are the warrior from 'the World of Those Greedy and Selfish'! The human world! Morrighan has guided you to me because she knew you were the one.",
+"Morrighan, through the soul of the people residing in the village, has guided you to me. You know what? Go to the village. Ask Largo, or 'that old man' as you call him, about Morrighan and Manahan if you wanna know more. He's the town wise, I'm just a witch, he's bound to know more than me. Also, give him this talisman. Tell him it's for Claire.",
+"Well, first things first. This island is inhabited and protected by a God named Morrighan. She was gifted this island by her father, Dullahan, and her brother, Manahan, was so envious on her, that he started to hate her.",
+" Well recently, he stole a weapon from his father's arsenal, the God-Sealer, to release a poisonous gas that will prevent Morrighan from travelling across the island.",
+"Look, I'm trying my best and you keep using your little soldier brain to make fun of what I say. How about you go talk to Largo, the old man that sent you here? He is the town wise and also I'm done with your attitude for the time being. Oh, and almost forgot, give him this talisman. Tell him it's for Claire.",
+"Look, just go and ask Largo about this, the old man that sent you here. He is the town wise and knows a lot more about these local affairs. Also, give him this talisman. Tell him it's for Claire."
+],
+"answers":[[{"text":"They're dead. Deader, I guess. They're definitely not walking around anymore.","stage":1,"close":false}],
+[{"text":"How about the 'prophecy of WhatsHisName'?","stage":2,"close":false},{"text":"Start with the Mist. And the reason everyone is crying about it.","stage":9,"close":false}],
+[{"text":"Witch God, and you're his oracle. So that makes you a witch, right? That's why you could move the ground around me, right?","stage":3,"close":false},{"text":"...","stage":4,"close":false}],
+[{"text":"My bad. Go on.","stage":4,"close":false}],
+[{"text":"What was the prophecy?","stage":5,"close":false}],
+[{"text":"...","stage":6,"close":false}],
+[{"text":"Ok, so where do I come in?","stage":7,"close":false},{"text":"Oh...","stage":8,"close":false}],
+[{"text":"Oh...","stage":12,"close":false}],
+[{"text":"*You look at the crystal inside the talisman. It's quite mesmerizing.*","stage":12,"close":true}],
+[{"text":"...","stage":10,"close":false}],
+[{"text":"That sounds pretty far fetched. You got any other, you know, LOGICAL explanation?","stage":11,"close":false},{"text":"Sounds kind of hard to believe, sorry.","stage":12,"close":false}],
+[{"text":"Whatever.","stage":12,"close":true}],
+[{"text":"*You look at the crystal inside the talisman. It's quite mesmerizing.*","stage":12,"close":true}]
+],
+"maxStage":12
+},
+{
+"npc_id":1,
+"texts":["You're back. I assume Fraya got the message?",
+"Did she really? Well, I'd love to chat with you, but I have to put the talisman to use. By the way, your superiors sent a sentry after you. And since they couldn't find you where you were supposed to be, they asked me to give you this message.",
+"'Every unit must be at the rendez-vous at Khali beach A.S.A.P. This is a direct order from General Eisenhower.' Captain C. Marshall.",
+"So are you in trouble or not?"
+],
+"answers":[[{"text":"She gave me this talisman. Said it's for Claire. Now, time for you to answer some questions, Fraya left me in the dark...","stage":1,"close":false}],
+[{"text":"Oh god, am I in trouble? You're the one who sent me to that witch...","stage":2,"close":false}],
+[{"text":"Seems like I'll ask the questions later. I gotta go.","stage":3,"close":false}],
+[{"text":"I'll find out soon.","stage":3,"close":true}]
+],
+"maxStage":3
+},
+{
+"npc_id":4,
+"texts":["Soldier! Where have you been? I've been informed you were not at your supposed location.",
+"Have you...drunk sake soldier? You smell an awful lot like sake.",
+"It matters not right now. Go in formation. We'll talk about this incident later. I'll make sure we do.",
+"Warriors. We have been dispatched here by the General himself. He knows the duties he has towards the islands under the king's jurisdiction and you better damn know them as well.",
+"There is a plague around this island that affects the animals and people alike. We do not know the reason it appeared, nor what it is exactly. All we know is the village is safe and the fields are not. Our job is to make sure the fields are safe as well.",
+"On my signal, we charge the beasts infecting the park to the west. Anyone has any questions?",
+"THEN GET OUT THERE. TIME TO TEACH THESE MONSTROSITIES A LESSON.",
+"What are you waiting for, soldier? The orders are clear. Eliminate the threat at the park to the west of the beach. Dismissed.",
+"Good job soldiers. You made short work of those creatures. Today we leave here victorious. Everyone, dismissed.",
+"You. The one from earlier. Care to explain to me once again why you were chasing 'witches' at the cemetery while smelling of sake? I'll make sure the quartermaster hears about this. Meanwhile, why don't you go back to the 'town wise' and run chores for him a bit more? Maybe it'll wake you up. Dismissed.",
+"No more talking back. You misbehaved enough. Now go before I send you back to the bootcamp."
+],
+"answers":[[{"text":"I was helping the townsfolk as asked, sir. The town wise asked me to deliver a message to some witch at the cemetery.","stage":1,"close":false}],
+[{"text":"I smell like what sir? I assure you, I haven't touched any beverage way before deployment sir.","stage":2,"close":false}],
+[{"text":"Sir...sir yes sir.","stage":3,"close":false}],
+[{"text":"'SIR YES SIR'","stage":4,"close":false}],
+[{"text":"'SIR YES SIR'","stage":5,"close":false}],
+[{"text":"'SIR NO SIR'","stage":6,"close":false}],
+[{"text":"'SIR YES SIR!!'","stage":7,"close":true,"progressObjectives":true}],
+[{"text":"Sir yes sir.","stage":7,"close":true}],
+[{"text":"*Loud cheers by the whole platoon*","stage":9,"close":false}],
+[{"text":"Sir......","stage":10,"close":false}],
+[{"text":"Sir yes sir...","stage":10,"close":true}]
+],
+"maxStage":10,
+"quest":{
+"monsters":["darkElf"],
+"quota":20
+}
+},
+{
+"npc_id":1,
+"texts":["Ha ha, I knew you would be back. You can't avoid destiny, my soldier friend.",
+"Hm? You mean the quarrel with the captain? I guess he just wanted to make sure our village is safe, ha ha.",
+"Oh, you're right, you didn't, I just uhh... I guessed? Well, truth is, the Goddess herself used her powers to make sure you fulfill your destiny.",
+"That is correct, yes. I am glad we are on the same page.",
+"No, please, don't get this wrong. The goddess depends on your heroism and selflessness to overcome her evil brother. It is still your choice afterall.",
+"Well, I guess I do owe you some answers. Afterall, you are the one that must fulfill the prophecy.",
+"Where do I start...Many epochs ago, Dullahan, God of the Defenders, gave 'birth' or whatever you wanna call it, to two children, Manahan was the elder one, God of Envy, and Morrighan was the younger one, Goddess of Purity.",
+"Since their childhood, Manahan had the duty to protect his younger sister, even though it sometimes meant he had to sarcrifice his well-being for her sake. But that is what elder brothers are supposed to do, it was his destiny. As they grew older, Manahan started to grow tired of his duty and envious of the way everyone treated Morrighan, but he kept going on as her rightful guardian.",
+"*Largo sheds a tear* Sometimes, she really regrets she didn't thank Manahan for what he's done, and I think she really loves him. If only envy wouldn't get in the way, Manahan and Morrighan would still love eachother...",
+"Well, legends have got to have some truth in them, don't they?",
+"You see, not too long ago, Dullahan gave Morrighan this island as a present. And well, Manahan got very envious about it. But it's not that hard to understand. His whole life, all he did was care for his sister.",
+"Thinking about it, I don't even know if Morrighan deserved this island at all. Oh, only if envy wouldn't get in the way of things. But the deed is done and gods don't back down, do they?",
+"I'm glad to see banter is included in the Royal Army's starter pack.",
+"This is where it gets interesting. You see, in order to get hold of the island, or at least to lock Morrighan in place, Manahan used Dullahan's God Sealer, one of their father's artifacts, to create a very potent fog around the island, the kind that was designed to keep other mischevous gods locked in dimensional prisons.",
+"But it was considered such a violent means of control, that he stopped using it and resorted to less painful methods, like temporal prisons.",
+"My child, envy is a very strong feeling. It makes you disregard all common sense and resort to everything you can to reach your goal.",
+"Well this is exactly why you aren't affected by it. 'GOD' Sealer, remember? It only works on spiritual beings, not physical.",
+"They have Morrighan's essence flowing through their veins, so the pain they feel from the Mist is very real, but it's not affecting them physically, only spiritually. They go through agonizing pain, but it's only in their mind. The body does not feel any pain. I do not quite know how to explain it, but be sure they suffer way more than from a sword cut.",
+"She is, indeed, walking among us via one of the villagers.",
+"No no no, you're making it sound way worse than it is. She's simply in complete union with one of the villagers. But it is considered the utmost honor to be the oracle of a god. Especially in a time where the safety of their native land is threatened.",
+"Well, I cannot tell you who she is in control of, only the locals are allowed to know. But I can give you one hint about one and only one local. Your choice.",
+"Wow, straight to the money. Well, all I can say is if Morrighan would have chosen an old man as her vessel, she would need to have a young oracle to take the old man's place, right? She cannot make physical bodies immortal.",
+"Heh, that is all I could do. Now it's time you got to work. We chattered enough already.",
+"Well, maybe I've said more than the Goddess would like me to, so how about we move on to important matters now?",
+"You cannot take your mind off that girl, can you? I know she might have come off to you as a lunatic, but she has her reasons. Standing too much in the Mist gives you terrible nightmares and immeasurable mental pain. But she would make a great oracle would her mind be clearer. All she needs is to get stronger from the Mist wounds.",
+"I guess so. Not in a skeleton kind of way though. Either way, we chattered enough. You have work to do.",
+"Go to Fraya. They have caught a traitor and they think she's under Manahan's influence. I'm sure Fraya can explain it better."
+],
+"answers":[[{"text":"Do I smell like sake?","stage":1,"close":false}],
+[{"text":"I didn't say anything about the captain though.","stage":2,"close":false}],
+[{"text":"So if I was let back to mainland, that would mean I'd never come back here and help her.","stage":3,"close":false},{"text":"Well here I am, so let's get this over with. I got many questions that you'll have to answer.","stage":5,"close":false}],
+[{"text":"Well that doesn't sound like destiny at all if a god had to intervene...","stage":4,"close":false}],
+[{"text":"And now getting to the main point. How about you explain to me all this gods stuff? Like the brothers and the Mist and whatever else?","stage":5,"close":false}],
+[{"text":"I gotta know what I'm gonna sacrifice myself for, right?","stage":6,"close":false}],
+[{"text":"...","stage":7,"close":false}],
+[{"text":"...","stage":8,"close":false}],
+[{"text":"Are you crying? Is everything ok? You seem a little bit too invested in this story. I'm sure they're just legends.","stage":9,"close":false},{"text":"Can we get to the island situation please?","stage":10,"close":false}],
+[{"text":"I guess they do. What about the island? What does it have to do with Morrighan?","stage":10,"close":false}],
+[{"text":"...","stage":11,"close":false}],
+[{"text":"I guess they don't. Are you sure you aren't making this story up? It seems a bit too detailed. Did you read their journals or something?","stage":12,"close":false}],
+[{"text":"How about the Mist? And God...Stopper...something...thingy?","stage":13,"close":false}],
+[{"text":"...","stage":14,"close":false}],
+[{"text":"So why would Manahan use this against his own sister?","stage":15,"close":false}],
+[{"text":"And why does it not affect me then? I'm surely not stronger than a god.","stage":16,"close":false}],
+[{"text":"What about the villagers though? Are they some kind of ghosts as well?","stage":17,"close":false}],
+[{"text":"Well, you said earlier that Morrighan is forced to hide among the villagers.","stage":18,"close":false}],
+[{"text":"So she has possessed a villager? Is that what you're trying to say?","stage":19,"close":false}],
+[{"text":"So the oracle is the vessel of a god? Either way, I'd love to have a chat with her about this prophecy.","stage":20,"close":false}],
+[{"text":"What about you? Nah, that would be too direct...Are you though?","stage":21,"close":false,"addPath":1},{"text":"Is Claire under Morrighan's control?","stage":24,"close":false,"addPath":2}],
+[{"text":"Great hint. Everyone here is so full of riddles, aren't they?","stage":22,"close":false},{"text":"Oh, I think I got the message. I think it all makes sense now.","stage":23,"close":false}],
+[{"text":"What do you need me to do?","stage":26,"close":false}],
+[{"text":"I'm all ears.","stage":26,"close":false}],
+[{"text":"I don't know what I expected.","stage":22,"close":false},{"text":"Get stronger? Kinda like...rebirthing...","stage":25,"close":false}],
+[{"text":"What do you need me to do?","stage":26,"close":false}],
+[{"text":"Here I go chatting again.","stage":26,"close":true}]
+],
+"maxStage":26
+},
+{
+"npc_id":3,
+"texts":["I've been waiting for you. I'll get to the point. Right after the Mist outbreak, Thulsa, one of my sisters, started acting very strange. First she said she had twisted visions about things to come, then she started attacking us. We think she got mind controlled by Manahan.",
+"We denounced her to the castle guards. She is locked inside one of the cells in the castle prison. I suggest you go speak with her, get as much info about Manahan as possible.",
+"You're a soldier, dummy. I'm sure you can find a way to uhh...make her talk.",
+"I thought you said you are not a mind reader? Although my obligations to my tribe as an oracle forbid me from letting you harm her. So no, you can't torture her.*wink*",
+"Shut up and be a big boy. You know you can't avoid it.",
+"Do whatever you want. Just, make sure you learn what you need to learn."
+],
+"answers":[
+[{"text":"Where is she now?","stage":1,"close":false}],
+[{"text":"And how am I supposed to do that? I'm no mind reader.","stage":2,"close":false}],
+[{"text":"So you want me to torture her? Is that it?","stage":3,"close":false}],
+[{"text":"Message received. Loud and clear.","stage":5,"close":false},{"text":"You guys really think I'm all no soul, don't you? What if I don't want to torture her?","stage":4,"close":false}],
+[{"text":"I can talk the information out of her. At least I'll try.","stage":5,"close":false}],
+[{"text":"I'll try my best.","stage":5,"close":true}]
+],
+"maxStage":5
+},
+{
+"npc_id":5,
+"texts":["I could smell your fear the moment Fraya sent you here. You are not a child of Morrighan. You are the outsider.",
+"This is it? The one to stop the Dark Lord is a wussy? I spit in your face.",
+"You think this wretched hag still has a mind of her own? Oh, child. Morrighan will succumb to her own indulgence.",
+"YOU DARE CALL MANAHAN, SON OF DULLAHAN, A FAKE GOD? I'LL BURY YOU WITHIN THIS CURSED ISLAND BEFORE I...before I...ughh...SILENCE YOU WORTHLESS WITCH.",
+"*Thulsa starts crying* YOU CANNOT!...Manahan...is not...don't let...SHUT! UP!!!...Claire...reborn...before it's too l..ENOUGH!!",
+"Mogdrogen is not......a god........Arggggggh!!!! YOU SPOKE ENOUGH!",
+"*Thulsa starts bleeding from her mouth and falls to the ground* Don't...let Claire......",
+"You think a God flinches from the pain of a mere metal blade? I was raised and trained by the God of the Protectors, with the cruelest torture devices you could think of. Physical pain is nothing to me.",
+"You dare threaten me, mortal?",
+"Arggh...ARGGH...You are powerful...human...meet me...at the nadir...of the dungeon...below...Khali...argggh......",
+"*Thulsa lies on the cold prison floor. There is a talisman with a broken crystal inside, hanging by her neck. It reminds you of something, but can't quite put your finger on it.*"
+],
+"answers":[
+[{"text":"Hello Mrs. Thulsa. I have no intent to harm you. I just want to know what happened to you.","stage":1,"close":false},{"text":"It might be the fear of killing you by mistake before finishing the inquest.","stage":7,"close":false}],
+[{"text":"I know everyone, including you, expects me to take answers by force, but I believe there is still some humanity left in you.","stage":2,"close":false},{"text":"THEN I WILL SPIT ON YOUR DEAD BODY!","stage":7,"close":false}],
+[{"text":"Thulsa! Listen to me, I know you can hear me. Stand up for yourself! Don't let yourself walked on by a fake god.","stage":3,"close":false},{"text":"Well, I tried my best. Time to talk, ghost boy.","stage":7,"close":false}],
+[{"text":"Thulsa! Fight! You are not a soulless vessel. Fight with the pride left in you now!","stage":4,"close":false,"addPath":3}],
+[{"text":"THULSA! TALK!","stage":5,"close":false,"addPath":2}],
+[{"text":"THULSA!!!!","stage":6,"close":false}],
+[{"text":"Thulsa...thank you.","stage":9,"close":false}],
+[{"text":"*You unsheathe your blade and grab Thulsa by her neck* We will see after you start bleeding.","stage":8,"close":false}],
+[{"text":"*You slowly cut Thulsa's neck* Bleed for a mortal, god!","stage":9,"close":false}],
+[{"text":"What the hell is a nadir? ANSWER ME!!","stage":10,"close":false}],
+[{"text":"Well, she is dead alright.","stage":10,"close":true}]
+],
+"maxStage":10
+},
+{
+"npc_id":3,
+"texts":[
+"You took your time. How did it go?",
+"It's always sad to hear this about a sister. But it had to be done. Did you find any valuable info?",
+"Nadir means lowest point, dummy. He's waiting for you at the deepest part of the dungeon. Any way to go down there though?",
+"You might be right. Go back and tell Largo what you've learned. I'm sure he'll be the biggest help you can get right now.",
+"Yes I am. Oracle of Mogdrogen, the Witch God.",
+"I don't understand the question.",
+"I mean...Yes, sure. I'm still me. What's this all about?",
+"I'm sure that through Largo, Morrighan will guide you to the dungeon. Good luck."
+],
+"answers":[
+[{"text":"Thulsa is dead.","stage":1,"close":false}],
+[{"text":"Just that Manahan waits for me in the dungeon below the island. He said something about a 'nadir' though.","stage":2,"close":false}],
+[{"text":"I think Morrighan might know the way.","stage":3,"close":false}],
+[{"text":"I have a question before I go, though. You said you're an oracle, right?","stage":4,"close":false,"reqPath":[2]},{"text":"I'll get going then.","stage":7,"close":false}],
+[{"text":"And how does it work, exactly? You still have free will, right?","stage":5,"close":false}],
+[{"text":"You're still Fraya, right?","stage":6,"close":false}],
+[{"text":"I was just curious. Guess I'll go now.","stage":7,"close":false}],
+[{"text":"See ya.","stage":7,"close":true}]
+],
+"maxStage":7
+},
+{
+"npc_id":1,
+"texts":[
+"You are back. I hope with useful information about Manahan.",
+"Are you sure? Seems like that information was given away pretty easily.",
+"Then he shall wait no more. Take some time to make preparations. The Dungeon Key is hidden in a locker somewhere in the woods. The location is highly secretive, not even I know it, but through the power of faith, Morrighan will guide me towards the location. I want you to meet me at the Fountain, on the center of the island.",
+"Morrighan is deeply thankful for all you've done for us, and for her."
+],
+"answers":[
+[{"text":"He's hiding in the dungeon below Khali.","stage":1,"close":false}],
+[{"text":"He said he is waiting for me.","stage":2,"close":false}],
+[{"text":"I will be ready.","stage":3,"close":false}],
+[{"text":"I will not fail.","stage":3,"close":true}]
+],
+"maxStage":3
+},
+{
+"npc_id":8,
+"texts":[
+"*As you go past one of the tents, you hear a loud scream. Sounds like...*",
+"*As you draw closer to the tent, you hear another deafening scream*",
+"It's burning...my eyes...I cannot see...help me please!!!",
+"*You notice a glowing green crystal necklace hanging around her neck*",
+"*Claire shouts from the bottom of her lungs as you try to take of the talisman* STOP IT!! THE BEAST IS GETTING CLOSER!",
+"*As you try to snap the talisman from her neck, the crystal pops* What...have you done? *Blood starts dripping from Claire's mouth as she lies down on her bed.*",
+"ARGGGHHH.....",
+"Leave...now..."
+],
+"answers":[
+[{"text":"Claire? Is that you?","stage":1,"close":false}],
+[{"text":"Claire!","stage":2,"close":false}],
+[{"text":"What is going on? You look perfectly fine.","stage":3,"close":false}],
+[{"text":"(Take it down)","stage":4,"close":false,"reqPath":[3]},{"text":"(Don't touch it) It's the talisman Fraya gave her. Her inner demons are getting drawn out!","stage":6,"close":false,"addPath":5}],
+[{"text":"(Keep going)","stage":5,"close":false,"addPath":4},{"text":"The beast? The one from her dreams. The talisman is working!","stage":6,"close":false,"addPath":5}],
+[{"text":"Oh god, what have I done?","stage":7,"close":false}],
+[{"text":"There's nothing I can do!","stage":7,"close":false}],
+[{"text":"(Exit Claire's tent)","stage":7,"close":true}]
+],
+"maxStage":7
+},
+{
+"npc_id":1,
+"texts":["Well, here we are. As soon as you go down there, it will only be you. The nadir of the dungeon is the central garden.",
+"Good luck, my friend. Remember, Morrighan trusts you. Not many humans have the honor of having her trust, but you do."
+],
+"answers":[
+[{"text":"I will do what must be done.","stage":1,"close":false}],
+[{"text":"I will not fail her.","stage":1,"close":true}]
+],
+"maxStage":1
+},
+{
+"npc_id":6,
+"texts":[
+"Welcome. I am but a sentinel, left here by Dullahan, God of the Defenders. I must warn you, this prison is made to keep gods inside. A human cannot fathom to tread the temporal lockdown of its Central Garden.",
+"Excuse me? Such words. From a mere mortal. How dare you bring Dullahan's children's name like that?",
+"*With a snap of his fingers, the gates towards the Central Garden close. You see two spirits emerging from the sentinel, going in different directions.*",
+"If you are decided on your mission, then you will have no problem opening the door. This door is opened by the soul of the Sapphire Dragon. My soul. There are two rooms holding the guardians of the Sapphire Dragon. Find the rooms. Kill the guardians. Then slay the Sapphire Dragon, and with its soul, open the door to the Central Garden.",
+"At last! My soul is free...free from the shackles of Dullahan. I am his sentinel no more. You truly are a blessed warrior. But for that I must say, that the decision you are going to take after passing into the temporal prison is far from heroic. You might be the edge of a blade you do not know the holder of.",
+"May Morrighan guide your blade. Be it for right or wrong."
+],
+"answers":[
+[{"text":"Move away spirit. I was sent by Morrighan to kill Manahan.","stage":1,"close":false}],
+[{"text":"Move. Away.","stage":2,"close":false}],
+[{"text":"What have you done??","stage":3,"close":false,"progressObjectives":true}],
+[{"text":"Watch me, spirit.","stage":3,"close":true}],
+[{"text":"What do you mean by all that? I am the one that freed you! Explain yourself!","stage":5,"close":false}],
+[{"text":"I guide the blade myself. I don't need any help.","stage":5,"close":true,"progressObjectives":true}]
+],
+"maxStage":5,
+"quest":{
+"monsters":["capedSkeleton","rangedSkeleton"],
+"quota":10
+}
+},
+{
+"npc_id":7,
+"texts":[
+"You...fool...brainwashed by Morrighan...and those damned witches...they have no god...",
+"There is no prophecy...Mogdrogen does not exist...The witches...sell their souls to any god willing to give them power...",
+"God of...Envy? My name is...Manahan, God of Shieldmen...",
+"The girl...you must not let Morrighan...possess her...",
+"I can feel Claire nearby...the Soul Catcher...is latched...*Manahan starts crying* My sweet child...",
+"I can feel Claire nearby...it's not too late...please...keep her alive...she is the true heir to the island...",
+"*Manahan's soul fades away*"
+],
+"answers":[
+[{"text":"What? What do you mean by all that?","stage":1,"close":false}],
+[{"text":"You cannot lie to me. Drown in your own sorrow, God of Envy!","stage":2,"close":false,"addPath":6},{"text":"So that means...Morrighan made a pact with the witches?","stage":3,"close":false,"addPath":7}],
+[{"text":"NO MORE LIES!","stage":6,"close":true}],
+[{"text":"I've done a grave mistake...","stage":4,"close":false,"reqPath":[5]},{"text":"It's already taken care of.","stage":5,"close":false,"reqPath":[4]}],
+[{"text":"The talisman!","stage":6,"close":false}],
+[{"text":"Then Morrighan...","stage":6,"close":false}],
+[{"text":"The prophecy is fullfilled.","stage":6,"close":true,"reqPath":[6]},{"text":"I hope it's not too late to make things right.","stage":6,"close":true,"reqPath":[7]}]
+],
+"maxStage":6
+},
+{
+"npc_id":1,
+"texts":[
+"*You see Largo, and he's brought Claire with him* You've done it. I cannot believe you've actually done it. I've never seen a man slay a god before and I could not think it possible.",
+"You probably think of me as a soulless monster, don't you? But...but...*Largo starts crying* I've always loved Manahan. I've always appreciated all the things he's done to me...My heart is broken knowing that he's gone now! And it's all my fault...",
+"You want the truth? Fine! Manahan was not the God of Envy. I am the God of Envy! And all my life, all I ever wanted was the attention and love I thought I deserved. But now I realise. I am nothing. I deserve nothing. I am a snake, I got my own brother killed, by even lying to someone else. All he's done was protect me, care for me, love me. And what have I done for him? Imprison him, torture him and get him killed.",
+"This is Manahan's island. An island truly his, every being having Manahan's essence flowing through it. Every human, animal and plant bows to Manahan. And Manahan always listened to their wishes and cared for them. Even the witches. Those filthy nomad creatures, having respect for no god. Claire is the purest soul of this island. So pure, only Manahan would be ever able to influence her. Except...",
+"Claire's will was so strong that it was near impossible for myself as well. I could only instill a seed of madness into her mind, in hopes that her will would shatter. But Manahan unleashed the God-Sealer to separate her from me. Claire is his true heir to the throne. But now, that the deed is done, as much as I loved Manahan...",
+"I truly appreciate all that you've done for me. But I cannot control my envy. Each time I saw Manahan getting something, getting praised for anything...I would go into a maddening frenzy until I would hate him. Even now, after realising the wrong in my ways, I cannot silence the voices in my head. I'm sorry, warrior.",
+"I'm afraid it's too late to change destiny now.",
+"THE SOUL CATCHER! HOW DARE YOU BACKSTAB ME, YOU LITTLE WORM? I WILL SINK THIS WHOLE ISLAND DOWN WITH YOU BURIED BENEATH IT, LIKE A SEWER RAT!",
+"*As you speak, you see Claire charging with Manahan's energy and glowing a bright white.* You defied two gods, and won each time...You truly are a wonder, warrior. *Claire starts absorbing Morrighan's essence from Largo, as he falls, lifeless, to the ground.*",
+"You stood faithful to the Goddess, the rightful owner of Khali and its citizens and abolished the evil trying to take over. For that, we all thank you. Deeply.",
+"Yes, my dear. That will be Claire and her sacrifice to the greater of the island.",
+"Claire is Morrighan's oracle. Her destiny is to harbor Morrighan's soul.",
+"*In a flash of light, Claire dissapears and Largo falls dead to the ground.*",
+"So you knew afterall. Looks like I knew to trust in your faith. Even though it all seemed wrong, you still had faith in me to guide you towards the right path. For that, I thank you.",
+"Now, it's time for Claire to do her part of the prophecy. So long, warrior.",
+"What do you mean? You did exactly as I asked of you. You can go back to your superiors with knowing that you did what was right for Khali.",
+"The Soul Catcher is...broken...How did this...DID YOU, YOU MONKEY, DID YOU BREAK IT?",
+"So you listened to Manahan. You see, my child, when gods let envy decide for them, the taken path isn't always the right path. *Largo starts sobbing* They sometimes take bad decisions, that get them or someone they love killed. But such is existence. Sometimes, we let envy get the best of us.",
+"I'm afraid you are correct. Morrighan is, in fact, the God of Envy. And she used you to take over Manahan's island. I'm sorry you had to find this the hard way.",
+"I'm sorry we had to lie to you. I hope you will forgive us one day. And not think of this island as a cursed one.",
+"Would you really do something so irrational, warrior? After all the suffering she went through, will you deny her the destiny that awaits her?",
+"What have you done? WHAT HAVE YOU DONE?? *After a bright flash, you see Morrighan's soul leaving Largo's body, as he drops dead to the floor.*",
+"*Largo lies dead on the floor*"
+],
+"answers":[
+[{"text":"Morrighan! You've tricked me enough. Time to tell me truth before I sink this island myself.","stage":1,"close":false,"reqPath":[1,7]},
+{"text":"I did what was expected of me to do.","stage":9,"close":false,"reqPath":[6]},{"text":"I've done it for you, Morrighan!","stage":13,"close":false,"reqPath":[1,6]},
+{"text":"Old man! It's time you tell me the truth about this damned island and these false gods before I gut you like I did with Manahan!","stage":17,"close":false,"reqPath":[7]}],
+[{"text":"Then why did you send me to kill him? TELL ME THE TRUTH! NO MORE LIES!","stage":2,"close":false}],
+[{"text":"What are you talking about? Imprison him?","stage":3,"close":false}],
+[{"text":"Except his family.","stage":4,"close":false}],
+[{"text":"You are going to possess Claire in her weakened state and take control of the island...","stage":5,"close":false}],
+[{"text":"Then the voices are not going to like what comes next, Morrighan.","stage":6,"close":false,"reqPath":[4]},{"text":"You won Morrighan. I have no obligations to anyone on this island, nor to any god.","stage":14,"close":false,"reqPath":[5]},{"text":"(Grab Claire) What if I kill Claire right now? Where would that leave you, Morrighan?","stage":20,"close":false,"reqPath":[5]}],
+[{"text":"Who said anything about doing something now?","stage":7,"close":false}],
+[{"text":"I'm afraid it's too late to change destiny now. Isn't that what you just said?","stage":8,"close":false}],
+[{"text":"So long.","stage":22,"close":true}],
+[{"text":"The prophecy said something about a sacrifice.","stage":10,"close":false,"reqPath":[5]},{"text":"Whenever you need me, I'll be here.","stage":22,"close":false}],
+[{"text":"What?? I thought I was the sacrifice! What does Claire have to do with any of this?","stage":11,"close":false}],
+[{"text":"You lied to me. Morrighan is by no means merciful. First you tortured Claire, and then you sacrificed a witch, and now you want to sacrifice Claire as well? I am tired of this facade. (Slay Largo)","stage":22,"close":true,"reqPath":3},{"text":"If this is destiny, then so be it. I am not responsible for anyone on this island.","stage":12,"close":false}],
+[{"text":"This does not concern me anymore. It was destiny.","stage":22,"close":true}],
+[{"text":"Always, goddess.","stage":14,"close":false},{"text":"Yeah, something like that.","stage":15,"close":false,"reqPath":[4]}],
+[{"text":"I can't believe I let Claire go...","stage":12,"close":false}],
+[{"text":"Yeah, about that...","stage":16,"close":false}],
+[{"text":"I wasn't going to let Claire suffer like that. I knew something was wrong so I did what I thought was right.","stage":8,"close":false}],
+[{"text":"What the hell is this supposed to mean? Manahan told me he is not the God of Envy. So does that mean...","stage":18,"close":false}],
+[{"text":"So you tricked me into thinking I'm the good guy. I get how it is.","stage":19,"close":false}],
+[{"text":"Well, I hope you will not think ill of me neither for what I've done...","stage":16,"close":false,"reqPath":[4]},{"text":"You won Morrighan. I have no obligations to anyone on this island, nor to any god.","stage":14,"close":false,"reqPath":[5]},{"text":"(Grab Claire) What if I kill Claire right now? Where would that leave you, Morrighan?","stage":20,"close":false,"reqPath":[5]}],
+[{"text":"She suffered enough. I'd rather put her to rest than see a monster walk around in her body. (Cut Claire's neck)","stage":21,"close":false},{"text":"You're right. I can't do this to her. This is not my fight. This does not concern me. I just wanna get away from this cursed island.","stage":14,"close":false}],
+[{"text":"Oh Claire, I'm so sorry. I'm so sorry...","stage":22,"close":true}],
+[{"text":"It was destiny.","stage":22,"close":true}]
+],
+"maxStage":4
+}
+],
+"defaults":[
+"You have no business here, soldier. This is our territory. Leave.",
+"Hello. Can I help you with anything, young man?",
+"*Sobbing* What do you want? I don't know you, leave me alone, PLEASE!",
+"How dare you trespass sacred ground, soldier pig? You're not a local, go back to where you came from!",
+"You have anything to report, soldier?",
+"I could smell your stench from miles away. Get out of my eyes.",
+"This is not a place for mortals. Leave. Now.",
+"You've bested a god. Very impressive, soldier. You truly are blessed.",
+"(It's just an empty tent)"
+],
+"objectives":[
+{
+"texts":[
+"The local guards have requested aid from the capital. Go and talk to the guards leader.",
+"The guards leader asked you to slay 10 monsters threatening the village.",
+"The task is done. Go back to the guards leader."
+]
+},
+{
+"texts":[
+"Some old man is asking for you. Go and see what he wants."
+]
+},
+{
+"texts":[
+"The old man has asked you to find her daughter that went camping at the fountain, west of the village."
+]
+},
+{
+"texts":[
+"You've found the old man's daughter. Take her back home."
+]
+},
+{
+"texts":[
+"The old man has sent you to talk with Fraya, a woman usually spending her time at the cemetery in the northwest of the island.",
+"Fraya asked you to kill 10 skeletons in exchange for information.",
+"Go back to Fraya."	
+]
+},
+{
+"texts":[
+"Talk to Fraya again and demand the promised answers."
+]
+},
+{
+"texts":[
+"Fraya has sent you back to Largo, the old man from the village."
+]
+},
+{
+"texts":[
+"The captain has sent a sentry for you. Go at the rendez-vous on the Khali Beach, south of the village.",
+"the captain has asked the platoon to kill the monsters infecting the park, west of the beach. Do your part by killing 20 monsters.",
+"The task is done, go back to the captain."
+]
+},
+{
+"texts":[
+"The captain sent you back to the village. Time to ask Largo some questions."
+]
+},{
+"texts":[
+"Largo has sent you to help Fraya with a possessed witch."
+]
+},
+{
+"texts":[
+"Fraya has asked you to get information from Thulsa, the possessed witch being held captive in the castle prison."
+]
+},{
+"texts":[
+"You've got all the information needed. Go tell Fraya what you've learned."
+]
+},
+{
+"texts":[
+"Go and talk to Largo about entering the dungeon."
+]
+},
+{
+"texts":[
+"What's that? There was a muffled scream from one of the tents. Go check it out."
+]
+},
+{
+"texts":[
+"You have to meet with Largo at the fountain in the center of the island. Better be there early than late."
+]
+},
+{
+"texts":[
+"After entering the dungeon, you see a spirit halting you. Ask it what it wants.",
+"The sentinel asked you to slay the Sapphire Dragon. But first you have to slay its two guards. Find them all and kill them.",
+"The Dragon is slain. Go talk to the sentinel again.",
+"Slay Manahan, residing at the heart of the Central Garden."
+]
+},
+{
+"texts":[
+"Manahan's soul! He's trying to speak to you. Ask him what he has to say."
+]
+},{
+"texts":[
+"You see Largo and Claire at the end of the dungeon. How did they get here? Talk to Largo."
+]
 }
 ]
+}
