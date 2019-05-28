@@ -7137,7 +7137,7 @@
   <object id="455" name="MainMap" type="spawnpoint" x="5518.67" y="5573.33">
    <point/>
   </object>
-  <object id="457" name="Dungeon" type="spawnpoint" x="3111.33" y="2726.67">
+  <object id="457" name="Dungeon" type="spawnpoint" x="3152.66" y="2683.34">
    <point/>
   </object>
   <object id="460" name="CastleMap" type="spawnpoint" x="5761" y="3285">

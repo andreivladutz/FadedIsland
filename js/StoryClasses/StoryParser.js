@@ -166,7 +166,6 @@ class StoryParser {
             if(stage === quest.maxStage && quest.completed === false) {
                 quest.completed = true;
                 StoryParser.upQuestsProgress(1);
-                counter++;
             }
             if(addPath) {
                 StoryParser.addPath(addPath);
