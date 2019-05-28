@@ -184,14 +184,10 @@ function getCredits() {
     menu.getCredits();
 }
 
-function eraseData(){
-    alert("AM REUSIT!");
-}
-
 function newGame(){
     window.location.href = "index.html?continue=false&player="+CHOSEN;
 }
 
 function continueGame(){
-    window.location.href = "index.html?continue=true", true;
+    window.location.href = "index.html?continue=true&player="+CHOSEN, true;
 }

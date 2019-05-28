@@ -114,7 +114,7 @@ function TEST_RANDOM_POINT_GENERATION(playerRef, range, noOfTest) {
 
 function init() {
     loadingScreen = new LoadingScreen();
-	getPreferences();
+	let desiredModel = getPreferences();
 	
 	if (DEBUGGING) {
 		let stats = new xStats();
@@ -145,7 +145,7 @@ function init() {
 	loadProjectileResources();
 
 	// instantiate the player using the actorFactory
-    player = ActorFactory().getActor("player3", -1, -1, loadedPromisesArr);
+    player = ActorFactory().getActor(desiredModel, -1, -1, loadedPromisesArr);
 
     // add the player with the rest of the drawable entities
 	DRAWABLE_ENTITIES.push(player);
