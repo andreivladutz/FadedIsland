@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" infinite="0" nextlayerid="59" nextobjectid="464">
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" infinite="0" nextlayerid="59" nextobjectid="464">
  <tileset firstgid="1" source="../tileset_workfiles/TERRAIN_TILESET.json"/>
  <tileset firstgid="1025" source="../tileset_workfiles/Tree.json"/>
  <tileset firstgid="1026" source="../tileset_workfiles/base_terrain_atlas.json"/>
@@ -24,6 +24,11 @@
  <tileset firstgid="7499" source="../tileset_workfiles/head_soldier.json"/>
  <tileset firstgid="7523" source="../tileset_workfiles/npc_empty.json"/>
  <tileset firstgid="7547" source="../tileset_workfiles/CASTLE.json"/>
+ <tileset firstgid="8031" source="../tileset_workfiles/Sentinel.json"/>
+ <tileset firstgid="9123" source="../tileset_workfiles/Thulsa.json"/>
+ <tileset firstgid="10215" source="../tileset_workfiles/Claire.json"/>
+ <tileset firstgid="11307" source="../tileset_workfiles/Guardswoman.json"/>
+ <tileset firstgid="12399" source="../tileset_workfiles/Manahan.json"/>
  <layer id="4" name="Base" width="200" height="200">
   <data encoding="csv">
 364,363,364,364,364,363,363,363,364,364,362,364,363,362,363,364,363,363,364,362,363,363,362,363,362,364,364,362,362,364,363,363,364,363,363,362,363,362,363,362,362,364,362,362,362,362,362,364,364,363,364,362,363,363,363,362,364,362,362,362,364,364,362,362,363,363,364,364,362,362,364,364,363,364,364,364,363,362,364,364,364,364,363,363,362,364,363,362,362,362,362,364,363,363,362,364,362,363,364,362,363,363,364,364,363,364,363,362,362,364,363,364,362,362,363,364,364,363,364,364,363,363,364,363,363,364,364,363,363,362,363,362,362,364,364,362,364,363,560,561,659,560,689,655,364,362,362,659,659,363,299,364,362,659,364,299,362,657,358,293,293,358,356,356,358,293,293,357,358,293,293,356,356,293,357,356,357,358,356,357,293,356,356,356,293,358,357,293,358,357,357,293,293,293,357,358,356,293,358,358,

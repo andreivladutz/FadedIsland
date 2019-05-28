@@ -2705,7 +2705,7 @@
                  "type":"enemyspawn",
                  "visible":true,
                  "width":0,
-                 "x":3105.33333333333,
+                 "x":3105.33,
                  "y":2716
                 }],
          "opacity":1,
@@ -2718,7 +2718,7 @@
  "nextobjectid":464,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.2.3",
+ "tiledversion":"1.2.4",
  "tileheight":32,
  "tilesets":[
         {
@@ -2816,6 +2816,10 @@
         {
          "firstgid":7547,
          "source":"..\/tileset_workfiles\/CASTLE.json"
+        }, 
+        {
+         "firstgid":8031,
+         "source":"..\/tileset_workfiles\/Sentinel.json"
         }],
  "tilewidth":32,
  "type":"map",
