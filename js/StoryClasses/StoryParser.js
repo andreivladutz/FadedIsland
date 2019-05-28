@@ -78,6 +78,21 @@ class StoryParser {
         localStorage.setItem(`questStages|${which}`, JSON.stringify(saveState));
     }
 
+    static getObjective() {
+
+        let currentQuest = null;
+        for(let quest of StoryParser.getReference().quests) {
+            if(quest.completed !== true) {
+                currentQuest = quest;
+                break;
+            }
+        }
+        if(currentQuest === null)
+            return "No current objectives.";
+        else
+            return currentQuest.objectives[currentQuest.currentObjective];
+    }
+
     constructor(dialogueBox) {
 
         this.dialogueBox = dialogueBox;
@@ -94,12 +109,13 @@ class StoryParser {
                     let jsonObject = JSON.parse(xobj.responseText);
                     let textsArray = jsonObject.quests;
                     let defaults = jsonObject.defaults;
+                    let objectives = jsonObject.objectives;
                     let stagesArray = [];
                     let quests = [];
 
                     for(let i = 0; i < textsArray.length; i++) {
                         quests[i] = new Quest(textsArray[i].npc_id, textsArray[i].texts,
-                            textsArray[i].answers, textsArray[i].maxStage, textsArray[i].objectives);
+                            textsArray[i].answers, textsArray[i].maxStage, objectives[i].texts);
                     }
 
                     for(let i = 0; i < textsArray.length; i++)
@@ -137,7 +153,7 @@ class StoryParser {
 
         };
 
-        this.getAnswer = function(which, stage, close, addPath, progressObjective) {
+        this.getAnswer = function(which, stage, close, addPath, progressObjectives) {
 
             stage = parseInt(stage);
             close = close === "true";
@@ -154,7 +170,7 @@ class StoryParser {
             if(addPath) {
                 StoryParser.addPath(addPath);
             }
-            if(progressObjective) {
+            if(progressObjectives) {
                 quest.currentObjective++;
             }
 
@@ -169,11 +185,11 @@ class StoryParser {
     }
 }
 let x = [0,1,2,1,3,3,1,4,1,3,5,3,1,8,1,6,7,1];
-let counter = 1;
-//localStorage.clear();
+let counter = 0;
+localStorage.clear();
 StoryParser.getReference(null);
 setTimeout(function(){
-    StoryParser.setQuestsProgress(1);
+    StoryParser.setQuestsProgress(0);
     window.addEventListener("keydown",function(e) {
         if(e.key.toLowerCase() === "e") {
             if (StoryParser.getReference().dialogueBox === null) {

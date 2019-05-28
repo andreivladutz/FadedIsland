@@ -462,7 +462,6 @@
 ],
 "objectives":[
 {
-"current":0,
 "texts":[
 "The local guards have requested aid from the capital. Go and talk to the guards leader.",
 "The guards leader asked you to slay 10 monsters threatening the village.",
@@ -470,25 +469,21 @@
 ]
 },
 {
-"current":0,
 "texts":[
 "Some old man is asking for you. Go and see what he wants."
 ]
 },
 {
-"current":0,
 "texts":[
 "The old man has asked you to find her daughter that went camping at the fountain, west of the village."
 ]
 },
 {
-"current":0,
 "texts":[
 "You've found the old man's daughter. Take her back home."
 ]
 },
 {
-"current":0,
 "texts":[
 "The old man has sent you to talk with Fraya, a woman usually spending her time at the cemetery in the northwest of the island.",
 "Fraya asked you to kill 10 skeletons in exchange for information.",
@@ -496,19 +491,16 @@
 ]
 },
 {
-"current":0,
 "texts":[
 "Talk to Fraya again and demand the promised answers."
 ]
 },
 {
-"current":0,
 "texts":[
 "Fraya has sent you back to Largo, the old man from the village."
 ]
 },
 {
-"current":0,
 "texts":[
 "The captain has sent a sentry for you. Go at the rendez-vous on the Khali Beach, south of the village.",
 "the captain has asked the platoon to kill the monsters infecting the park, west of the beach. Do your part by killing 20 monsters.",
@@ -516,47 +508,39 @@
 ]
 },
 {
-"current":0,
 "texts":[
 "The captain sent you back to the village. Time to ask Largo some questions."
 ]
 },{
-"current":0,
 "texts":[
 "Largo has sent you to help Fraya with a possessed witch."
 ]
 },
 {
-"current":0,
 "texts":[
 "Fraya has asked you to get information from Thulsa, the possessed witch being held captive in the castle prison."
 ]
 },{
-"current":0,
 "texts":[
 "You've got all the information needed. Go tell Fraya what you've learned."
 ]
 },
 {
-"current":0,
 "texts":[
 "Go and talk to Largo about entering the dungeon."
 ]
 },
 {
-"current":0,
 "texts":[
 "What's that? There was a muffled scream from one of the tents. Go check it out."
 ]
 },
 {
-"current":0,
 "texts":[
 "You have to meet with Largo at the fountain in the center of the island. Better be there early than late."
 ]
 },
 {
-"current":0,
 "texts":[
 "After entering the dungeon, you see a spirit halting you. Ask it what it wants.",
 "The sentinel asked you to slay the Sapphire Dragon. But first you have to slay its two guards. Find them all and kill them.",
@@ -565,12 +549,10 @@
 ]
 },
 {
-"current":0,
 "texts":[
 "Manahan's soul! He's trying to speak to you. Ask him what he has to say."
 ]
 },{
-"current":0,
 "texts":[
 "You see Largo and Claire at the end of the dungeon. How did they get here? Talk to Largo."
 ]

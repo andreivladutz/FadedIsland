@@ -164,6 +164,8 @@ _d.setOptions = function (options) {
         newOption.setAttribute("close", options[i].close);
         if (options[i].addPath !== undefined)
             newOption.setAttribute("addPath", options[i].addPath);
+        if (options[i].progressObjectives !== undefined)
+            newOption.setAttribute("progressObjectives", options[i].progressObjectives);
 
         this.options.appendChild(newOption);
 
@@ -225,7 +227,9 @@ _d.waitOnInput = function (which) {
                 window.removeEventListener("keydown", handler);
                 StoryParser.getReference().getAnswer(which, allOptions[currentPos].getAttribute("stage"),
                     allOptions[currentPos].getAttribute("close"),
-                    allOptions[currentPos].getAttribute("addPath"));
+                    allOptions[currentPos].getAttribute("addPath"),
+                    allOptions[currentPos].getAttribute("progressObjectives")
+                );
             }
             if (e.keyCode === 27) {
                 window.removeEventListener("keydown", handler);
