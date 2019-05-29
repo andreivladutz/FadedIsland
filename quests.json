@@ -93,7 +93,7 @@
 [{"text":"Sounds fair enough... Wait, what do you mean I am not affected? Why is that?","stage":8,"close":false}],
 [{"text":"......I guess......","stage":9,"close":true}],
 [{"text":"Very helpful.","stage":9,"close":true}],
-[{"text":"Do you always speak in code?","stage":10,"close":false}]
+[{"text":"Do you always speak in code?","stage":10,"close":true}]
 ],
 "maxStage":10,
 "quest":{

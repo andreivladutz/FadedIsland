@@ -179,7 +179,8 @@ class StoryParser {
             objectiveBox.showObjective(StoryParser.getObjective());
             if(progressObjectives) {
                 objectiveBox.showQuestProgress(quest["quest"].monsters, 0, quest["quest"].quota);
-                new QuestProgressManager(quest["quest"].monsters, 0, quest["quest"].quota);
+				console.log(quest);
+                new QuestProgressManager(quest, objectiveBox);
             }
 
             if(close)

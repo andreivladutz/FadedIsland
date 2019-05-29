@@ -148,6 +148,31 @@ _p.checkCurrentRoom = function() {
 	}
 };
 
+_p.handleAfterDeath = function(){
+	var endScreen = document.createElement("div");
+	endScreen.id = "end-screen";
+	endScreen.textContent = "You Died";
+	
+	var retryButton = document.createElement("div");
+	retryButton.textContent = "Retry";
+	retryButton.id = "retry-button";
+	retryButton.addEventListener("click", function(){
+		window.location.href = "index.html?continue=true";
+	})
+	
+	
+	var menuButton = document.createElement("div");
+	menuButton.textContent = "Main Menu";
+	menuButton.id = "menu-button";
+	menuButton.addEventListener("click", function(){
+		window.location.href = "menu_test.html?";
+	})
+	
+	document.body.appendChild(endScreen);
+	document.body.appendChild(retryButton);
+	document.body.appendChild(menuButton);
+}
+
 // we want to move the player to the spawn point of that map when the map gets changed
 // FOR EXAMPLE: 
 // if we came from dungeon back to mainMap we want to go at the transition point on the mainMap for the dungeon
@@ -533,6 +558,9 @@ _p.checkInteractionPointsProximity = function() {
 			else if (point.type === MapInstance.CHANGE_ROOM_POINT) {
 				boundHandler = this.interactWithRoomTransitionPoint.bind(this, point);
 			}
+			else if (point.type === "npc") {
+				boundHandler = this.interactWithNpcs.bind(this, point);
+			}
 
 			// registering a handler for the current interaction point
 			// concatenating point type and name to get a unique key in the handlers dictionary
@@ -543,6 +571,12 @@ _p.checkInteractionPointsProximity = function() {
 			// unregistering the handler when we get further away from the point
 			this.removeInteractionHandlers(uniqueKeyName);
 		}
+	}
+};
+
+_p.interactWithNpcs = function(point, e) {
+	if (e.key.toLowerCase() === Player.INTERACTION_KEY) {
+		StoryParser.getReference(new DialogueBox()).getQuest(point.npcId);
 	}
 };
 

@@ -1,25 +1,28 @@
 class QuestProgressManager extends EventTarget{
 
-    constructor(monsters, progress, quantity, objectiveBox = null) {
+    constructor(quest, objectiveBox) {
 
         super();
 
-        this.monsters = monsters;
-        this.progress = progress;
-        this.quantity = quantity;
+        this.quest = quest;
+		this.progress = 0;
         this.objectiveBox = objectiveBox;
 
-        let obj = this;
-        this.addEventListener("killedEnemy",function(name) {
-
-            console.log("sal");
-            if(obj.monsters.includes(name)) {
+		
+		let obj = this;
+        player.addEventListener(Enemy.KILLED_ENEMY_EVENT, function enemyKill(e) {	
+          	console.log(obj.quest);
+			if(obj.quest["quest"].monsters.includes(e.detail)) {
+				console.log("sal");
                 obj.progress++;
                 obj.objectiveBox.updateQuestProgress();
             }
-            if(obj.progress === obj.quantity) {
+            if(obj.progress === obj.quest["quest"].quota) {
                 obj.objectiveBox.removeQuestProgress();
-                obj.removeEventListener("killedEnemy");
+				quest.stage++;
+				quest.currentObjective++;
+				objectiveBox.showObjective(StoryParser.getObjective());
+                player.removeEventListener("killedEnemy", enemyKill); 	
             }
 
         })

@@ -272,10 +272,13 @@ _p.processObjects = function() {
 
 				this.enemySpawnPoints.push(obj);
 			}
-
-			// deleting useless properties
-			delete obj["properties"];
-			delete obj["point"];
+			
+			if ("type" in obj && obj["type"] === "npc") {
+				obj.npcId = parseInt(obj.name);
+				
+				this.interactionPoints.push(obj);
+			}
+				
 			delete obj["id"];
 			delete obj["rotation"];
 			delete obj["visible"];
