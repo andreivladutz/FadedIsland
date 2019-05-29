@@ -113,6 +113,7 @@ function TEST_RANDOM_POINT_GENERATION(playerRef, range, noOfTest) {
 }
 
 function init() {
+	localStorage.clear();
     loadingScreen = new LoadingScreen();
 	let desiredModel = getPreferences();
 	
